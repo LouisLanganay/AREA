@@ -22,3 +22,5 @@ interface About {
   client: Client;
   server: Server;
 }
+
+export type { Client, Server, About };
