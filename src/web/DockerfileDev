@@ -1,6 +1,6 @@
 FROM node:18-alpine AS builder
 
-WORKDIR /app
+WORKDIR /web_service
 
 COPY package*.json ./
 RUN npm install
@@ -19,6 +19,3 @@ COPY --from=builder /app/dist ./dist
 RUN npm run build
 
 EXPOSE 8081
-
-CMD ["npm", "run", "dev"]
-
