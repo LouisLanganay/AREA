@@ -3,33 +3,32 @@ version: '3.8'
 services:
   server:
     build:
-      context: .
-      dockerfile: src/server/Dockerfile
+      context: ./src/server/
+      dockerfile: DockerfileDev
     ports:
-      - "8080:8080"
+      - 8080:8080
+    volumes:
+      - ./src/server:/server
+      - ./src/shared:/server/shared
+      - /server/node_modules
     env_file:
       - .env
     depends_on:
       - database
     networks:
       - app_network
-    command: npm run start:prod
-    security_opt:
-      - no-new-privileges:true
-    user: "node"
+    command: npm run start:dev
 
   database:
     image: mariadb:latest
     env_file:
       - .env
+    ports:
+      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     networks:
       - app_network
-    expose:
-      - "3306"
-    security_opt:
-      - no-new-privileges:true
 
 volumes:
   db-data:
