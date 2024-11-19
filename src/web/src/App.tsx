@@ -3,7 +3,6 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { AuthProvider, useAuth } from '@/auth/AuthContext'
-import Home from './pages/Home'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
