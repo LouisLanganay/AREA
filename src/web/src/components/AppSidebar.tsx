@@ -17,6 +17,7 @@ import { Cog6ToothIcon,
   Squares2X2Icon,
   UsersIcon
 } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
 
 const groups = [
   {
