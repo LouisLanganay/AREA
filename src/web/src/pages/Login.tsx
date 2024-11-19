@@ -29,8 +29,8 @@ const providers = [
 ]
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('test@test.com')
+  const [password, setPassword] = useState('test')
   const [error, setError] = useState('')
   const { login } = useAuth()
   const navigate = useNavigate()

@@ -3,15 +3,22 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { AuthProvider, useAuth } from '@/auth/AuthContext'
+import Home from './pages/Home'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
-  return isAuthenticated ? children : <Navigate to="/register" replace />
+  return isAuthenticated ? children : <Navigate to='/register' replace />
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
-  return !isAuthenticated ? children : <Navigate to="/" replace />
+  return !isAuthenticated ? children : <Navigate to='/' replace />
+}
+
+function Logout() {
+  const { logout } = useAuth();
+  logout();
+  return <Navigate to='/login' replace />;
 }
 
 function App() {
@@ -31,9 +38,17 @@ function App() {
             </PublicRoute>
           } />
 
+          <Route path='/logout' element={
+            <ProtectedRoute>
+              <Logout />
+            </ProtectedRoute>
+          } />
+
           <Route path='/' element={
             <ProtectedRoute>
-              <Layout/>
+              <Layout>
+                <Home />
+              </Layout>
             </ProtectedRoute>
           }>
           </Route>

@@ -1,11 +1,16 @@
-import { Outlet } from 'react-router-dom'
+import { AppSidebar } from './AppSidebar';
+import { SidebarProvider, SidebarTrigger } from './ui/sidebar';
 
-export default function Layout() {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className='min-h-screen bg-background'>
-      <main>
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <div className='min-h-screen bg-background'>
+        <main>
+          <SidebarTrigger />
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
   )
 }
