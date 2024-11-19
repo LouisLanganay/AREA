@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+  web_service:
+    build:
+      context: ./src/web/
+      dockerfile: DockerfileDev
+    ports:
+      - 8081:8081
+    volumes:
+      - ./src/web:/web_service
+      - ./src/shared:/web_service/shared
+      - web_service_node_modules:/web_service/node_modules
+    networks:
+      - app_network
+    command: npm run dev
+
   server:
     build:
       context: ./src/server/
@@ -32,6 +46,8 @@ services:
 
 volumes:
   db-data:
+  web_service_node_modules:
+    driver: local
 
 networks:
   app_network:
