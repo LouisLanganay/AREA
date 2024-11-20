@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import { AuthProvider, useAuth } from '@/auth/AuthContext'
 import Home from './pages/Home'
+import AdminPanel from './pages/AdminPanel'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -48,6 +49,15 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <Home />
+              </Layout>
+            </ProtectedRoute>
+          }>
+          </Route>
+
+          <Route path='/users' element={
+            <ProtectedRoute>
+              <Layout>
+                <AdminPanel />
               </Layout>
             </ProtectedRoute>
           }>
