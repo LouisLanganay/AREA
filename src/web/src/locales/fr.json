@@ -1,5 +1,32 @@
 {
-  "welcome": "Bienvenue",
-  "login": "Connexion",
-  "users": "Utilisateurs"
+  "main": {
+    "welcome": "Bienvenue",
+    "login": "Connexion",
+    "users": "Utilisateurs"
+  },
+  "admin": {
+    "active": "Actif",
+    "suspended": "Suspendu",
+    "title": "Gestion des utilisateurs",
+    "usersTitle": "Utilisateurs enregistrés",
+    "users": {
+      "id": "ID",
+      "name": "Nom",
+      "email": "Email",
+      "status": "Statut",
+      "actions": "Actions",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "openMenu": "Ouvrir le menu",
+    "suspend": "Suspendre",
+    "activate": "Activer",
+    "confirmDeleteTitle": "Confirmer la suppression",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {userName}?",
+    "confirmStatusTitle": "Confirmer le changement de statut",
+    "confirmStatus": "Êtes-vous sûr de vouloir {status} l'utilisateur {userName}?",
+    "editTitle": "Modifier l'utilisateur",
+    "saveChanges": "Enregistrer les modifications"
+  }
 }

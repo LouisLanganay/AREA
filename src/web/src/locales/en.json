@@ -1,5 +1,33 @@
 {
-  "welcome": "Welcome",
-  "login": "Login",
-  "users": "Users"
+  "main": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "users": "Users"
+  },
+  "admin": {
+    "active": "Active",
+    "suspended": "Suspended",
+    "title": "User Management",
+    "usersTitle": "Registered Users",
+    "users": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "openMenu": "Open menu",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "confirmDeleteTitle": "Confirm Deletion",
+    "confirmDelete": "Are you sure you want to delete the user {userName}?",
+    "confirmStatusTitle": "Confirm Status Change",
+    "confirmStatus": "Are you sure you want to {status} the user {userName}?",
+    "editTitle": "Edit User",
+    "saveChanges": "Save Changes"
+  }
 }
