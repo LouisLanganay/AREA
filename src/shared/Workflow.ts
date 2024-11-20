@@ -72,6 +72,7 @@ interface Workflow {
   name: string;
   description: string;
   image: string;
+  enabled: boolean;
   nodes: Node[];
 }
 

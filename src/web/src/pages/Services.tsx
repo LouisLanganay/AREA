@@ -25,9 +25,9 @@ export default function Services() {
   }, [])
 
   return (
-    <div className='container mx-auto p-8'>
+    <>
       <div className='mb-8'>
-        <h1 className='text-3xl font-bold'>{t('sidebar.items.services')}</h1>
+        <h1 className='text-2xl font-bold'>{t('sidebar.items.services')}</h1>
         <p className='text-muted-foreground mt-2'>
           Connect and manage your service integrations
         </p>
@@ -77,6 +77,6 @@ export default function Services() {
           </Card>
         ))}
       </div>
-    </div>
+    </>
   )
 }

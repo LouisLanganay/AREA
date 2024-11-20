@@ -1,19 +1,22 @@
 import { AppSidebar } from './sidebar/AppSidebar';
-import { SidebarProvider, SidebarTrigger } from './ui/sidebar';
+import { Separator } from './ui/separator';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from './ui/sidebar';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <div className='min-h-screen bg-background w-full'>
-        <header className='bg-sidebar text-sidebar-foreground p-4 border-b border-border flex items-center justify-between'>
-          <SidebarTrigger />
-          <h1>My Application Header</h1>
+      <SidebarInset>
+        <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
+          <SidebarTrigger className='-ml-1' />
+          <Separator orientation='vertical' className='mr-2 h-4' />
         </header>
-        <main>
-          {children}
-        </main>
-      </div>
+        <div className='min-h-screen bg-background w-full'>
+          <main className='p-4 container mx-auto'>
+            {children}
+          </main>
+        </div>
+      </SidebarInset>
     </SidebarProvider>
   )
 }

@@ -15,5 +15,26 @@
       "switchAccount": "Switch Account",
       "logout": "Logout"
     }
+  },
+  "workflows": {
+    "selectAll": "Select All",
+    "selectRow": "Select Row",
+    "name": "Name",
+    "enabled": "Enabled",
+    "openMenu": "Open Menu",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "filterByName": "Filter by name...",
+    "bulkActions": "Bulk Actions",
+    "enableAll": "Enable All",
+    "disableAll": "Disable All",
+    "columns": "Columns",
+    "create": "Create Workflow",
+    "noResults": "No results found",
+    "selectedRows": "{{selected}} of {{total}} rows selected",
+    "previous": "Previous",
+    "next": "Next",
+    "apps": "Apps"
   }
 }
