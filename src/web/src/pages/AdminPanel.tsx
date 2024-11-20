@@ -209,17 +209,8 @@ export default function AdminPanel() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("admin.confirmDeleteTitle")}</DialogTitle>
-            {/* <DialogDescription>
-              Are you sure you want to delete {selectedUser?.name}? This action
-              cannot be undone.
-            </DialogDescription> */}
-            {/* <DialogDescription>
-              {selectedUser
-                ? t("admin.confirmDelete", { userName: selectedUser.name })
-                : t("admin.confirmDelete", { userName: "the user" })}
-            </DialogDescription> */}
             <DialogDescription>
-              {t("admin.confirmDelete", { userName: "Justine" })}
+              {t("admin.confirmDelete", { userName: selectedUser?.name || "" })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -240,11 +231,6 @@ export default function AdminPanel() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("admin.confirmStatusTitle")}</DialogTitle>
-            {/* <DialogDescription>
-              Are you sure you want to{" "}
-              {selectedUser?.status === "Active" ? "suspend" : "activate"} the
-              user {selectedUser?.name}?
-            </DialogDescription> */}
             <DialogDescription>
               {t("admin.confirmStatus", {
                 status:

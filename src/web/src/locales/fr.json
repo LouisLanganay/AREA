@@ -23,9 +23,9 @@
     "suspend": "Suspendre",
     "activate": "Activer",
     "confirmDeleteTitle": "Confirmer la suppression",
-    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {userName}?",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{userName}}?",
     "confirmStatusTitle": "Confirmer le changement de statut",
-    "confirmStatus": "Êtes-vous sûr de vouloir {status} l'utilisateur {userName}?",
+    "confirmStatus": "Êtes-vous sûr de vouloir {{status}} l'utilisateur {{userName}}?",
     "editTitle": "Modifier l'utilisateur",
     "saveChanges": "Enregistrer les modifications"
   }
