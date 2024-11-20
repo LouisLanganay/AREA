@@ -17,7 +17,8 @@
       "actions": "Actions",
       "edit": "Modifier",
       "delete": "Supprimer",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "confirm": "Confirmer"
     },
     "openMenu": "Ouvrir le menu",
     "suspend": "Suspendre",
@@ -28,5 +29,20 @@
     "confirmStatus": "Êtes-vous sûr de vouloir {{status}} l'utilisateur {{userName}}?",
     "editTitle": "Modifier l'utilisateur",
     "saveChanges": "Enregistrer les modifications"
+  },
+  "sidebar": {
+    "groups": {
+      "application": "Application",
+      "administration": "Administration"
+    },
+    "items": {
+      "home": "Accueil",
+      "workflows": "Mes flux de travail",
+      "services": "Mes services",
+      "users": "Utilisateurs",
+      "settings": "Paramètres",
+      "switchAccount": "Changer de compte",
+      "logout": "Déconnexion"
+    }
   }
 }
