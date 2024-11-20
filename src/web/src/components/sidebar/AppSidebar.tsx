@@ -2,7 +2,6 @@ import { useAuth } from '@/auth/AuthContext'
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -13,7 +12,6 @@ import {
 } from '@/components/ui/sidebar'
 import { UserInfo } from './UserInfo'
 import {
-  Cog6ToothIcon,
   CursorArrowRaysIcon,
   HomeIcon,
   Squares2X2Icon,
