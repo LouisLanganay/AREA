@@ -29,5 +29,20 @@
     "confirmStatus": "Are you sure you want to {{status}} the user {{userName}}?",
     "editTitle": "Edit user",
     "saveChanges": "Save changes"
+  },
+  "sidebar": {
+    "groups": {
+      "application": "Application",
+      "administration": "Administration"
+    },
+    "items": {
+      "home": "Home",
+      "workflows": "My Workflows",
+      "services": "My Services",
+      "users": "Users",
+      "settings": "Settings",
+      "switchAccount": "Switch Account",
+      "logout": "Logout"
+    }
   }
 }
