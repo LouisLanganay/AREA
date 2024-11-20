@@ -12,34 +12,41 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { UserInfo } from './UserInfo'
-import { Cog6ToothIcon,
+import {
+  Cog6ToothIcon,
+  CursorArrowRaysIcon,
   HomeIcon,
   Squares2X2Icon,
   UsersIcon
-} from '@heroicons/react/24/solid';
-import { useTranslation } from 'react-i18next';
+} from '@heroicons/react/24/solid'
+import { useTranslation } from 'react-i18next'
 
-const groups = [
+const getGroups = (t: (key: string) => string) => [
   {
-    title: 'Application',
+    title: t('sidebar.groups.application'),
     items: [
       {
-        title: 'Home',
+        title: t('sidebar.items.home'),
         icon: HomeIcon,
         url: '/'
       },
       {
-        title: 'My Workflows',
+        title: t('sidebar.items.workflows'),
         icon: Squares2X2Icon,
         url: '/workflows'
+      },
+      {
+        title: t('sidebar.items.services'),
+        icon: CursorArrowRaysIcon,
+        url: '/services'
       }
     ]
   },
   {
-    title: 'Administration',
+    title: t('sidebar.groups.administration'),
     items: [
       {
-        title: 'Users',
+        title: t('sidebar.items.users'),
         icon: UsersIcon,
         url: '/users'
       }
@@ -50,6 +57,8 @@ const groups = [
 
 export function AppSidebar() {
   const { user } = useAuth();
+  const { t } = useTranslation();
+  const groups = getGroups(t);
 
   return (
     <Sidebar>
@@ -79,16 +88,6 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Cog6ToothIcon />
-              <span>Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   )
 }
