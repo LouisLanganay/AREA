@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import { AuthProvider, useAuth } from '@/auth/AuthContext'
 import Home from './pages/Home'
+import Services from './pages/Services'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth()
@@ -50,8 +51,15 @@ function App() {
                 <Home />
               </Layout>
             </ProtectedRoute>
-          }>
-          </Route>
+          } />
+
+          <Route path='/services' element={
+            <ProtectedRoute>
+              <Layout>
+                <Services />
+              </Layout>
+            </ProtectedRoute>
+          } />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,4 +1,19 @@
 {
   "welcome": "Welcome",
-  "login": "Login"
+  "login": "Login",
+  "sidebar": {
+    "groups": {
+      "application": "Application",
+      "administration": "Administration"
+    },
+    "items": {
+      "home": "Home",
+      "workflows": "My Workflows",
+      "services": "My Services",
+      "users": "Users",
+      "settings": "Settings",
+      "switchAccount": "Switch Account",
+      "logout": "Logout"
+    }
+  }
 }
