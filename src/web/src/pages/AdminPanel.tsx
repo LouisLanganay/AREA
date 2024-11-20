@@ -4,18 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  BarChart3,
-  Settings,
-  Users,
-  Zap,
-  MoreVertical,
-  Trash,
-  UserX,
-  UserCheck,
-  Edit,
-} from "lucide-react";
+import { MoreVertical, Trash, UserX, UserCheck, Edit } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -67,6 +56,7 @@ const initialUsers: User[] = [
 ];
 
 export default function AdminPanel() {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -110,12 +100,13 @@ export default function AdminPanel() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.id.toString().includes(searchTerm)
   );
+
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+      <h2 className="text-2xl font-bold mb-4">{t("admin.title")}</h2>
       <Card>
         <CardHeader>
-          <CardTitle>Registered Users</CardTitle>
+          <CardTitle>{t("admin.usersTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
@@ -129,11 +120,11 @@ export default function AdminPanel() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t("admin.users.id")}</TableHead>
+                  <TableHead>{t("admin.users.name")}</TableHead>
+                  <TableHead>{t("admin.users.email")}</TableHead>
+                  <TableHead>{t("admin.users.status")}</TableHead>
+                  <TableHead>{t("admin.users.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -157,12 +148,16 @@ export default function AdminPanel() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">
+                              {t("admin.openMenu")}
+                            </span>
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>
+                            {t("admin.users.actions")}
+                          </DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedUser(user);
@@ -170,7 +165,7 @@ export default function AdminPanel() {
                             }}
                           >
                             <Edit className="mr-2 h-4 w-4" />
-                            Edit
+                            {t("admin.users.edit")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => {
@@ -181,12 +176,12 @@ export default function AdminPanel() {
                             {user.status === "Active" ? (
                               <>
                                 <UserX className="mr-2 h-4 w-4" />
-                                Suspend
+                                {t("admin.suspend")}
                               </>
                             ) : (
                               <>
                                 <UserCheck className="mr-2 h-4 w-4" />
-                                Activate
+                                {t("admin.activate")}
                               </>
                             )}
                           </DropdownMenuItem>
@@ -198,7 +193,7 @@ export default function AdminPanel() {
                             }}
                           >
                             <Trash className="mr-2 h-4 w-4" />
-                            Delete
+                            {t("admin.users.delete")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -213,10 +208,18 @@ export default function AdminPanel() {
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-            <DialogDescription>
+            <DialogTitle>{t("admin.confirmDeleteTitle")}</DialogTitle>
+            {/* <DialogDescription>
               Are you sure you want to delete {selectedUser?.name}? This action
               cannot be undone.
+            </DialogDescription> */}
+            {/* <DialogDescription>
+              {selectedUser
+                ? t("admin.confirmDelete", { userName: selectedUser.name })
+                : t("admin.confirmDelete", { userName: "the user" })}
+            </DialogDescription> */}
+            <DialogDescription>
+              {t("admin.confirmDelete", { userName: "Justine" })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -224,10 +227,10 @@ export default function AdminPanel() {
               variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
-              Cancel
+              {t("admin.users.cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDeleteUser}>
-              Delete
+              {t("admin.users.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -236,11 +239,18 @@ export default function AdminPanel() {
       <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Status Change</DialogTitle>
-            <DialogDescription>
+            <DialogTitle>{t("admin.confirmStatusTitle")}</DialogTitle>
+            {/* <DialogDescription>
               Are you sure you want to{" "}
               {selectedUser?.status === "Active" ? "suspend" : "activate"} the
               user {selectedUser?.name}?
+            </DialogDescription> */}
+            <DialogDescription>
+              {t("admin.confirmStatus", {
+                status:
+                  selectedUser?.status === "Active" ? "suspend" : "activate",
+                userName: selectedUser?.name,
+              })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -248,9 +258,11 @@ export default function AdminPanel() {
               variant="outline"
               onClick={() => setIsStatusDialogOpen(false)}
             >
-              Cancel
+              {t("admin.users.cancel")}
             </Button>
-            <Button onClick={handleToggleUserStatus}>Confirm</Button>
+            <Button onClick={handleToggleUserStatus}>
+              {t("admin.users.confirm")}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -258,7 +270,7 @@ export default function AdminPanel() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>{t("admin.editTitle")}</DialogTitle>
           </DialogHeader>
           <form
             onSubmit={(e) => {
@@ -276,7 +288,7 @@ export default function AdminPanel() {
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name" className="text-right">
-                  Name
+                  {t("admin.users.name")}
                 </Label>
                 <Input
                   id="name"
@@ -287,7 +299,7 @@ export default function AdminPanel() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">
-                  Email
+                  {t("admin.users.email")}
                 </Label>
                 <Input
                   id="email"
@@ -298,7 +310,7 @@ export default function AdminPanel() {
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="status" className="text-right">
-                  Status
+                  {t("admin.users.status")}
                 </Label>
                 <select
                   id="status"
@@ -306,13 +318,13 @@ export default function AdminPanel() {
                   defaultValue={selectedUser?.status || "Active"}
                   className="col-span-3 flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="Active">Active</option>
-                  <option value="Suspended">Suspended</option>
+                  <option value="Active">{t("admin.active")}</option>
+                  <option value="Suspended">{t("admin.suspended")}</option>
                 </select>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">{t("admin.saveChanges")}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
