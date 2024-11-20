@@ -1,11 +1,21 @@
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart3, Settings, Users, Zap, MoreVertical, Trash, UserX, UserCheck, Edit } from 'lucide-react'
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  BarChart3,
+  Settings,
+  Users,
+  Zap,
+  MoreVertical,
+  Trash,
+  UserX,
+  UserCheck,
+  Edit,
+} from "lucide-react";
 import {
   Table,
   TableBody,
@@ -13,7 +23,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +31,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -29,19 +39,284 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
+} from "@/components/ui/dialog";
 
-const initialUsers = [
-    { id: 1, name: 'Alice Johnson', email: 'alice@example.com', status: 'Active' },
-    { id: 2, name: 'Bob Smith', email: 'bob@example.com', status: 'Active' },
-    { id: 3, name: 'Charlie Brown', email: 'charlie@example.com', status: 'Suspended' },
-    { id: 4, name: 'David Lee', email: 'david@example.com', status: 'Active' },
-    { id: 5, name: 'Eva Martinez', email: 'eva@example.com', status: 'Active' },
-  ]
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  status: "Active" | "Suspended";
+}
+
+const initialUsers: User[] = [
+  {
+    id: 1,
+    name: "Alice Johnson",
+    email: "alice@example.com",
+    status: "Active",
+  },
+  { id: 2, name: "Bob Smith", email: "bob@example.com", status: "Active" },
+  {
+    id: 3,
+    name: "Charlie Brown",
+    email: "charlie@example.com",
+    status: "Suspended",
+  },
+  { id: 4, name: "David Lee", email: "david@example.com", status: "Active" },
+  { id: 5, name: "Eva Martinez", email: "eva@example.com", status: "Active" },
+];
 
 export default function AdminPanel() {
-  const { t } = useTranslation();
-  return <div>{t('users')}</div>
+  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const handleDeleteUser = () => {
+    if (selectedUser) {
+      setUsers(users.filter((user) => user.id !== selectedUser.id));
+      setIsDeleteDialogOpen(false);
+    }
+  };
+
+  const handleToggleUserStatus = () => {
+    if (selectedUser) {
+      setUsers(
+        users.map((user) =>
+          user.id === selectedUser.id
+            ? {
+                ...user,
+                status: user.status === "Active" ? "Suspended" : "Active",
+              }
+            : user
+        )
+      );
+      setIsStatusDialogOpen(false);
+    }
+  };
+
+  const handleEditUser = (editedUser: User) => {
+    setUsers(
+      users.map((user) => (user.id === editedUser.id ? editedUser : user))
+    );
+    setIsEditDialogOpen(false);
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.id.toString().includes(searchTerm)
+  );
+  return (
+    <div>
+      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+      <Card>
+        <CardHeader>
+          <CardTitle>Registered Users</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4">
+            <Input
+              placeholder="Search by name, email, or ID"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.id}</TableCell>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          user.status === "Active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {user.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsEditDialogOpen(true);
+                            }}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsStatusDialogOpen(true);
+                            }}
+                          >
+                            {user.status === "Active" ? (
+                              <>
+                                <UserX className="mr-2 h-4 w-4" />
+                                Suspend
+                              </>
+                            ) : (
+                              <>
+                                <UserCheck className="mr-2 h-4 w-4" />
+                                Activate
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setIsDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {selectedUser?.name}? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteUser}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Status Change</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to{" "}
+              {selectedUser?.status === "Active" ? "suspend" : "activate"} the
+              user {selectedUser?.name}?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsStatusDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleToggleUserStatus}>Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit User</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target as HTMLFormElement);
+              const editedUser: User = {
+                id: selectedUser?.id || 0,
+                name: formData.get("name") as string,
+                email: formData.get("email") as string,
+                status: formData.get("status") as "Active" | "Suspended",
+              };
+              handleEditUser(editedUser);
+            }}
+          >
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  defaultValue={selectedUser?.name || ""}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  defaultValue={selectedUser?.email || ""}
+                  className="col-span-3"
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <select
+                  id="status"
+                  name="status"
+                  defaultValue={selectedUser?.status || "Active"}
+                  className="col-span-3 flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Suspended">Suspended</option>
+                </select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
