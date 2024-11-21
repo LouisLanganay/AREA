@@ -1,21 +1,22 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/Layout'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import { AuthProvider, useAuth } from '@/auth/AuthContext'
-import Home from './pages/Home'
-import Services from './pages/Services'
-import Workflows from './pages/Workflows'
-import AdminPanel from './pages/AdminPanel'
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import Home from './pages/Home';
+import AdminPanel from './pages/AdminPanel';
+import Services from './pages/Services';
+import Workflows from './pages/Workflows';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth()
-  return isAuthenticated ? children : <Navigate to='/register' replace />
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to='/register' replace />;
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuth()
-  return !isAuthenticated ? children : <Navigate to='/' replace />
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? children : <Navigate to='/' replace />;
 }
 
 function Logout() {

@@ -7,22 +7,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { PlusIcon } from '@heroicons/react/24/solid';
 
 export default function Services() {
-  const { t } = useTranslation()
-  const [services, setServices] = useState<Service[]>([])
+  const { t } = useTranslation();
+  const [services, setServices] = useState<Service[]>([]);
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const services = await getServices();
-        console.log("services ", services);
         setServices(services);
       } catch (error) {
         // TODO: Handle error
         console.error(error);
       }
-    }
+    };
     fetchServices();
-  }, [])
+  }, []);
 
   return (
     <>
