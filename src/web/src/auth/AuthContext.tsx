@@ -26,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       createdAt: 0,
       updatedAt: 0,
       avatarUrl: 'https://i.pinimg.com/736x/0d/80/97/0d8097710f3027186444099111c6f93f.jpg',
-    }
+    };
     setToken(newToken);
     setUser(data);
     localStorage.setItem('token', newToken);

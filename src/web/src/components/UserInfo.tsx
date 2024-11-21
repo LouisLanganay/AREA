@@ -3,18 +3,18 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
-import { User } from '../../../shared/Users'
-import { ChevronUpDownIcon, ArrowLeftStartOnRectangleIcon, ArrowsRightLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline'
-import { useAuth } from '@/auth/AuthContext'
-import clsx from 'clsx'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+} from '@/components/ui/sidebar';
+import { User } from '../../../shared/Users';
+import { ChevronUpDownIcon, ArrowLeftStartOnRectangleIcon, ArrowsRightLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@/auth/AuthContext';
+import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 export function UserInfo({
   user,
@@ -77,5 +77,5 @@ export function UserInfo({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

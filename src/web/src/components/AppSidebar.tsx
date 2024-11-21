@@ -1,8 +1,7 @@
-import { useAuth } from '@/auth/AuthContext'
+import { useAuth } from '@/auth/AuthContext';
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,16 +9,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar'
-import { UserInfo } from './UserInfo'
+} from '@/components/ui/sidebar';
+import { UserInfo } from './UserInfo';
 import {
-  Cog6ToothIcon,
   CursorArrowRaysIcon,
   HomeIcon,
   Squares2X2Icon,
   UsersIcon
-} from '@heroicons/react/24/solid'
-import { useTranslation } from 'react-i18next'
+} from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
 
 const getGroups = (t: (key: string) => string) => [
   {
@@ -53,7 +51,7 @@ const getGroups = (t: (key: string) => string) => [
     ],
     isAdmin: true
   }
-]
+];
 
 export function AppSidebar() {
   const { user } = useAuth();
@@ -89,5 +87,5 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

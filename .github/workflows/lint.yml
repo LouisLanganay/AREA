@@ -1,0 +1,59 @@
+name: Lint Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Run ESLint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src/web
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: './src/web/package-lock.json'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run ESLint
+      run: npm run lint > coding_style.log
+    - name: Check coding style
+      run: |
+        log_file="coding_style.log"
+        error_found=0
+        while IFS= read -r line; do
+            if [ "${line#/}" != "$line" ]; then
+                file=$(echo "$line" | rev | cut -d'/' -f1 | rev)
+                echo "file: $file"
+            fi
+            if [[ $line =~ ^\ *([0-9]+):([0-9]+)\ +([a-zA-Z]+)\ +(.+)$ ]]; then
+                error_found=1
+                error_type=${BASH_REMATCH[3]}
+                line_number=${BASH_REMATCH[1]}
+                error_message=${BASH_REMATCH[4]}
+                error_message="${error_message% *}"
+                if [ "$error_type" == "error" ]; then
+                    echo "::error title="Coding style error found!",file=$file,line=$line_number::${error_message}"
+                elif [ "$error_type" == "warning" ]; then
+                    echo "::warning title="Coding style warning found!",file=$file,line=$line_number::${error_message}"
+                fi
+            fi
+        done < "$log_file"
+        if [ $error_found -eq 1 ]; then
+            exit 1
+        elif [ $error_found -eq 0 ]; then
+            echo "::notice title=Coding style::No coding style error found"
+            exit 0
+        fi

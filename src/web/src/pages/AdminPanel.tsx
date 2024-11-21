@@ -77,9 +77,9 @@ export default function AdminPanel() {
         users.map((user) =>
           user.id === selectedUser.id
             ? {
-                ...user,
-                status: user.status === "Active" ? "Suspended" : "Active",
-              }
+              ...user,
+              status: user.status === "Active" ? "Suspended" : "Active",
+            }
             : user
         )
       );
