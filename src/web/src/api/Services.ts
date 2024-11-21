@@ -1,7 +1,4 @@
-import axios from 'axios';
 import { Service } from '../../../shared/Workflow';
-
-const API_BASE_URL = "http://localhost:8080/api";
 
 export const getServices = async (): Promise<Service[]> => {
   //const response = await axios.get<Service[]>(`${API_BASE_URL}/services`);
