@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  web_service:
+    build:
+      context: ./src/web/
+      dockerfile: DockerfileDev
+    ports:
+      - 8081:8081
+    volumes:
+      - ./src/web:/web_service
+      - ./src/shared:/web_service/shared
+      - web_service_node_modules:/web_service/node_modules
+    networks:
+      - app_network
+    command: npm run dev
+
+  server:
+    build:
+      context: ./src/server/
+      dockerfile: DockerfileDev
+    ports:
+      - 8080:8080
+    volumes:
+      - ./src/server:/server
+      - ./src/shared:/server/shared
+      - /server/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - database
+    networks:
+      - app_network
+    command: npm run start:dev
+
+  database:
+    image: mariadb:latest
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app_network
+
+volumes:
+  db-data:
+  web_service_node_modules:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge
