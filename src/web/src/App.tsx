@@ -1,16 +1,13 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Layout from "./components/Layout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { AuthProvider, useAuth } from "@/auth/AuthContext";
-import { FontScaleProvider } from "@/context/FontScaleContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-import Home from "./pages/Home";
-import AdminPanel from "./pages/AdminPanel";
-import Settings from "./pages/Settings";
-import Services from "./pages/Services";
-import Workflows from "./pages/Workflows";
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import Home from './pages/Home';
+import AdminPanel from './pages/AdminPanel';
+import Services from './pages/Services';
+import Workflows from './pages/Workflows';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -117,20 +114,18 @@ function App() {
                 }
               />
 
-              <Route
-                path="/workflows"
-                element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Workflows />
-                    </Layout>
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </BrowserRouter>
-        </FontScaleProvider>
-      </ThemeProvider>
+          <Route
+            path='/workflows'
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Workflows />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
