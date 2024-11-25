@@ -7,13 +7,14 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
+import * as process from 'node:process';
 
 @Module({
   imports: [
     UsersModule, // Module pour la gestion des utilisateurs
     PassportModule,
     JwtModule.register({
-      secret: 'SECRET_KEY', // Remplacez par une clé plus sécurisée
+      secret: process.env.JWT_TOKEN, // Remplacez par une clé plus sécurisée
       signOptions: { expiresIn: '1h' },
     }),
   ],

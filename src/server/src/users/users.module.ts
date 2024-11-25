@@ -5,15 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
-  imports: [
-    UsersModule,
-    JwtModule.register({
-      secret: 'SECRET_KEY', // LE TOKEN HEHE
-      signOptions: {
-        expiresIn: '24h',
-      },
-    }),
-  ],
+  imports: [UsersModule],
   providers: [UsersService, PrismaService],
   controllers: [UsersController],
   exports: [UsersService],
