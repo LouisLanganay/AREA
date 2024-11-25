@@ -58,3 +58,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 images/
 .idea/
 ./.env
+./package-lock.json
+prisma/migrations/migration_lock.toml
