@@ -53,94 +53,125 @@ export default function Settings() {
 
   const handleDeleteAccount = () => {
     toast({
-      title: "Compte supprimé",
-      description: "Votre compte a été supprimé avec succès.",
+      title: t("settings.security.delete.confirmation.title"),
+      description: t("settings.security.delete.confirmation.description"),
     });
   };
 
   const handleChangePassword = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     toast({
-      title: "Mot de passe modifié",
-      description: "Votre mot de passe a été changé avec succès.",
+      title: t("settings.security.password.change"),
+      description: t("settings.security.password.changed"),
     });
   };
 
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Paramètres</h1>
+      <h1 className="text-3xl font-bold mb-6">{t("settings.title")}</h1>
       <Tabs defaultValue="account" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="account">Compte</TabsTrigger>
-          <TabsTrigger value="appearance">Apparence</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Sécurité</TabsTrigger>
-          <TabsTrigger value="automation">Automatisation</TabsTrigger>
+          <TabsTrigger value="account">
+            {t("settings.tabs.account")}
+          </TabsTrigger>
+          <TabsTrigger value="appearance">
+            {t("settings.tabs.appearance")}
+          </TabsTrigger>
+          <TabsTrigger value="notifications">
+            {t("settings.tabs.notifications")}
+          </TabsTrigger>
+          <TabsTrigger value="security">
+            {t("settings.tabs.security")}
+          </TabsTrigger>
+          <TabsTrigger value="automation">
+            {t("settings.tabs.automation")}
+          </TabsTrigger>
         </TabsList>
+
+        {/* Account Tab */}
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>Informations du compte</CardTitle>
+              <CardTitle>{t("settings.account.title")}</CardTitle>
               <CardDescription>
-                Gérez les détails et les préférences de votre compte.
+                {t("settings.account.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src="/placeholder.svg?height=80&width=80"
-                    alt="Photo de profil"
+                    src="/placeholder.svg"
+                    alt={t("settings.account.avatar.alt")}
                   />
                   <AvatarFallback>
                     <User className="h-10 w-10" />
                   </AvatarFallback>
                 </Avatar>
-                <Button>Changer l'avatar</Button>
+                <Button>{t("settings.account.avatar.change")}</Button>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Nom</Label>
+                <Label htmlFor="name">
+                  {t("settings.account.fields.name")}
+                </Label>
                 <Input id="name" placeholder="John Doe" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">
+                  {t("settings.account.fields.email")}
+                </Label>
                 <Input id="email" type="email" placeholder="john@example.com" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="language">Langue</Label>
+                <Label htmlFor="language">
+                  {t("settings.account.fields.language")}
+                </Label>
                 <Select>
                   <SelectTrigger id="language">
-                    <SelectValue placeholder="Sélectionnez une langue" />
+                    <SelectValue
+                      placeholder={t("settings.account.languages.placeholder")}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="fr">Français</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="de">Deutsch</SelectItem>
-                    <SelectItem value="es">Español</SelectItem>
+                    <SelectItem value="fr">
+                      {t("settings.account.languages.fr")}
+                    </SelectItem>
+                    <SelectItem value="en">
+                      {t("settings.account.languages.en")}
+                    </SelectItem>
+                    <SelectItem value="de">
+                      {t("settings.account.languages.de")}
+                    </SelectItem>
+                    <SelectItem value="es">
+                      {t("settings.account.languages.es")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Sauvegarder les modifications</Button>
+              <Button>{t("settings.account.save")}</Button>
             </CardFooter>
           </Card>
         </TabsContent>
+
+        {/* Appearance Tab */}
         <TabsContent value="appearance">
           <Card>
             <CardHeader>
-              <CardTitle>Apparence</CardTitle>
+              <CardTitle>{t("settings.appearance.title")}</CardTitle>
               <CardDescription>
-                Personnalisez l'apparence de l'application.
+                {t("settings.appearance.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="dark-mode">Mode sombre</Label>
+                  <Label htmlFor="dark-mode">
+                    {t("settings.appearance.darkMode.label")}
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Activez le mode sombre pour une expérience visuelle
-                    confortable en faible luminosité.
+                    {t("settings.appearance.darkMode.description")}
                   </p>
                 </div>
                 <Switch
@@ -150,7 +181,9 @@ export default function Settings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="font-size">Taille de la police</Label>
+                <Label htmlFor="font-size">
+                  {t("settings.appearance.fontSize.label")}
+                </Label>
                 <Slider
                   id="font-size"
                   min={12}
@@ -162,22 +195,24 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Notifications Tab */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>Préférences de notification</CardTitle>
+              <CardTitle>{t("settings.notifications.title")}</CardTitle>
               <CardDescription>
-                Gérez la façon dont vous recevez les notifications.
+                {t("settings.notifications.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="email-notifications">
-                    Notifications par email
+                    {t("settings.notifications.email.label")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Recevez des notifications par email.
+                    {t("settings.notifications.email.description")}
                   </p>
                 </div>
                 <Switch
@@ -188,51 +223,68 @@ export default function Settings() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="push-notifications">Notifications push</Label>
+                  <Label htmlFor="push-notifications">
+                    {t("settings.notifications.push.label")}
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Recevez des notifications push sur vos appareils.
+                    {t("settings.notifications.push.description")}
                   </p>
                 </div>
                 <Switch id="push-notifications" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="notification-frequency">
-                  Fréquence des notifications
+                  {t("settings.notifications.frequency.label")}
                 </Label>
                 <Select>
                   <SelectTrigger id="notification-frequency">
-                    <SelectValue placeholder="Sélectionnez la fréquence" />
+                    <SelectValue
+                      placeholder={t(
+                        "settings.notifications.frequency.placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="realtime">Temps réel</SelectItem>
-                    <SelectItem value="hourly">Résumé horaire</SelectItem>
-                    <SelectItem value="daily">Résumé quotidien</SelectItem>
-                    <SelectItem value="weekly">Résumé hebdomadaire</SelectItem>
+                    <SelectItem value="realtime">
+                      {t("settings.notifications.frequency.options.realtime")}
+                    </SelectItem>
+                    <SelectItem value="hourly">
+                      {t("settings.notifications.frequency.options.hourly")}
+                    </SelectItem>
+                    <SelectItem value="daily">
+                      {t("settings.notifications.frequency.options.daily")}
+                    </SelectItem>
+                    <SelectItem value="weekly">
+                      {t("settings.notifications.frequency.options.weekly")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Security Tab */}
         <TabsContent value="security">
           <Card>
             <CardHeader>
-              <CardTitle>Paramètres de sécurité</CardTitle>
+              <CardTitle>{t("settings.security.title")}</CardTitle>
               <CardDescription>
-                Gérez la sécurité et l'accès de votre compte.
+                {t("settings.security.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button>Changer le mot de passe</Button>
+                  <Button>{t("settings.security.password.change")}</Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>Changer le mot de passe</DialogTitle>
+                    <DialogTitle>
+                      {t("settings.security.password.change")}
+                    </DialogTitle>
                     <DialogDescription>
-                      Entrez votre mot de passe actuel et votre nouveau mot de
-                      passe.
+                      {t("settings.security.password.description")}
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleChangePassword}>
@@ -242,7 +294,7 @@ export default function Settings() {
                           htmlFor="current-password"
                           className="text-right"
                         >
-                          Mot de passe actuel
+                          {t("settings.security.password.current")}
                         </Label>
                         <Input
                           id="current-password"
@@ -252,7 +304,7 @@ export default function Settings() {
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="new-password" className="text-right">
-                          Nouveau mot de passe
+                          {t("settings.security.password.new")}
                         </Label>
                         <Input
                           id="new-password"
@@ -265,7 +317,7 @@ export default function Settings() {
                           htmlFor="confirm-password"
                           className="text-right"
                         >
-                          Confirmer le mot de passe
+                          {t("settings.security.password.confirm")}
                         </Label>
                         <Input
                           id="confirm-password"
@@ -275,7 +327,9 @@ export default function Settings() {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit">Changer le mot de passe</Button>
+                      <Button type="submit">
+                        {t("settings.security.password.change")}
+                      </Button>
                     </DialogFooter>
                   </form>
                 </DialogContent>
@@ -283,34 +337,35 @@ export default function Settings() {
               <div className="flex items-center justify-between pt-4">
                 <div className="space-y-0.5">
                   <Label htmlFor="two-factor">
-                    Authentification à deux facteurs
+                    {t("settings.security.twoFactor.label")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    Ajoutez une couche de sécurité supplémentaire à votre
-                    compte.
+                    {t("settings.security.twoFactor.description")}
                   </p>
                 </div>
                 <Switch id="two-factor" />
               </div>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Supprimer le compte</Button>
+                  <Button variant="destructive">
+                    {t("settings.security.delete.label")}
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
-                      Êtes-vous absolument sûr ?
+                      {t("settings.security.delete.confirmation.title")}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Cette action ne peut pas être annulée. Cela supprimera
-                      définitivement votre compte et supprimera vos données de
-                      nos serveurs.
+                      {t("settings.security.delete.confirmation.description")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogCancel>
+                      {t("settings.cancel")}
+                    </AlertDialogCancel>
                     <AlertDialogAction onClick={handleDeleteAccount}>
-                      Continuer
+                      {t("settings.confirm")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -318,40 +373,58 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Automation Tab */}
         <TabsContent value="automation">
           <Card>
             <CardHeader>
-              <CardTitle>Paramètres d'automatisation</CardTitle>
+              <CardTitle>{t("settings.automation.title")}</CardTitle>
               <CardDescription>
-                Configurez les options spécifiques à l'automatisation.
+                {t("settings.automation.description")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="execution-limit">
-                  Limite d'exécutions quotidiennes
+                  {t("settings.automation.executionLimit.label")}
                 </Label>
                 <Input id="execution-limit" type="number" placeholder="1000" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="api-key">Clé API</Label>
+                <Label htmlFor="api-key">
+                  {t("settings.automation.apiKey.label")}
+                </Label>
                 <Input
                   id="api-key"
                   type="password"
-                  placeholder="Votre clé API"
+                  placeholder={t("settings.automation.apiKey.label")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="retry-attempts">Tentatives de réessai</Label>
+                <Label htmlFor="retry-attempts">
+                  {t("settings.automation.retryAttempts.label")}
+                </Label>
                 <Select>
                   <SelectTrigger id="retry-attempts">
-                    <SelectValue placeholder="Sélectionnez le nombre de tentatives" />
+                    <SelectValue
+                      placeholder={t(
+                        "settings.automation.retryAttempts.placeholder"
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">1 tentative</SelectItem>
-                    <SelectItem value="3">3 tentatives</SelectItem>
-                    <SelectItem value="5">5 tentatives</SelectItem>
-                    <SelectItem value="10">10 tentatives</SelectItem>
+                    <SelectItem value="1">
+                      {t("settings.automation.retryAttempts.options.1")}
+                    </SelectItem>
+                    <SelectItem value="3">
+                      {t("settings.automation.retryAttempts.options.3")}
+                    </SelectItem>
+                    <SelectItem value="5">
+                      {t("settings.automation.retryAttempts.options.5")}
+                    </SelectItem>
+                    <SelectItem value="10">
+                      {t("settings.automation.retryAttempts.options.10")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
