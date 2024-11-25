@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,12 @@ export default function Settings() {
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const { toast } = useToast();
+  const [language, setLanguage] = useState(i18n.language);
+
+  const handleAccountChanges = () => {
+    i18n.changeLanguage(language);
+    localStorage.setItem("language", language);
+  };
 
   const handleDeleteAccount = () => {
     toast({
@@ -126,7 +133,10 @@ export default function Settings() {
                 <Label htmlFor="language">
                   {t("settings.account.fields.language")}
                 </Label>
-                <Select>
+                <Select
+                  onValueChange={(value) => setLanguage(value)}
+                  value={language}
+                >
                   <SelectTrigger id="language">
                     <SelectValue
                       placeholder={t("settings.account.languages.placeholder")}
@@ -150,7 +160,9 @@ export default function Settings() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button>{t("settings.account.save")}</Button>
+              <Button onClick={handleAccountChanges}>
+                {t("settings.account.save")}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
