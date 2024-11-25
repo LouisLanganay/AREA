@@ -3,54 +3,37 @@ version: '3.8'
 services:
   server:
     build:
-      context: ./src/server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: src/server/Dockerfile
     ports:
       - "8080:8080"
-    environment:
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongodb:27017/area
+    env_file:
+      - .env
     depends_on:
-      - mongodb
+      - database
     networks:
-      - area_network
+      - app_network
+    command: npm run start:prod
+    security_opt:
+      - no-new-privileges:true
+    user: "node"
 
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
+  database:
+    image: mariadb:latest
+    env_file:
+      - .env
     volumes:
-      - mongodb_data:/data/db
+      - db-data:/var/lib/mysql
     networks:
-      - area_network
-
-  client_mobile:
-    build:
-      context: ./src/mobile
-      dockerfile: Dockerfile
-    volumes:
-      - mobile-build:/app/build
-    networks:
-      - area_network
-
-  client_web:
-    build:
-      context: ./src/web
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    volumes:
-      - mobile-build:/app/mobile-build:ro
-    depends_on:
-      - client_mobile
-      - server
-    networks:
-      - area_network
+      - app_network
+    expose:
+      - "3306"
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
-  mobile-build:
-  mongodb_data:
+  db-data:
 
 networks:
-  area_network:
+  app_network:
     driver: bridge

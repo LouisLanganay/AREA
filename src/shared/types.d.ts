@@ -1,7 +1,6 @@
 interface Client {
     host: string;
 }
-
 interface Server {
     current_time: number;
     services: {
@@ -17,10 +16,8 @@ interface Server {
         }[];
     }[];
 }
-
 interface About {
     client: Client;
     server: Server;
 }
-
 export type { Client, Server, About };

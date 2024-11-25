@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build && npx cap sync && cd android && ./gradlew assembleDebug",
-    "lint": "eslint . --fix",
+    "dev": "vite --port=8081",
+    "build": "tsc -b && vite build && npx cap sync",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
