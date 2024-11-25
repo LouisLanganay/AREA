@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import Home from './pages/Home';
 import AdminPanel from './pages/AdminPanel';
 import Services from './pages/Services';
+import Workflows from './pages/Workflows';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -84,6 +85,18 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Services />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
+
+          <Route
+            path='/workflows'
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Workflows />
                 </Layout>
               </ProtectedRoute>
             }
