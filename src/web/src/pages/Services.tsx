@@ -7,26 +7,27 @@ import { Card, CardContent } from '@/components/ui/card';
 import { PlusIcon } from '@heroicons/react/24/solid';
 
 export default function Services() {
-  const { t } = useTranslation();
-  const [services, setServices] = useState<Service[]>([]);
+  const { t } = useTranslation()
+  const [services, setServices] = useState<Service[]>([])
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const services = await getServices();
+        console.log("services ", services);
         setServices(services);
       } catch (error) {
         // TODO: Handle error
         console.error(error);
       }
-    };
+    }
     fetchServices();
-  }, []);
+  }, [])
 
   return (
-    <div className='container mx-auto p-8'>
+    <>
       <div className='mb-8'>
-        <h1 className='text-3xl font-bold'>{t('sidebar.items.services')}</h1>
+        <h1 className='text-2xl font-bold'>{t('sidebar.items.services')}</h1>
         <p className='text-muted-foreground mt-2'>
           Connect and manage your service integrations
         </p>
@@ -76,6 +77,6 @@ export default function Services() {
           </Card>
         ))}
       </div>
-    </div>
-  );
+    </>
+  )
 }
