@@ -1,19 +1,19 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> & { variantSize?: 'sm' | 'md' | 'lg' }>(
   ({ className, type, variantSize = 'md', ...props }, ref) => {
     const getSizeClass = (size: string) => {
       switch (size) {
-        case 'sm':
-          return 'h-8'
-        case 'lg':
-          return 'h-10'
-        default:
-          return 'h-9'
+      case 'sm':
+        return 'h-8';
+      case 'lg':
+        return 'h-10';
+      default:
+        return 'h-9';
       }
-    }
+    };
 
     return (
       <input
@@ -26,9 +26,9 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> &
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = "Input";
 
-export { Input }
+export { Input };

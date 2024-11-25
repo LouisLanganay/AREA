@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -10,9 +10,9 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table'
+} from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -21,8 +21,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -30,18 +30,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@/components/ui/table';
 import { deleteWorkflow, getWorkflows, updateWorkflow } from '@/api/Workflows';
 import { Node, Service, Workflow } from '../../../shared/Workflow';
 import { useNavigate } from 'react-router-dom';
-import { ArrowsUpDownIcon, CheckIcon, ChevronDownIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Switch } from '@/components/ui/switch'
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { getServices } from '@/api/Services'
-import { TooltipProvider } from '@/components/ui/tooltip'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ArrowsUpDownIcon, CheckIcon, ChevronDownIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { getServices } from '@/api/Services';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -238,7 +238,7 @@ export default function Workflows() {
               );
             })}
           </div>
-        )
+        );
       }
     },
     {
@@ -269,7 +269,7 @@ export default function Workflows() {
         </>
       ),
       cell: ({ row }) => {
-        const workflow = row.original
+        const workflow = row.original;
         const navigate = useNavigate();
         return (
           <DropdownMenu>
@@ -292,10 +292,10 @@ export default function Workflows() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )
+        );
       },
     },
-  ]
+  ];
 
   const table = useReactTable({
     data: workflows,
@@ -314,7 +314,7 @@ export default function Workflows() {
       columnVisibility,
       rowSelection,
     },
-  })
+  });
 
   return (
     <div className='w-full'>
@@ -381,7 +381,7 @@ export default function Workflows() {
                     >
                       {t(`workflows.${column.id}`)}
                     </DropdownMenuCheckboxItem>
-                  )
+                  );
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -406,11 +406,11 @@ export default function Workflows() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -454,5 +454,5 @@ export default function Workflows() {
         </div>
       </div>
     </div>
-  )
+  );
 }

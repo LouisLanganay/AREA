@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Service, Workflow } from '../../../shared/Workflow';
+import { Workflow } from '../../../shared/Workflow';
 
 const API_BASE_URL = "http://localhost:8080/api";
 
