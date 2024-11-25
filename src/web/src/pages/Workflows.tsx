@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -281,7 +280,7 @@ export default function Workflows() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuLabel>{t('workflows.actions')}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`/workflows/edit/${workflow.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`/workflows/${workflow.id}`)}>
                 <PencilSquareIcon className='w-4 h-4' />
                 {t('workflows.edit')}
               </DropdownMenuItem>

@@ -64,6 +64,8 @@
     "selectedRows": "{{selected}} of {{total}} rows selected",
     "previous": "Previous",
     "next": "Next",
-    "apps": "Apps"
+    "apps": "Apps",
+    "runNow": "Run Now",
+    "disabled": "Disabled"
   }
 }
