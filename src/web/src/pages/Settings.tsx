@@ -1,6 +1,7 @@
 import i18n from "@/i18n";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFontScale } from "@/context/FontScaleContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -48,14 +48,26 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
   const { t } = useTranslation();
+  const { fontScale, setFontScale } = useFontScale();
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const { toast } = useToast();
   const [language, setLanguage] = useState(i18n.language);
 
+  const fontSizeOptions = [
+    { label: "Petit", value: 0.8 },
+    { label: "Normal", value: 1 },
+    { label: "Grand", value: 1.2 },
+    { label: "Très Grand", value: 1.5 },
+  ];
+
   const handleAccountChanges = () => {
     i18n.changeLanguage(language);
     localStorage.setItem("language", language);
+  };
+
+  const handleFontScaleChange = (value: number) => {
+    setFontScale(value);
   };
 
   const handleDeleteAccount = () => {
@@ -188,13 +200,32 @@ export default function Settings() {
                 <Label htmlFor="font-size">
                   {t("settings.appearance.fontSize.label")}
                 </Label>
-                <Slider
-                  id="font-size"
-                  min={12}
-                  max={24}
-                  step={1}
-                  defaultValue={[16]}
-                />
+                <Select
+                  value={fontScale.toString()}
+                  onValueChange={(value) =>
+                    handleFontScaleChange(Number(value))
+                  }
+                >
+                  <SelectTrigger id="font-size">
+                    <SelectValue
+                      placeholder={t("settings.appearance.fontSize.label")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fontSizeOptions.map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value.toString()}
+                      >
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">
+                  {t("settings.appearance.fontSize.description")} (
+                  {Math.round(fontScale * 100)}%)
+                </p>
               </div>
             </CardContent>
           </Card>
