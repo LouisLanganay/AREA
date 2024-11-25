@@ -53,7 +53,6 @@
     "openMenu": "Open Menu",
     "actions": "Actions",
     "edit": "Edit",
-    "delete": "Delete",
     "filterByName": "Filter by name...",
     "bulkActions": "Bulk Actions",
     "enableAll": "Enable All",
@@ -66,6 +65,16 @@
     "next": "Next",
     "apps": "Apps",
     "runNow": "Run Now",
-    "disabled": "Disabled"
+    "disabled": "Disabled",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirmDeleteTitle": "Confirm deletion",
+    "confirmDelete": "Are you sure you want to delete the workflow {{workflowName}}?",
+    "linkCopied": "Link copied to clipboard",
+    "linkCopiedDescription": "You can now share the link to your workflow with others",
+    "updateErrorTitle": "Error updating workflow",
+    "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
+    "deleteErrorTitle": "Error deleting workflow",
+    "deleteErrorDescription": "An error occurred while deleting the workflow. Please try again."
   }
 }
