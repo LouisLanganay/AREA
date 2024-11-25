@@ -24,9 +24,9 @@
     "suspend": "Suspendre",
     "activate": "Activer",
     "confirmDeleteTitle": "Confirmer la suppression",
-    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{userName}}?",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{userName}} ?",
     "confirmStatusTitle": "Confirmer le changement de statut",
-    "confirmStatus": "Êtes-vous sûr de vouloir {{status}} l'utilisateur {{userName}}?",
+    "confirmStatus": "Êtes-vous sûr de vouloir {{status}} l'utilisateur {{userName}} ?",
     "editTitle": "Modifier l'utilisateur",
     "saveChanges": "Enregistrer les modifications"
   },
@@ -37,12 +37,120 @@
     },
     "items": {
       "home": "Accueil",
-      "workflows": "Mes flux de travail",
-      "services": "Mes services",
+      "workflows": "Mes Workflows",
+      "services": "Mes Services",
       "users": "Utilisateurs",
       "settings": "Paramètres",
       "switchAccount": "Changer de compte",
       "logout": "Déconnexion"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "tabs": {
+      "account": "Compte",
+      "appearance": "Apparence",
+      "notifications": "Notifications",
+      "security": "Sécurité",
+      "automation": "Automatisation"
+    },
+    "account": {
+      "title": "Informations du compte",
+      "description": "Gérez les détails et les préférences de votre compte.",
+      "avatar": {
+        "change": "Changer d'avatar",
+        "alt": "Photo de profil"
+      },
+      "fields": {
+        "name": "Nom",
+        "email": "Email",
+        "language": "Langue"
+      },
+      "save": "Enregistrer les modifications",
+      "languages": {
+        "fr": "Français",
+        "en": "Anglais",
+        "de": "Allemand",
+        "es": "Espagnol",
+        "placeholder": "Sélectionnez une langue"
+      }
+    },
+    "appearance": {
+      "title": "Apparence",
+      "description": "Personnalisez l'apparence de l'application.",
+      "darkMode": {
+        "label": "Mode sombre",
+        "description": "Activez le mode sombre pour une expérience visuelle confortable en faible luminosité."
+      },
+      "fontSize": {
+        "label": "Taille de la police",
+        "description": "Ajustez la taille de la police pour une meilleure lisibilité."
+      }
+    },
+    "notifications": {
+      "title": "Préférences de notification",
+      "description": "Gérez la façon dont vous recevez les notifications.",
+      "email": {
+        "label": "Notifications par email",
+        "description": "Recevez des notifications par email."
+      },
+      "push": {
+        "label": "Notifications push",
+        "description": "Recevez des notifications push sur vos appareils."
+      },
+      "frequency": {
+        "label": "Fréquence des notifications",
+        "placeholder": "Sélectionnez une fréquence",
+        "options": {
+          "realtime": "En temps réel",
+          "hourly": "Résumé horaire",
+          "daily": "Résumé quotidien",
+          "weekly": "Résumé hebdomadaire"
+        }
+      }
+    },
+    "security": {
+      "title": "Paramètres de sécurité",
+      "description": "Gérez la sécurité et l'accès à votre compte.",
+      "password": {
+        "change": "Changer le mot de passe",
+        "current": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "twoFactor": {
+        "label": "Authentification à deux facteurs",
+        "description": "Ajoutez une couche de sécurité supplémentaire à votre compte."
+      },
+      "delete": {
+        "label": "Supprimer le compte",
+        "confirmation": {
+          "title": "Êtes-vous absolument sûr ?",
+          "description": "Cette action est irréversible. Cela supprimera définitivement votre compte et supprimera vos données de nos serveurs."
+        }
+      }
+    },
+    "automation": {
+      "title": "Paramètres d'automatisation",
+      "description": "Configurez les options spécifiques à l'automatisation.",
+      "executionLimit": {
+        "label": "Limite quotidienne d'exécutions"
+      },
+      "apiKey": {
+        "label": "Clé API"
+      },
+      "retryAttempts": {
+        "label": "Tentatives de réessai",
+        "placeholder": "Sélectionnez le nombre de tentatives",
+        "options": {
+          "1": "1 tentative",
+          "3": "3 tentatives",
+          "5": "5 tentatives",
+          "10": "10 tentatives"
+        }
+      }
     }
   }
 }
