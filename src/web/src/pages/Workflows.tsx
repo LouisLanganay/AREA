@@ -332,7 +332,7 @@ export default function Workflows() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant='default'
+                  variant='destructiveOutline'
                   size='sm'
                 >
                   {t('workflows.bulkActions')}
