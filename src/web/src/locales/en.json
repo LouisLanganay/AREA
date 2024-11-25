@@ -72,8 +72,6 @@
       "languages": {
         "fr": "French",
         "en": "English",
-        "de": "German",
-        "es": "Spanish",
         "placeholder": "Select language"
       }
     },

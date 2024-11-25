@@ -95,7 +95,6 @@ export default function Settings() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Account Tab */}
         <TabsContent value="account">
           <Card>
             <CardHeader>
@@ -149,12 +148,6 @@ export default function Settings() {
                     <SelectItem value="en">
                       {t("settings.account.languages.en")}
                     </SelectItem>
-                    <SelectItem value="de">
-                      {t("settings.account.languages.de")}
-                    </SelectItem>
-                    <SelectItem value="es">
-                      {t("settings.account.languages.es")}
-                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -167,7 +160,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        {/* Appearance Tab */}
         <TabsContent value="appearance">
           <Card>
             <CardHeader>
@@ -208,7 +200,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        {/* Notifications Tab */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
@@ -276,7 +267,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        {/* Security Tab */}
         <TabsContent value="security">
           <Card>
             <CardHeader>
@@ -386,7 +376,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        {/* Automation Tab */}
         <TabsContent value="automation">
           <Card>
             <CardHeader>
