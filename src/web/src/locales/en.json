@@ -1,0 +1,48 @@
+{
+  "main": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "users": "Users"
+  },
+  "admin": {
+    "active": "Active",
+    "suspended": "Suspended",
+    "title": "User Management",
+    "usersTitle": "Registered Users",
+    "users": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "openMenu": "Open menu",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "confirmDeleteTitle": "Confirm deletion",
+    "confirmDelete": "Are you sure you want to delete the user {{userName}}?",
+    "confirmStatusTitle": "Confirm status change",
+    "confirmStatus": "Are you sure you want to {{status}} the user {{userName}}?",
+    "editTitle": "Edit user",
+    "saveChanges": "Save changes"
+  },
+  "sidebar": {
+    "groups": {
+      "application": "Application",
+      "administration": "Administration"
+    },
+    "items": {
+      "home": "Home",
+      "workflows": "My Workflows",
+      "services": "My Services",
+      "users": "Users",
+      "settings": "Settings",
+      "switchAccount": "Switch Account",
+      "logout": "Logout"
+    }
+  }
+}
