@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button'
-import { Link } from 'react-router-dom'
-import GoogleIcon from '@/assets/google-icon.svg'
-import GitHubIcon from '@/assets/github-icon.svg'
-import DiscordIcon from '@/assets/discord-icon.svg'
-import AppleIcon from '@/assets/apple-icon.svg'
-import { useState } from 'react'
-import { useAuth } from '@/auth/AuthContext'
-import { loginUser } from '@/auth/authService'
-import { useNavigate } from 'react-router-dom'
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import GoogleIcon from '@/assets/google-icon.svg';
+import GitHubIcon from '@/assets/github-icon.svg';
+import DiscordIcon from '@/assets/discord-icon.svg';
+import AppleIcon from '@/assets/apple-icon.svg';
+import { useState } from 'react';
+import { useAuth } from '@/auth/AuthContext';
+import { loginUser } from '@/auth/authService';
+import { useNavigate } from 'react-router-dom';
 
 const providers = [
   {
@@ -26,25 +26,25 @@ const providers = [
     name: 'Apple',
     icon: AppleIcon
   }
-]
+];
 
 export default function Login() {
-  const [email, setEmail] = useState('test@test.com')
-  const [password, setPassword] = useState('test')
-  const [error, setError] = useState('')
-  const { login } = useAuth()
-  const navigate = useNavigate()
+  const [email, setEmail] = useState('test@test.com');
+  const [password, setPassword] = useState('test');
+  const [error, setError] = useState('');
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      const token = await loginUser()
-      login(token)
-      navigate('/')
-    } catch (err) {
-      setError('Failed to login')
+      const token = await loginUser();
+      login(token);
+      navigate('/');
+    } catch {
+      setError('Failed to login');
     }
-  }
+  };
 
   return (
     <div className='flex min-h-screen items-center justify-center'>
@@ -122,5 +122,5 @@ export default function Login() {
         </p>
       </div>
     </div>
-  )
+  );
 }

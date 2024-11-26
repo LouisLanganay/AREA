@@ -1,3 +1,4 @@
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
@@ -7,8 +8,9 @@ import { FontScaleProvider } from "@/context/FontScaleContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import Home from "./pages/Home";
 import AdminPanel from "./pages/AdminPanel";
-import Services from "./pages/Services";
 import Settings from "./pages/Settings";
+import Services from "./pages/Services";
+import Workflows from "./pages/Workflows";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -99,6 +101,28 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Settings />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/services"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Services />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/workflows"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Workflows />
                     </Layout>
                   </ProtectedRoute>
                 }
