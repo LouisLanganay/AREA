@@ -11,9 +11,6 @@ services:
       - ./src/web:/web_service
       - ./src/shared:/web_service/shared
       - web_service_node_modules:/web_service/node_modules
-    networks:
-      - app_network
-    command: npm run dev
 
   server:
     build:
@@ -31,7 +28,6 @@ services:
       - database
     networks:
       - app_network
-    command: npm run start:dev
 
   database:
     image: mariadb:latest
