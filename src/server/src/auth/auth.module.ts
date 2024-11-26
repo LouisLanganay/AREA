@@ -11,12 +11,13 @@ import * as process from 'node:process';
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET, // Remplacez par une clé plus sécurisée
+      signOptions: { expiresIn: '1h' },
+      global: true,
+    }),
     UsersModule, // Module pour la gestion des utilisateurs
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_TOKEN, // Remplacez par une clé plus sécurisée
-      signOptions: { expiresIn: '1h' },
-    }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, MailerService],
