@@ -2,6 +2,7 @@ import i18n from "@/i18n";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { useFontScale } from "@/context/FontScaleContext";
+import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,7 +50,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function Settings() {
   const { t } = useTranslation();
   const { fontScale, setFontScale } = useFontScale();
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [notifications, setNotifications] = useState(true);
   const { toast } = useToast();
   const [language, setLanguage] = useState(i18n.language);
@@ -192,8 +193,10 @@ export default function Settings() {
                 </div>
                 <Switch
                   id="dark-mode"
-                  checked={darkMode}
-                  onCheckedChange={setDarkMode}
+                  checked={theme === "dark"}
+                  onCheckedChange={(checked) =>
+                    setTheme(checked ? "dark" : "light")
+                  }
                 />
               </div>
               <div className="space-y-2">
