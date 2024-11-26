@@ -26,6 +26,7 @@ import {
   applyEdgeChanges,
   addEdge,
   ConnectionLineType,
+  MiniMap,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from '@dagrejs/dagre';
@@ -261,7 +262,11 @@ const flattenNodesAndCreateEdges = (
 ): { nodes: WorkflowNode[], edges: WorkflowEdge[] } => {
   let allEdges: WorkflowEdge[] = [];
 
+
   const flattenedNodes = nodes.flatMap((node, index) => {
+    console.log("name ", node.name);
+    console.log("services ", services);
+    console.log("service found ", services.find(s => s.id === node.service.id));
     const currentNode: WorkflowNode = {
       id: node.id,
       type: 'custom',
@@ -333,34 +338,30 @@ export default function EditWorkflow() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchServices = async () => {
-      const services = await getServices();
-      await setServices(services);
-      console.log(services);
-      fetchWorkflow();
-    };
-    fetchServices();
-
-    const fetchWorkflow = async () => {
+    const fetchData = async () => {
       try {
-        const workflows = await getWorkflows();
-        const workflow = workflows.find(w => w.id === id);
+        const fetchedServices = await getServices();
+        setServices(fetchedServices);
+
+        if (!id) return;
+        const workflow = await getWorkflow(id);
         if (!workflow) {
           navigate('/workflows');
           return;
         }
         setWorkflow(workflow);
 
-        const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.nodes, services);
+        const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.nodes, fetchedServices);
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
-
       } catch (error) {
-        console.error('Failed to fetch workflow', error);
+        console.error('Failed to fetch data', error);
         navigate('/workflows');
       }
     };
+
+    fetchData();
   }, [id, navigate]);
 
   if (!workflow) return null;
@@ -389,9 +390,15 @@ export default function EditWorkflow() {
               style: edgeStyles,
             }}
             fitView
+            zoomOnScroll={false}
+            zoomOnPinch={false}
+            zoomOnDoubleClick={false}
+            panOnScroll
+            preventScrolling
           >
             <Background />
-            <Controls />
+            <Controls showInteractive={false} className="Controls" showZoom={false} />
+            <MiniMap />
           </ReactFlow>
         </div>
       </div>

@@ -1,30 +1,24 @@
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { Service } from '../../../../shared/Workflow';
+import { PlusCircleIcon } from '@heroicons/react/24/solid';
 
 interface NodeData {
-  label: string;
-  service: Service | undefined;
-  status?: 'pending' | 'success' | 'error';
-  description?: string;
 }
 
 export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
   return (
     <div className={`
       rounded-md
+      bg-white
       border
       shadow-sm
       text-sm
       px-2
       py-1
     `}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            AA
-          </div>
-        </div>
+      <div className="flex items-center justify-between text-center">
+        <PlusCircleIcon className='w-4 h-4 mr-2' />
+        Add
       </div>
 
       <Handle
