@@ -23,3 +23,6 @@ android
 *.njsproj
 *.sln
 *.sw?
+
+.env
+android/*

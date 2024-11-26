@@ -1,0 +1,69 @@
+{
+  "main": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "users": "Users"
+  },
+  "admin": {
+    "active": "Active",
+    "suspended": "Suspended",
+    "title": "User Management",
+    "usersTitle": "Registered Users",
+    "users": {
+      "id": "ID",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "openMenu": "Open menu",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "confirmDeleteTitle": "Confirm deletion",
+    "confirmDelete": "Are you sure you want to delete the user {{userName}}?",
+    "confirmStatusTitle": "Confirm status change",
+    "confirmStatus": "Are you sure you want to {{status}} the user {{userName}}?",
+    "editTitle": "Edit user",
+    "saveChanges": "Save changes"
+  },
+  "sidebar": {
+    "groups": {
+      "application": "Application",
+      "administration": "Administration"
+    },
+    "items": {
+      "home": "Home",
+      "workflows": "My Workflows",
+      "services": "My Services",
+      "users": "Users",
+      "settings": "Settings",
+      "switchAccount": "Switch Account",
+      "logout": "Logout"
+    }
+  },
+  "workflows": {
+    "selectAll": "Select All",
+    "selectRow": "Select Row",
+    "name": "Name",
+    "enabled": "Enabled",
+    "openMenu": "Open Menu",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "filterByName": "Filter by name...",
+    "bulkActions": "Bulk Actions",
+    "enableAll": "Enable All",
+    "disableAll": "Disable All",
+    "columns": "Columns",
+    "create": "Create Workflow",
+    "noResults": "No results found",
+    "selectedRows": "{{selected}} of {{total}} rows selected",
+    "previous": "Previous",
+    "next": "Next",
+    "apps": "Apps"
+  }
+}

@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button'
-import { Link } from 'react-router-dom'
-import GoogleIcon from '@/assets/google-icon.svg'
-import GitHubIcon from '@/assets/github-icon.svg'
-import DiscordIcon from '@/assets/discord-icon.svg'
-import AppleIcon from '@/assets/apple-icon.svg'
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import GoogleIcon from '@/assets/google-icon.svg';
+import GitHubIcon from '@/assets/github-icon.svg';
+import DiscordIcon from '@/assets/discord-icon.svg';
+import AppleIcon from '@/assets/apple-icon.svg';
 
 const providers = [
   {
@@ -22,7 +22,7 @@ const providers = [
     name: 'Apple',
     icon: AppleIcon
   }
-]
+];
 
 export default function Register() {
   return (
@@ -124,5 +124,5 @@ export default function Register() {
         </p>
       </div>
     </div>
-  )
+  );
 }

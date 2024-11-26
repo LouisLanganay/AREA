@@ -4,7 +4,7 @@ on:
   push:
 
 env:
-  MIRROR_URL: git@github.com:EpitechPromo2027/B-DEV-500-REN-5-1-area-louis.langanay.git
+  MIRROR_URL: git@github.com:EpitechPromo2027/B-DEV-500-REN-5-2-area-louis.langanay.git
 
 jobs:
   mirror:
