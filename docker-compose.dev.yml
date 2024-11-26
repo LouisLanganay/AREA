@@ -9,7 +9,7 @@ services:
       - 8081:8081
     volumes:
       - ./src/web:/web_service
-      - ./src/shared:/web_service/shared
+      - ./src/shared:/shared
       - web_service_node_modules:/web_service/node_modules
 
   server:
@@ -20,7 +20,7 @@ services:
       - 8080:8080
     volumes:
       - ./src/server:/server
-      - ./src/shared:/server/shared
+      - ./src/shared:/shared
       - /server/node_modules
     env_file:
       - .env
