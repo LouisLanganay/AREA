@@ -1,6 +1,6 @@
 import i18n from "@/i18n";
 import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useFontScale } from "@/context/FontScaleContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/button";
