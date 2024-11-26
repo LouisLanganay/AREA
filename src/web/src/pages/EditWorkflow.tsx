@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { getWorkflows, deleteWorkflow, getWorkflow, updateWorkflow } from '@/api/Workflows';
-import { FieldGroup, Service, Workflow } from '../../../shared/Workflow';
+import { FieldGroup, Node as AreaNode, Service, Workflow } from '../../../shared/Workflow';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,7 @@ import dagre from '@dagrejs/dagre';
 import Node from '../components/flow/Node';
 import AddNode from '../components/flow/AddNode';
 import { getServices } from '@/api/Services';
+import { WorkflowNodeData } from '@/interfaces/Workflows';
 
 const nodeTypes = {
   custom: Node,
@@ -43,11 +44,7 @@ type WorkflowNode = {
   id: string;
   type: string;
   position: { x: number; y: number };
-  data: {
-    label?: string;
-    service?: Service;
-    fieldGroups?: FieldGroup[];
-  };
+  data: WorkflowNodeData;
 };
 
 type WorkflowEdge = {
@@ -59,13 +56,18 @@ type WorkflowEdge = {
   style?: React.CSSProperties;
 };
 
-const nodeWidth = 172;
-const nodeHeight = 36;
+const nodeWidth = 200;
+const nodeHeight = 100;
 
 const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction });
+  dagreGraph.setGraph({
+    rankdir: direction,
+    nodesep: 100,
+    ranksep: 50,
+    edgesep: 50,
+  });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
@@ -253,7 +255,7 @@ export function WorkflowHeader() {
 }
 
 const flattenNodesAndCreateEdges = (
-  nodes: any[],
+  nodes: AreaNode[],
   services: Service[],
   parentX = 100,
   parentY = 100,
@@ -262,22 +264,20 @@ const flattenNodesAndCreateEdges = (
 ): { nodes: WorkflowNode[], edges: WorkflowEdge[] } => {
   let allEdges: WorkflowEdge[] = [];
 
-
   const flattenedNodes = nodes.flatMap((node, index) => {
-    console.log("name ", node.name);
-    console.log("services ", services);
-    console.log("service found ", services.find(s => s.id === node.service.id));
     const currentNode: WorkflowNode = {
       id: node.id,
       type: 'custom',
       position: {
-        x: parentX + (index * 200),
-        y: parentY + (level * 150)
+        x: parentX + (index * 300),
+        y: parentY + (level * 250)
       },
       data: {
         label: node.name,
         service: services.find(s => s.id === node.service.id),
         fieldGroups: node.fieldGroups,
+        description: node.description,
+        isTrigger: node.type === 'reaction',
       },
     };
 
@@ -293,8 +293,8 @@ const flattenNodesAndCreateEdges = (
       const { nodes: childNodes, edges: childEdges } = flattenNodesAndCreateEdges(
         node.nodes,
         services,
-        parentX + (index * 200),
-        parentY + 150,
+        parentX + (index * 300),
+        parentY + 250,
         level + 1,
         node.id
       );
@@ -306,7 +306,7 @@ const flattenNodesAndCreateEdges = (
         type: 'custom2',
         position: {
           x: parentX,
-          y: parentY + ((level + 1) * 150)
+          y: parentY + ((level + 1) * 250)
         },
         data: {},
       };
@@ -390,11 +390,8 @@ export default function EditWorkflow() {
               style: edgeStyles,
             }}
             fitView
-            zoomOnScroll={false}
             zoomOnPinch={false}
             zoomOnDoubleClick={false}
-            panOnScroll
-            preventScrolling
           >
             <Background />
             <Controls showInteractive={false} className="Controls" showZoom={false} />

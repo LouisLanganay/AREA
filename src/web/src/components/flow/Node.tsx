@@ -1,15 +1,13 @@
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { Service } from '../../../../shared/Workflow';
+import { WorkflowNodeData } from '@/interfaces/Workflows';
+import { SignalIcon } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
-interface NodeData {
-  label: string;
-  service: Service | undefined;
-  status?: 'pending' | 'success' | 'error';
-  description?: string;
-}
+export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean }) => {
+  const { t } = useTranslation();
 
-export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
   const getStatusColor = () => {
     switch (data.status) {
       case 'success':
@@ -24,49 +22,48 @@ export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
   };
 
   return (
-    <div className={`
-      rounded-md
-      border
-      shadow-sm
-      text-sm
-      px-2
-      py-1
-      ${getStatusColor()}
-    `}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            {data.service ? (
-              <div className="text-gray-400">
-                <img src={data.service.image} alt={data.service.name} className="w-full h-4 object-cover" />
-              </div>
-            ) : (
-              <div className="text-gray-400">
-                AA
-              </div>
-            )}
-            <div className="font-medium text-sm text-gray-900">
+    <div className="flex flex-col">
+      {data.isTrigger && (
+        <div className='w-fit p-1 flex flex-row items-center gap-1 bg-muted border border-b-0 rounded-t-lg'>
+          <SignalIcon className='size-4 text-muted-foreground' />
+          <div className='text-xs text-muted-foreground'>
+            {t('builder.trigger')}
+          </div>
+        </div>
+      )}
+      <div className={clsx(
+        'border shadow-sm text-sm px-2 py-2 w-[250px] h-fit',
+        data.isTrigger ? 'rounded-b-lg rounded-r-lg' : 'rounded-lg',
+        getStatusColor()
+      )}>
+        <div className='flex flex-col justify-start gap-2'>
+          <div className='flex items-center gap-2 h-fit'>
+            <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
+              {data.service && (
+                <img src={data.service.image} alt={data.service.name} className='size-4 object-contain' />
+              )}
+            </div>
+            <div className='font-medium text-sm text-gray-900'>
               {data.label}
             </div>
           </div>
-        </div>
-        {data.description && (
-          <div className="text-xs text-gray-500 mt-1">
+          <hr className='w-full border-border' />
+          <div className='text-xs text-muted-foreground tracking-tight'>
             {data.description}
           </div>
-        )}
-      </div>
+        </div>
 
-      <Handle
-        type="target"
-        position={Position.Top}
-        style={{ visibility: 'hidden' }}
-      />
-      <Handle
-        type="source"
-        position={Position.Bottom}
-        style={{ visibility: 'hidden' }}
-      />
+        <Handle
+          type='target'
+          position={Position.Top}
+          style={{ visibility: 'hidden' }}
+        />
+        <Handle
+          type='source'
+          position={Position.Bottom}
+          style={{ visibility: 'hidden' }}
+        />
+      </div>
     </div>
   );
 });
