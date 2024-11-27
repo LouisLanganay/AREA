@@ -25,6 +25,7 @@ RUN apt-get install -qy \
     usbutils \
     git \
     unzip \
+    wget \
     p7zip p7zip-full \
     python3 \
     openjdk-${JAVA_VERSION}-jre \
@@ -78,4 +79,9 @@ COPY . .
 
 EXPOSE 8081
 
-CMD ["npm", "run", "dev"]
+#CMD ["npm", "run", "build"]
+#CMD ["cd", "android"]
+#CMD ["touch", "test"]
+#CMD ["./gradlew", "assembleDebug"]
+#CMD ["cd", ".."]
+#CMD ["npm", "run", "dev"]
