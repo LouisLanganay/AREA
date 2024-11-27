@@ -1,4 +1,4 @@
-import { About } from '../shared/types';
+import { About } from '../../shared/types';
 
 export function getAbout(req: any, res: any) {
   const about: About = {
