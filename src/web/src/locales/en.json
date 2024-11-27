@@ -172,15 +172,23 @@
     "apps": "Apps",
     "runNow": "Run Now",
     "disabled": "Disabled",
-    "cancel": "Cancel",
     "delete": "Delete",
     "confirmDeleteTitle": "Confirm deletion",
-    "confirmDelete": "Are you sure you want to delete the workflow {{workflowName}}?",
+    "confirmDelete": "Are you sure you want to delete the workflow '{{workflowName}}'?",
     "linkCopied": "Link copied to clipboard",
     "linkCopiedDescription": "You can now share the link to your workflow with others",
     "updateErrorTitle": "Error updating workflow",
     "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
     "deleteErrorTitle": "Error deleting workflow",
-    "deleteErrorDescription": "An error occurred while deleting the workflow. Please try again."
+    "deleteErrorDescription": "An error occurred while deleting the workflow. Please try again.",
+    "typeNameToConfirm": "Type '{{workflowName}}' to confirm.",
+    "trigger": "Trigger",
+    "remove": "Remove Node",
+    "confirmRemove": "Confirm Remove ?",
+    "cancel": "Cancel",
+    "validationErrorTitle": "Validation Error",
+    "validationErrorDescription": "Please fill in all required fields.",
+    "invalidFields": "Error",
+    "resetNode": "Cancel Changes"
   }
 }
