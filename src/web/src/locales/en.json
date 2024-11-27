@@ -44,5 +44,132 @@
       "switchAccount": "Switch Account",
       "logout": "Logout"
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "tabs": {
+      "account": "Account",
+      "appearance": "Appearance",
+      "notifications": "Notifications",
+      "security": "Security",
+      "automation": "Automation"
+    },
+    "account": {
+      "title": "Account Information",
+      "description": "Manage your account details and preferences.",
+      "avatar": {
+        "change": "Change Avatar",
+        "alt": "Profile Picture"
+      },
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "language": "Language"
+      },
+      "save": "Save Changes",
+      "languages": {
+        "fr": "French",
+        "en": "English",
+        "placeholder": "Select language"
+      }
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize the application's appearance.",
+      "darkMode": {
+        "label": "Dark Mode",
+        "description": "Enable dark mode for a comfortable visual experience in low light."
+      },
+      "fontSize": {
+        "label": "Font Size",
+        "description": "Adjust the font size for better readability."
+      }
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Manage how you receive notifications.",
+      "email": {
+        "label": "Email Notifications",
+        "description": "Receive notifications via email."
+      },
+      "push": {
+        "label": "Push Notifications",
+        "description": "Receive push notifications on your devices."
+      },
+      "frequency": {
+        "label": "Notification Frequency",
+        "placeholder": "Select frequency",
+        "options": {
+          "realtime": "Real-time",
+          "hourly": "Hourly Summary",
+          "daily": "Daily Summary",
+          "weekly": "Weekly Summary"
+        }
+      }
+    },
+    "security": {
+      "title": "Security Settings",
+      "description": "Manage your account's security and access.",
+      "password": {
+        "change": "Change Password",
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm Password"
+      },
+      "twoFactor": {
+        "label": "Two-Factor Authentication",
+        "description": "Add an extra layer of security to your account."
+      },
+      "delete": {
+        "label": "Delete Account",
+        "confirmation": {
+          "title": "Are you absolutely sure?",
+          "description": "This action cannot be undone. It will permanently delete your account and remove your data from our servers."
+        }
+      }
+    },
+    "automation": {
+      "title": "Automation Settings",
+      "description": "Configure automation-specific options.",
+      "executionLimit": {
+        "label": "Daily Execution Limit"
+      },
+      "apiKey": {
+        "label": "API Key"
+      },
+      "retryAttempts": {
+        "label": "Retry Attempts",
+        "placeholder": "Select number of attempts",
+        "options": {
+          "1": "1 attempt",
+          "3": "3 attempts",
+          "5": "5 attempts",
+          "10": "10 attempts"
+        }
+      }
+    }
+  },
+  "workflows": {
+    "selectAll": "Select All",
+    "selectRow": "Select Row",
+    "name": "Name",
+    "enabled": "Enabled",
+    "openMenu": "Open Menu",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "filterByName": "Filter by name...",
+    "bulkActions": "Bulk Actions",
+    "enableAll": "Enable All",
+    "disableAll": "Disable All",
+    "columns": "Columns",
+    "create": "Create Workflow",
+    "noResults": "No results found",
+    "selectedRows": "{{selected}} of {{total}} rows selected",
+    "previous": "Previous",
+    "next": "Next",
+    "apps": "Apps"
   }
 }
