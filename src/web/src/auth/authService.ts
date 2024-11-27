@@ -8,14 +8,14 @@ export async function loginUser(): Promise<string> {
     //  },
     //  body: JSON.stringify(credentials),
     //});
-//
+    //
     //if (!response.ok) {
     //  throw new Error('Login failed');
     //}
-//
+    //
     //const data = await response.json();
     return "token_example";
-  } catch (error) {
+  } catch {
     throw new Error('Login failed');
   }
 }
