@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   web_service:
+    container_name: linkit_web-service
     build:
       context: ./src/web/
       dockerfile: DockerfileDev
@@ -21,10 +22,6 @@ services:
       mv android/app/build/outputs/apk/debug/app-debug.apk src/ &&
       npm run dev
       "
-
-#./gradlew assembleRelease
-#     wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar &&
-#      java -jar uber-apk-signer-1.3.0.jar --apks android/app/build/outputs/apk/debug/app-debug.apk &&
 
   database:
     container_name: linkit_db
