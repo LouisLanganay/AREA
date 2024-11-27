@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "------------------------------------"
 echo "Before Prisma Migrate"
 while npx prisma migrate deploy ; [ $? -ne 0 ]; do
@@ -5,3 +6,4 @@ while npx prisma migrate deploy ; [ $? -ne 0 ]; do
   sleep 5
 done
 echo "After Prisma Migrate"
+npm run dev
