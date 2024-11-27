@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { User } from '../../../shared/Users';
+import { User } from '../../../../shared/Users';
 import { ChevronUpDownIcon, ArrowLeftStartOnRectangleIcon, ArrowsRightLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/auth/AuthContext';
 import clsx from 'clsx';

@@ -73,6 +73,7 @@ interface Workflow {
     description: string;
     image: string;
     nodes: Node[];
+    enabled?: boolean;
 }
 
 export type {
