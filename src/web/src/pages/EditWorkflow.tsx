@@ -5,7 +5,7 @@ import { FieldGroup, Node as AreaNode, Service, Workflow, Field } from '../../..
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { LinkIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { ArchiveBoxArrowDownIcon, ArrowDownTrayIcon, ArrowUturnDownIcon, ArrowUturnLeftIcon, Cog6ToothIcon, LinkIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import {
   Dialog,
   DialogContent,
@@ -43,6 +43,15 @@ import { isEqual } from 'lodash';
 import React from 'react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import clsx from 'clsx';
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 
 const nodeTypes = {
   node: Node,
@@ -65,8 +74,24 @@ type WorkflowEdge = {
   style?: React.CSSProperties;
 };
 
-const nodeWidth = 200;
+const nodeWidth = 330;
 const nodeHeight = 100;
+
+function findNode(nodes: AreaNode[] | undefined, nodeId: string): AreaNode | undefined {
+  if (!nodes || nodes.length === 0) return undefined;
+
+  const directMatch = nodes.find(node => node.id === nodeId);
+  if (directMatch) return directMatch;
+
+  for (const node of nodes) {
+    if (node?.nodes) {
+      const found = findNode(node.nodes, nodeId);
+      if (found) return found;
+    }
+  }
+
+  return undefined;
+}
 
 const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -116,7 +141,7 @@ const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[], direc
       targetPosition: isHorizontal ? 'left' : 'top',
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
-        x: parentNode.position.x + (nodeWidth - 20) / 2,
+        x: parentNode.position.x + (nodeWidth - 70) / 2,
         y: parentNode.position.y + nodeHeight + 50,
       },
     };
@@ -133,23 +158,44 @@ const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[], direc
   };
 };
 
-export function WorkflowHeader() {
-  const { id } = useParams();
-  const [workflow, setWorkflow] = useState<Workflow | null>(null);
+const validateWorkflow = (workflow: Workflow): boolean => {
+  const validateFields = (nodes: AreaNode[]): boolean => {
+    for (const node of nodes) {
+      for (const group of node.fieldGroups) {
+        for (const field of group.fields) {
+          if (field.required && !field.value) {
+            return false;
+          }
+        }
+      }
+      if (node.nodes && !validateFields(node.nodes)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  return validateFields(workflow.nodes);
+};
+
+export function WorkflowHeader({
+  workflow,
+  updatedWorkflow,
+  setWorkflow
+}: {
+  workflow: Workflow,
+  updatedWorkflow: Workflow | null,
+  setWorkflow: React.Dispatch<React.SetStateAction<Workflow | null>>
+}) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [confirmWorkflowName, setConfirmWorkflowName] = useState('');
 
-  useEffect(() => {
-    const fetchWorkflow = async () => {
-      if (!id) return;
-      const workflow = await getWorkflow(id);
-      setWorkflow(workflow);
-    };
-    fetchWorkflow();
-  }, [id]);
+  const hasChanges = !isEqual(workflow, updatedWorkflow);
+  const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
 
   const copyWorkflowUrl = () => {
     const url = `${window.location.origin}/workflows/${workflow?.id}`;
@@ -185,7 +231,7 @@ export function WorkflowHeader() {
   const handleEnable = async (value: boolean) => {
     if (!workflow) return;
     setIsLoading(true);
-    setWorkflow((prevWorkflow) => ({
+    setWorkflow(prevWorkflow => ({
       ...prevWorkflow!,
       enabled: value
     }));
@@ -198,7 +244,7 @@ export function WorkflowHeader() {
       });
     } catch (error) {
       console.error('Failed to update workflow', error);
-      setWorkflow((prevWorkflow) => ({
+      setWorkflow(prevWorkflow => ({
         ...prevWorkflow!,
         enabled: !value
       }));
@@ -212,14 +258,58 @@ export function WorkflowHeader() {
     }
   };
 
+  const handleSave = async () => {
+    if (!updatedWorkflow) return;
+    if (!isValid) {
+      toast({
+        title: t('workflows.validationErrorTitle'),
+        description: t('workflows.validationErrorDescription'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await updateWorkflow(updatedWorkflow.id, updatedWorkflow);
+      setWorkflow(updatedWorkflow);
+      toast({
+        title: t('workflows.updateSuccessTitle'),
+        description: t('workflows.updateSuccessDescription'),
+      });
+    } catch (error) {
+      console.error('Failed to update workflow', error);
+      toast({
+        title: t('workflows.updateErrorTitle'),
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatWorkflowName = (name: string) => {
+    return name.toUpperCase().replace(/\s+/g, '-');
+  };
+
   if (!workflow) return null;
 
   return (
     <>
       <div className='flex items-center gap-2 ml-auto'>
-        <Separator orientation='vertical' className='mr-2 h-4' />
         <Button
           variant='default'
+          size='sm'
+          disabled={!hasChanges || isLoading || !isValid}
+          onClick={handleSave}
+        >
+          <ArrowDownTrayIcon className='w-4 h-4' />
+          {t('workflows.save')}
+        </Button>
+        <Separator orientation='vertical' className='mx-2 h-4' />
+        <Button
+          variant='outline'
           size='sm'
           disabled={isLoading}
         >
@@ -269,10 +359,25 @@ export function WorkflowHeader() {
               {t('workflows.confirmDelete', { workflowName: workflow.name })}
             </DialogDescription>
           </DialogHeader>
+          <div className='py-4'>
+            <Label htmlFor='confirmName' className='flex flex-row items-center flex-wrap gap-1'>
+              {t('workflows.typeNameToConfirm', { workflowName: formatWorkflowName(workflow.name) })}
+            </Label>
+            <Input
+              id='confirmName'
+              value={confirmWorkflowName}
+              onChange={(e) => setConfirmWorkflowName(e.target.value)}
+              placeholder={formatWorkflowName(workflow.name)}
+              className='mt-2'
+            />
+          </div>
           <DialogFooter>
             <Button
               variant='outline'
-              onClick={() => setIsDeleteDialogOpen(false)}
+              onClick={() => {
+                setConfirmWorkflowName('');
+                setIsDeleteDialogOpen(false);
+              }}
               disabled={isLoading}
             >
               {t('workflows.cancel')}
@@ -280,7 +385,7 @@ export function WorkflowHeader() {
             <Button
               variant='destructive'
               onClick={handleDelete}
-              disabled={isLoading}
+              disabled={isLoading || confirmWorkflowName !== formatWorkflowName(workflow.name)}
             >
               <TrashIcon className='w-4 h-4' />
               {t('workflows.delete')}
@@ -291,76 +396,6 @@ export function WorkflowHeader() {
     </>
   );
 }
-
-const flattenNodesAndCreateEdges = (
-  nodes: AreaNode[],
-  services: Service[],
-  parentX = 100,
-  parentY = 100,
-  level = 0,
-  parentId?: string
-): { nodes: WorkflowNode[], edges: WorkflowEdge[] } => {
-  let allEdges: WorkflowEdge[] = [];
-
-  const flattenedNodes = nodes.flatMap((node, index) => {
-    const currentNode: WorkflowNode = {
-      id: node.id,
-      type: 'node',
-      position: {
-        x: parentX + (index * 300),
-        y: parentY + (level * 250)
-      },
-      data: {
-        label: node.name,
-        service: services.find(s => s.id === node.service.id),
-        fieldGroups: node.fieldGroups,
-        description: node.description,
-        isTrigger: node.type === 'reaction',
-        selected: false,
-      },
-    };
-
-    if (parentId) {
-      allEdges.push({
-        id: `${parentId}-${node.id}`,
-        source: parentId,
-        target: node.id,
-      });
-    }
-
-    if (node.nodes && node.nodes.length > 0) {
-      const { nodes: childNodes, edges: childEdges } = flattenNodesAndCreateEdges(
-        node.nodes,
-        services,
-        parentX + (index * 300),
-        parentY + 250,
-        level + 1,
-        node.id
-      );
-      allEdges = [...allEdges, ...childEdges];
-      return [currentNode, ...childNodes];
-    } else {
-      const addNode: WorkflowNode = {
-        id: `${node.id}-add`,
-        type: 'custom2',
-        position: {
-          x: parentX,
-          y: parentY + ((level + 1) * 250)
-        },
-        data: {},
-      };
-      allEdges.push({
-        id: `${node.id}-${addNode.id}`,
-        source: node.id,
-        target: addNode.id,
-      });
-
-      return [currentNode, addNode];
-    }
-  });
-
-  return { nodes: flattenedNodes, edges: allEdges };
-};
 
 const edgeStyles = {
   stroke: '#956FD6',
@@ -391,6 +426,87 @@ export default function EditWorkflow() {
   const [updatedWorkflow, setUpdatedWorkflow] = useState<Workflow | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
+  const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
+  const [deleteNodeConfirmation, setDeleteNodeConfirmation] = useState<boolean>(false);
+
+  const flattenNodesAndCreateEdges = (
+    nodes: AreaNode[],
+    services: Service[],
+    parentX = 100,
+    parentY = 100,
+    level = 0,
+    parentId?: string
+  ): { nodes: WorkflowNode[], edges: WorkflowEdge[] } => {
+    let allEdges: WorkflowEdge[] = [];
+
+    const flattenedNodes = nodes.flatMap((node, index) => {
+      const hasInvalidFields = node.fieldGroups.some(group =>
+        group.fields.some(field => field.required && !field.value)
+      );
+
+      const currentNode: WorkflowNode = {
+        id: node.id,
+        type: 'node',
+        position: {
+          x: parentX + (index * 300),
+          y: parentY + (level * 250)
+        },
+        data: {
+          label: node.name,
+          service: services.find(s => s.id === node.service.id),
+          fieldGroups: node.fieldGroups,
+          description: node.description,
+          isTrigger: node.type === 'reaction',
+          selected: false,
+          isValid: !hasInvalidFields,
+        },
+      };
+
+      if (parentId) {
+        allEdges.push({
+          id: `${parentId}-${node.id}`,
+          source: parentId,
+          target: node.id,
+        });
+      }
+
+      if (node.nodes && node.nodes.length > 0) {
+        const { nodes: childNodes, edges: childEdges } = flattenNodesAndCreateEdges(
+          node.nodes,
+          services,
+          parentX + (index * 300),
+          parentY + 250,
+          level + 1,
+          node.id
+        );
+        allEdges = [...allEdges, ...childEdges];
+        return [currentNode, ...childNodes];
+      } else {
+        const addNode: WorkflowNode = {
+          id: `${node.id}-add`,
+          type: 'custom2',
+          position: {
+            x: parentX,
+            y: parentY + ((level + 1) * 250)
+          },
+          data: {
+            parentId: node.id,
+            onAdd: handleAddNode,
+          },
+        };
+        allEdges.push({
+          id: `${node.id}-${addNode.id}`,
+          source: node.id,
+          target: addNode.id,
+        });
+
+        return [currentNode, addNode];
+      }
+    });
+
+    return { nodes: flattenedNodes, edges: allEdges };
+  };
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: WorkflowNode) => {
     if (node.type === 'node') {
@@ -446,27 +562,6 @@ export default function EditWorkflow() {
     fetchData();
   }, [id, navigate]);
 
-  const handleSave = async () => {
-    try {
-      if (!updatedWorkflow) return;
-      await updateWorkflow(updatedWorkflow.id, updatedWorkflow);
-      setWorkflow(updatedWorkflow);
-      toast({
-        title: t('workflows.updateSuccessTitle'),
-        description: t('workflows.updateSuccessDescription'),
-      });
-    } catch (error) {
-      console.error('Failed to update workflow', error);
-      toast({
-        title: t('workflows.updateErrorTitle'),
-        description: t('workflows.updateErrorDescription'),
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const hasChanges = !isEqual(workflow, updatedWorkflow);
-
   const handleFieldChange = (fieldId: string, value: any) => {
     if (!updatedWorkflow) return;
 
@@ -483,10 +578,41 @@ export default function EditWorkflow() {
       }));
     };
 
+    const updatedNodes = updateNodeFields(updatedWorkflow.nodes);
     setUpdatedWorkflow(prev => ({
       ...prev!,
-      nodes: updateNodeFields(prev!.nodes)
+      nodes: updatedNodes
     }));
+
+    // Mettre à jour l'état visuel des nodes
+    setNodes(nodes => nodes.map(node => {
+      const workflowNode = findNodeInWorkflow(updatedNodes, node.id);
+      if (!workflowNode) return node;
+
+      const hasInvalidFields = workflowNode.fieldGroups.some(group =>
+        group.fields.some(field => field.required && !field.value)
+      );
+
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          isValid: !hasInvalidFields
+        }
+      };
+    }));
+  };
+
+  // Fonction utilitaire pour trouver un node dans le workflow
+  const findNodeInWorkflow = (nodes: AreaNode[], nodeId: string): AreaNode | null => {
+    for (const node of nodes) {
+      if (node.id === nodeId) return node;
+      if (node.nodes) {
+        const found = findNodeInWorkflow(node.nodes, nodeId);
+        if (found) return found;
+      }
+    }
+    return null;
   };
 
   const renderField = (field: Field) => {
@@ -513,6 +639,7 @@ export default function EditWorkflow() {
     };
 
     const currentValue = getCurrentValue();
+    const isInvalid = field.required && !currentValue;
 
     switch (field.type) {
       case 'text':
@@ -523,6 +650,7 @@ export default function EditWorkflow() {
             value={currentValue || ''}
             onChange={(e) => handleFieldChange(field.id, e.target.value)}
             required={field.required}
+            className={isInvalid ? 'border-destructive !ring-0' : ''}
           />
         );
       case 'number':
@@ -533,6 +661,7 @@ export default function EditWorkflow() {
             value={currentValue || ''}
             onChange={(e) => handleFieldChange(field.id, parseFloat(e.target.value))}
             required={field.required}
+            className={isInvalid ? 'border-destructive !ring-0' : ''}
           />
         );
       case 'boolean':
@@ -593,7 +722,7 @@ export default function EditWorkflow() {
       case 'message':
         return <ChatBubbleBottomCenterTextIcon className='w-4 h-4' />;
       default:
-        return null;
+        return <Cog6ToothIcon className='w-4 h-4' />;
     }
   };
 
@@ -608,6 +737,127 @@ export default function EditWorkflow() {
     })));
   };
 
+  const handleAddNode = (parentId: string) => {
+    setSelectedParentId(parentId);
+    setIsCommandOpen(true);
+  };
+
+  const handleSelectService = (service: Service, node: any) => {
+    // TODO: Implement the logic to add a new node
+    console.log('Selected service:', service);
+    console.log('Selected node:', node);
+    setIsCommandOpen(false);
+  };
+
+  const handleResetNode = (nodeId: string) => {
+    if (!workflow || !updatedWorkflow) return;
+    const defaultNode = findNode(workflow.nodes, nodeId);
+    if (!defaultNode) return;
+    const resetNodeInTree = (nodes: AreaNode[]): AreaNode[] => {
+      return nodes.map(node => {
+        if (node.id === nodeId) {
+          return defaultNode;
+        }
+        if (node.nodes) {
+          return {
+            ...node,
+            nodes: resetNodeInTree(node.nodes)
+          };
+        }
+        return node;
+      });
+    };
+
+    setUpdatedWorkflow(prev => ({
+      ...prev!,
+      nodes: resetNodeInTree(prev!.nodes)
+    }));
+
+    setNodes(nodes => nodes.map(node => {
+      if (node.id === nodeId) {
+        const hasInvalidFields = defaultNode.fieldGroups.some(group =>
+          group.fields.some(field => field.required && !field.value)
+        );
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            fieldGroups: defaultNode.fieldGroups,
+            isValid: !hasInvalidFields
+          }
+        };
+      }
+      return node;
+    }));
+
+    toast({
+      title: t('workflows.nodeResetTitle'),
+      description: t('workflows.nodeResetDescription')
+    });
+  };
+
+  const hasChangesOnNode = (nodeId: string): boolean => {
+    if (!workflow || !updatedWorkflow) return false;
+    const originalNode = findNode(workflow.nodes, nodeId);
+    const currentNode = findNode(updatedWorkflow.nodes, nodeId);
+    if (!originalNode || !currentNode) return false;
+
+    const compareFieldGroups = (original: FieldGroup[], current: FieldGroup[]): boolean => {
+      if (original.length !== current.length) return true;
+
+      return original.some((originalGroup, index) => {
+        const currentGroup = current[index];
+        return originalGroup.fields.some((originalField, fieldIndex) => {
+          const currentField = currentGroup.fields[fieldIndex];
+          return originalField.value !== currentField.value;
+        });
+      });
+    };
+
+    const compareNodes = (original: AreaNode, current: AreaNode): boolean => {
+      if (compareFieldGroups(original.fieldGroups, current.fieldGroups))
+        return true;
+
+      if (original.nodes?.length !== current.nodes?.length)
+        return true;
+
+      if (original.nodes && current.nodes)
+        return original.nodes.some((originalChild, index) =>
+          compareNodes(originalChild, current.nodes![index])
+        );
+
+      return false;
+    };
+
+    return compareNodes(originalNode, currentNode);
+  };
+
+  const handleRemoveNode = (nodeId: string) => {
+    setDeleteNodeConfirmation(false);
+    if (!updatedWorkflow) return;
+
+    const removeNodeFromTree = (nodes: AreaNode[]): AreaNode[] => {
+      return nodes.filter(node => {
+        if (node.id === nodeId) return false;
+        if (node.nodes) {
+          node.nodes = removeNodeFromTree(node.nodes);
+        }
+        return true;
+      });
+    };
+
+    setUpdatedWorkflow(prev => ({
+      ...prev!,
+      nodes: removeNodeFromTree(prev!.nodes)
+    }));
+
+    setNodes(nodes => nodes.filter(n => !n.id.startsWith(nodeId)));
+    setEdges(edges => edges.filter(e => !e.source.startsWith(nodeId) && !e.target.startsWith(nodeId)));
+
+    handleClosePanel();
+  };
+
   if (!workflow) return null;
 
   return (
@@ -616,7 +866,11 @@ export default function EditWorkflow() {
         <SidebarTrigger className='-ml-1' />
         <Separator orientation='vertical' className='mr-2 h-4' />
         <h1 className='text-lg font-semibold'>{workflow.name}</h1>
-        <WorkflowHeader />
+        <WorkflowHeader
+          workflow={workflow}
+          updatedWorkflow={updatedWorkflow}
+          setWorkflow={setWorkflow}
+        />
       </header>
       <div className='w-full flex'>
         <div className={clsx(
@@ -653,7 +907,6 @@ export default function EditWorkflow() {
               >
                 <Background />
                 <Controls showInteractive={false} className='Controls' showZoom={false} />
-                <MiniMap />
               </ReactFlow>
             </div>
           </div>
@@ -664,9 +917,9 @@ export default function EditWorkflow() {
             <div className='space-y-4'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                  <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
+                  <div className='p-1 rounded-md bg-muted border overflow-hidden'>
                     {services.find(s => s.id === selectedNode.service.id)?.image && (
-                      <img src={services.find(s => s.id === selectedNode.service.id)?.image} alt={selectedNode.service.name} className='size-4 object-contain' />
+                      <img src={services.find(s => s.id === selectedNode.service.id)?.image} alt={selectedNode.service.name} className='size-5 object-contain' />
                     )}
                   </div>
                   <div className='font-medium text-sm text-gray-900'>
@@ -694,8 +947,13 @@ export default function EditWorkflow() {
                           <p className='text-sm font-semibold'>{group.name}</p>
                         </div>
                         {group.fields.map((field: Field) => (
-                          <div key={field.id} className=''>
-                            <Label>{field.label}</Label>
+                          <div key={field.id} className='space-y-1'>
+                            <Label className='flex items-center gap-1'>
+                              {field.label}
+                              {field.required && (
+                                <span className='text-sm text-destructive'>*</span>
+                              )}
+                            </Label>
                             {renderField(field)}
                           </div>
                         ))}
@@ -704,17 +962,56 @@ export default function EditWorkflow() {
                   </div>
                 )}
               </div>
+              <div className='flex items-center gap-2'>
+                <Button
+                  variant='destructiveOutline'
+                  size='sm'
+                  onClick={() => handleRemoveNode(selectedNode.id)}
+                >
+                  <ArchiveBoxArrowDownIcon className='w-4 h-4' />
+                  {t('workflows.remove')}
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => handleResetNode(selectedNode.id)}
+                  disabled={!hasChangesOnNode(selectedNode.id)}
+                >
+                  <ArrowUturnLeftIcon className='w-4 h-4' />
+                  {t('workflows.resetNode')}
+                </Button>
+              </div>
             </div>
           </div>
         )}
-        {hasChanges && (
-          <div className="fixed bottom-4 right-4">
-            <Button onClick={handleSave}>
-              {t('workflows.save')}
-            </Button>
-          </div>
-        )}
       </div>
+
+      <CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
+        <Command className='rounded-lg border shadow-md'>
+          <CommandInput placeholder={t('workflows.searchServices')} />
+          <CommandList>
+            <CommandEmpty>{t('workflows.noServicesFound')}</CommandEmpty>
+            {services.map((service: Service) => (
+              <CommandGroup heading={service.name}>
+                {service.actions?.map((action) => (
+                  <CommandItem
+                    key={action.id}
+                    onSelect={() => handleSelectService(service, action)}
+                    className='flex items-center gap-2'
+                  >
+                    <div className='p-1 rounded-md bg-muted border overflow-hidden'>
+                      {service.image && (
+                        <img src={service.image} alt={service.name} className='size-4 object-contain' />
+                      )}
+                    </div>
+                    {action.name} <span className='text-muted-foreground text-xs'>{action.description}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+      </CommandDialog>
     </div>
   );
 }

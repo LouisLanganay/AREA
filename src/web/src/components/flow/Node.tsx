@@ -1,9 +1,10 @@
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { WorkflowNodeData } from '@/interfaces/Workflows';
-import { SignalIcon } from '@heroicons/react/24/solid';
+import { ExclamationTriangleIcon, SignalIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { Badge } from '../ui/badge';
 
 export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean }) => {
   const { t } = useTranslation();
@@ -22,31 +23,40 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
   };
 
   return (
-    <div className="flex flex-col">
+    <div className='flex flex-col'>
       {data.isTrigger && (
         <div className='w-fit p-1 flex flex-row items-center gap-1 bg-muted border border-b-0 rounded-t-lg'>
           <SignalIcon className='size-4 text-muted-foreground' />
           <div className='text-xs text-muted-foreground'>
-            {t('builder.trigger')}
+            {t('workflows.trigger')}
           </div>
         </div>
       )}
       <div className={clsx(
-        'border shadow-sm text-sm px-2 py-2 w-[250px] h-fit ring-primary ring-0 transition-all',
+        'border shadow-sm text-sm px-2 py-2 w-[330px] h-fit ring-primary ring-0 transition-all',
         data.isTrigger ? 'rounded-b-lg rounded-r-lg' : 'rounded-lg',
-        data.selected ? 'ring-2' : '',
+        !data.isValid ? '!ring-destructive ring-1' : '',
+        data.selected ? '!ring-2' : '',
         getStatusColor()
       )}>
         <div className='flex flex-col justify-start gap-2'>
-          <div className='flex items-center gap-2 h-fit'>
-            <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
-              {data.service && (
-                <img src={data.service.image} alt={data.service.name} className='size-4 object-contain' />
-              )}
+          <div className='flex items-center gap-2 h-fit justify-between'>
+            <div className='flex items-center gap-2'>
+              <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
+                {data.service && (
+                  <img src={data.service.image} alt={data.service.name} className='size-4 object-contain' />
+                )}
+              </div>
+              <div className='font-medium text-sm text-foreground'>
+                {data.label}
+              </div>
             </div>
-            <div className='font-medium text-sm text-gray-900'>
-              {data.label}
-            </div>
+            {!data.isValid && (
+              <Badge variant='destructiveOutline'>
+                <ExclamationTriangleIcon className='size-4 mr-1' />
+                {t('workflows.invalidFields')}
+              </Badge>
+            )}
           </div>
           <hr className='w-full border-border' />
           <div className='text-xs text-muted-foreground tracking-tight'>

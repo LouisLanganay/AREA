@@ -8,6 +8,7 @@ interface WorkflowNodeData {
   fieldGroups?: FieldGroup[];
   description?: string;
   isTrigger?: boolean;
+  isValid?: boolean;
   [key: string]: unknown;
 }
 
