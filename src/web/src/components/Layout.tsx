@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { AppSidebar } from './sidebar/AppSidebar';
 import { Separator } from './ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './ui/sidebar';
@@ -6,9 +7,10 @@ import { Toaster } from '@/components/ui/toaster';
 interface LayoutProps {
   children: React.ReactNode;
   headerContent?: React.ReactNode;
+  padding?: boolean;
 }
 
-export default function Layout({ children, headerContent }: LayoutProps) {
+export default function Layout({ children, headerContent, padding = true }: LayoutProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -19,9 +21,7 @@ export default function Layout({ children, headerContent }: LayoutProps) {
           {headerContent}
         </header>
         <div className='min-h-screen bg-background w-full'>
-          <main className='p-4 container mx-auto'>
-            {children}
-          </main>
+          <main className={clsx('container mx-auto', padding ? 'p-4' : 'p-0')}>{children}</main>
           <Toaster />
         </div>
       </SidebarInset>

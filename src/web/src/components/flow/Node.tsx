@@ -32,8 +32,9 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
         </div>
       )}
       <div className={clsx(
-        'border shadow-sm text-sm px-2 py-2 w-[250px] h-fit',
+        'border shadow-sm text-sm px-2 py-2 w-[250px] h-fit ring-primary ring-0 transition-all',
         data.isTrigger ? 'rounded-b-lg rounded-r-lg' : 'rounded-lg',
+        data.selected ? 'ring-2' : '',
         getStatusColor()
       )}>
         <div className='flex flex-col justify-start gap-2'>

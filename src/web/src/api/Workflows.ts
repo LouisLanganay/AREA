@@ -390,7 +390,7 @@ export const getWorkflow = async (id: string): Promise<Workflow> => {
                 "id": "discord-config",
                 "name": "Discord Configuration",
                 "description": "Configure Discord message settings",
-                "type": "discord",
+                "type": "server",
                 "fields": [
                   {
                     "id": "server_id",

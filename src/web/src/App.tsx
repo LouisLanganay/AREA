@@ -106,7 +106,7 @@ function App() {
             path='/workflows/:id'
             element={
               <ProtectedRoute>
-                <Layout headerContent={<WorkflowHeader />}>
+                <Layout headerContent={<WorkflowHeader />} padding={false}>
                   <EditWorkflow />
                 </Layout>
               </ProtectedRoute>
