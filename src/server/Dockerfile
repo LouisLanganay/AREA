@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN npx prisma db push
+
 EXPOSE 8080
 
 CMD ["npm", "start"]

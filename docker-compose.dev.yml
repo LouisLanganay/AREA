@@ -1,31 +1,44 @@
 version: '3.8'
 
 services:
-  web_service:
-    build:
-      context: ./src/web/
-      dockerfile: DockerfileDev
-    ports:
-      - 8081:8081
-    volumes:
-      - ./src/web:/web_service
-      - ./src/shared:/shared
-      - web_service_node_modules:/web_service/node_modules
-    command: >
-      bash -c "
-      npm install &&
-      npm run build &&
-      cd android &&
-      ./gradlew assembleDebug &&
-      cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk src/ &&
-      npm run dev
-      "
+  # web_service:
+  #   build:
+  #     context: ./src/web/
+  #     dockerfile: DockerfileDev
+  #   ports:
+  #     - 8081:8081
+  #   volumes:
+  #     - ./src/web:/web_service
+  #     - ./src/shared:/shared
+  #     - web_service_node_modules:/web_service/node_modules
+  #   command: >
+  #     bash -c "
+  #     npm install &&
+  #     npm run build &&
+  #     cd android &&
+  #     ./gradlew assembleDebug &&
+  #     cd .. &&
+  #     mv android/app/build/outputs/apk/debug/app-debug.apk src/ &&
+  #     npm run dev
+  #     "
 #./gradlew assembleRelease
 #     wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar &&
 #      java -jar uber-apk-signer-1.3.0.jar --apks android/app/build/outputs/apk/debug/app-debug.apk &&
 
+  database:
+    container_name: linkit_db
+    image: mariadb:latest
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app_network
+
   server:
+    container_name: linkit_server
     build:
       context: ./src/server/
       dockerfile: DockerfileDev
@@ -42,17 +55,6 @@ services:
     networks:
       - app_network
 
-  database:
-    image: mariadb:latest
-    env_file:
-      - .env
-    ports:
-      - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
-    networks:
-      - app_network
-
 volumes:
   db-data:
   web_service_node_modules:
@@ -60,4 +62,3 @@ volumes:
 
 networks:
   app_network:
-    driver: bridge
