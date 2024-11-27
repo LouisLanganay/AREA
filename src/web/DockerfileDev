@@ -25,6 +25,7 @@ RUN apt-get install -qy \
     usbutils \
     git \
     unzip \
+    wget \
     p7zip p7zip-full \
     python3 \
     openjdk-${JAVA_VERSION}-jre \
@@ -67,7 +68,14 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+#RUN npm run build
+
+#WORKDIR /web_service/android
+#RUN ./gradlew assembleDebug
+
+#WORKDIR /web_service
+
+#RUN java -jar uber-apk-signer-1.3.0.jar --apks android/app/build/outputs/apk/debug/app-debug.apk
 
 RUN npm run apk
 
@@ -83,4 +91,9 @@ RUN keytool -genkeypair -v \
 
 EXPOSE 8081
 
-CMD ["npm", "run", "dev"]
+#CMD ["npm", "run", "build"]
+#CMD ["cd", "android"]
+#CMD ["touch", "test"]
+#CMD ["./gradlew", "assembleDebug"]
+#CMD ["cd", ".."]
+#CMD ["npm", "run", "dev"]

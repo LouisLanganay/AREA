@@ -9,8 +9,21 @@ services:
       - 8081:8081
     volumes:
       - ./src/web:/web_service
-      - ./src/shared:/web_service/shared
+      - ./src/shared:/shared
       - web_service_node_modules:/web_service/node_modules
+    command: >
+      bash -c "
+      npm install &&
+      npm run build &&
+      cd android &&
+      ./gradlew assembleDebug &&
+      cd .. &&
+      mv android/app/build/outputs/apk/debug/app-debug.apk src/ &&
+      npm run dev
+      "
+#./gradlew assembleRelease
+#     wget https://github.com/patrickfav/uber-apk-signer/releases/download/v1.3.0/uber-apk-signer-1.3.0.jar &&
+#      java -jar uber-apk-signer-1.3.0.jar --apks android/app/build/outputs/apk/debug/app-debug.apk &&
 
   server:
     build:
@@ -20,7 +33,7 @@ services:
       - 8080:8080
     volumes:
       - ./src/server:/server
-      - ./src/shared:/server/shared
+      - ./src/shared:/shared
       - /server/node_modules
     env_file:
       - .env
