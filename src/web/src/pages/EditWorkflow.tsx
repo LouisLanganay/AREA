@@ -39,6 +39,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
+import { isEqual } from 'lodash';
+import React from 'react';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import clsx from 'clsx';
 
 const nodeTypes = {
   node: Node,
@@ -376,95 +380,6 @@ const flowStyles = `
   }
 `;
 
-const renderField = (field: Field) => {
-  switch (field.type) {
-    case 'text':
-      return (
-        <Input
-          variantSize='sm'
-          type='text'
-          value={field.value || ''}
-          onChange={(e) => handleFieldChange(field.id, e.target.value)}
-          required={field.required}
-        />
-      );
-    case 'number':
-      return (
-        <Input
-          type='number'
-          variantSize='sm'
-          value={field.value || ''}
-          onChange={(e) => handleFieldChange(field.id, parseFloat(e.target.value))}
-          required={field.required}
-        />
-      );
-    case 'boolean':
-      return (
-        <Checkbox
-          checked={field.value || false}
-          onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
-        />
-      );
-    case 'select':
-      return (
-        <Select value={field.value} onValueChange={(value) => handleFieldChange(field.id, value)}>
-          <SelectTrigger>
-            <SelectValue placeholder='Select an option' />
-          </SelectTrigger>
-          <SelectContent>
-            {field.options?.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      );
-    case 'date':
-      return (
-        <Calendar
-          mode='single'
-          selected={field.value ? new Date(field.value) : undefined}
-          onSelect={(date) => handleFieldChange(field.id, date)}
-        />
-      );
-    case 'checkbox':
-      return (
-        <Checkbox
-          checked={field.value || false}
-          onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
-        />
-      );
-    case 'color':
-      return (
-        <Input
-          type='color'
-          value={field.value || '#000000'}
-          onChange={(e) => handleFieldChange(field.id, e.target.value)}
-          required={field.required}
-        />
-      );
-    default:
-      return null;
-  }
-};
-
-const getGroupIcon = (type: string) => {
-  switch (type) {
-    case 'server':
-      return <ServerIcon className='w-4 h-4' />;
-    case 'message':
-      return <ChatBubbleBottomCenterTextIcon className='w-4 h-4' />;
-    default:
-      return null;
-  }
-};
-
-const handleFieldChange = (fieldId: string, value: any) => {
-  // TODO: Implement field value update logic
-  console.log('Field changed:', fieldId, value);
-};
-
 export default function EditWorkflow() {
   const { id } = useParams();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
@@ -473,6 +388,9 @@ export default function EditWorkflow() {
   const [services, setServices] = useState<Service[]>([]);
   const navigate = useNavigate();
   const [selectedNode, setSelectedNode] = useState<AreaNode | null>(null);
+  const [updatedWorkflow, setUpdatedWorkflow] = useState<Workflow | null>(null);
+  const { toast } = useToast();
+  const { t } = useTranslation();
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: WorkflowNode) => {
     if (node.type === 'node') {
@@ -489,7 +407,7 @@ export default function EditWorkflow() {
 
       const areaNode = workflow?.nodes ? findNode(workflow.nodes) : null;
       setSelectedNode(areaNode);
-      
+
       setNodes(nodes => nodes.map(n => ({
         ...n,
         data: {
@@ -513,6 +431,7 @@ export default function EditWorkflow() {
           return;
         }
         setWorkflow(workflow);
+        setUpdatedWorkflow(workflow);
 
         const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.nodes, fetchedServices);
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
@@ -527,95 +446,275 @@ export default function EditWorkflow() {
     fetchData();
   }, [id, navigate]);
 
+  const handleSave = async () => {
+    try {
+      if (!updatedWorkflow) return;
+      await updateWorkflow(updatedWorkflow.id, updatedWorkflow);
+      setWorkflow(updatedWorkflow);
+      toast({
+        title: t('workflows.updateSuccessTitle'),
+        description: t('workflows.updateSuccessDescription'),
+      });
+    } catch (error) {
+      console.error('Failed to update workflow', error);
+      toast({
+        title: t('workflows.updateErrorTitle'),
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const hasChanges = !isEqual(workflow, updatedWorkflow);
+
+  const handleFieldChange = (fieldId: string, value: any) => {
+    if (!updatedWorkflow) return;
+
+    const updateNodeFields = (nodes: AreaNode[]): AreaNode[] => {
+      return nodes.map(node => ({
+        ...node,
+        fieldGroups: node.fieldGroups.map(group => ({
+          ...group,
+          fields: group.fields.map(field =>
+            field.id === fieldId ? { ...field, value } : field
+          )
+        })),
+        nodes: node.nodes ? updateNodeFields(node.nodes) : []
+      }));
+    };
+
+    setUpdatedWorkflow(prev => ({
+      ...prev!,
+      nodes: updateNodeFields(prev!.nodes)
+    }));
+  };
+
+  const renderField = (field: Field) => {
+    const getCurrentValue = () => {
+      if (!updatedWorkflow) return field.value;
+
+      const findFieldValue = (nodes: AreaNode[]): any => {
+        for (const node of nodes) {
+          const foundField = node.fieldGroups
+            .flatMap(group => group.fields)
+            .find(f => f.id === field.id);
+
+          if (foundField) return foundField.value;
+
+          if (node.nodes) {
+            const nestedValue = findFieldValue(node.nodes);
+            if (nestedValue !== undefined) return nestedValue;
+          }
+        }
+        return undefined;
+      };
+
+      return findFieldValue(updatedWorkflow.nodes) ?? field.value;
+    };
+
+    const currentValue = getCurrentValue();
+
+    switch (field.type) {
+      case 'text':
+        return (
+          <Input
+            variantSize='sm'
+            type='text'
+            value={currentValue || ''}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            required={field.required}
+          />
+        );
+      case 'number':
+        return (
+          <Input
+            type='number'
+            variantSize='sm'
+            value={currentValue || ''}
+            onChange={(e) => handleFieldChange(field.id, parseFloat(e.target.value))}
+            required={field.required}
+          />
+        );
+      case 'boolean':
+        return (
+          <Checkbox
+            checked={currentValue || false}
+            onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
+          />
+        );
+      case 'select':
+        return (
+          <Select value={currentValue} onValueChange={(value) => handleFieldChange(field.id, value)}>
+            <SelectTrigger>
+              <SelectValue placeholder='Select an option' />
+            </SelectTrigger>
+            <SelectContent>
+              {field.options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      case 'date':
+        return (
+          <Calendar
+            mode='single'
+            selected={currentValue ? new Date(currentValue) : undefined}
+            onSelect={(date) => handleFieldChange(field.id, date)}
+          />
+        );
+      case 'checkbox':
+        return (
+          <Checkbox
+            checked={currentValue || false}
+            onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
+          />
+        );
+      case 'color':
+        return (
+          <Input
+            type='color'
+            value={currentValue || '#000000'}
+            onChange={(e) => handleFieldChange(field.id, e.target.value)}
+            required={field.required}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getGroupIcon = (type: string) => {
+    switch (type) {
+      case 'server':
+        return <ServerIcon className='w-4 h-4' />;
+      case 'message':
+        return <ChatBubbleBottomCenterTextIcon className='w-4 h-4' />;
+      default:
+        return null;
+    }
+  };
+
+  const handleClosePanel = () => {
+    setSelectedNode(null);
+    setNodes(nodes => nodes.map(n => ({
+      ...n,
+      data: {
+        ...n.data,
+        selected: false
+      }
+    })));
+  };
+
   if (!workflow) return null;
 
   return (
-    <div className='container mx-auto flex'>
-      <div className={`transition-all duration-300 ${selectedNode ? 'w-[calc(100%-400px)]' : 'w-full'}`}>
-        <style>{flowStyles}</style>
-        <div className='bg-muted/50 h-full flex items-center justify-center'>
-          <div className='container mx-auto h-[600px]'>
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              nodeTypes={nodeTypes}
-              onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
-              onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
-              onConnect={(params) => setEdges((eds) => addEdge({
-                ...params,
-                type: ConnectionLineType.SmoothStep,
-                animated: true,
-                style: edgeStyles,
-              }, eds))}
-              nodesConnectable={false}
-              nodesDraggable={false}
-              panOnDrag
-              connectionLineType={ConnectionLineType.SmoothStep}
-              defaultEdgeOptions={{
-                type: 'step',
-                style: edgeStyles,
-              }}
-              fitView
-              zoomOnPinch={false}
-              zoomOnDoubleClick={false}
-              onNodeClick={onNodeClick}
-            >
-              <Background />
-              <Controls showInteractive={false} className='Controls' showZoom={false} />
-              <MiniMap />
-            </ReactFlow>
-          </div>
-        </div>
-      </div>
-
-      {selectedNode && (
-        <div className='w-[400px] bg-muted/50 p-4 border-l'>
-          <div className='space-y-4'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
-                  {services.find(s => s.id === selectedNode.service.id)?.image && (
-                    <img src={services.find(s => s.id === selectedNode.service.id)?.image} alt={selectedNode.service.name} className='size-4 object-contain' />
-                  )}
-                </div>
-                <div className='font-medium text-sm text-gray-900'>
-                  {selectedNode.service.description}
-                </div>
-              </div>
-              <Button
-                variant='outline'
-                size='sm'
-                className='p-1 h-auto'
-                onClick={() => setSelectedNode(null)}
+    <div className='h-full w-full'>
+      <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
+        <SidebarTrigger className='-ml-1' />
+        <Separator orientation='vertical' className='mr-2 h-4' />
+        <h1 className='text-lg font-semibold'>{workflow.name}</h1>
+        <WorkflowHeader />
+      </header>
+      <div className='w-full flex'>
+        <div className={clsx(
+          'transition-all duration-300',
+          selectedNode ? 'w-[calc(100%-400px)]' : 'w-full'
+        )}>
+          <style>{flowStyles}</style>
+          <div className='bg-muted/50 h-full flex items-center justify-center w-full'>
+            <div className='w-full h-[600px]'>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
+                onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
+                onConnect={(params) => setEdges((eds) => addEdge({
+                  ...params,
+                  type: ConnectionLineType.SmoothStep,
+                  animated: true,
+                  style: edgeStyles,
+                }, eds))}
+                nodesConnectable={false}
+                nodesDraggable={false}
+                panOnDrag
+                connectionLineType={ConnectionLineType.SmoothStep}
+                defaultEdgeOptions={{
+                  type: 'step',
+                  style: edgeStyles,
+                }}
+                fitView
+                zoomOnPinch={false}
+                zoomOnDoubleClick={false}
+                onNodeClick={onNodeClick}
               >
-                <XMarkIcon className='w-4 h-4' />
-              </Button>
-            </div>
-            <div className='space-y-2'>
-              {selectedNode.fieldGroups && (
-                <div className='space-y-4'>
-                  {selectedNode.fieldGroups.map((group: FieldGroup) => (
-                    <div key={group.id} className='space-y-4 bg-white border rounded-lg p-4'>
-                      <div className='flex items-center gap-2'>
-                        <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
-                          {getGroupIcon(group.type)}
-                        </div>
-                        <p className='text-sm font-semibold'>{group.name}</p>
-                      </div>
-                      {group.fields.map((field: Field) => (
-                        <div key={field.id} className=''>
-                          <Label>{field.label}</Label>
-                          {renderField(field)}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              )}
+                <Background />
+                <Controls showInteractive={false} className='Controls' showZoom={false} />
+                <MiniMap />
+              </ReactFlow>
             </div>
           </div>
         </div>
-      )}
+
+        {selectedNode && (
+          <div className='w-[400px] bg-muted/50 p-4 border-l'>
+            <div className='space-y-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-2'>
+                  <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
+                    {services.find(s => s.id === selectedNode.service.id)?.image && (
+                      <img src={services.find(s => s.id === selectedNode.service.id)?.image} alt={selectedNode.service.name} className='size-4 object-contain' />
+                    )}
+                  </div>
+                  <div className='font-medium text-sm text-gray-900'>
+                    {selectedNode.service.description}
+                  </div>
+                </div>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='p-1 h-auto'
+                  onClick={handleClosePanel}
+                >
+                  <XMarkIcon className='w-4 h-4' />
+                </Button>
+              </div>
+              <div className='space-y-2'>
+                {selectedNode.fieldGroups && (
+                  <div className='space-y-4'>
+                    {selectedNode.fieldGroups.map((group: FieldGroup) => (
+                      <div key={group.id} className='space-y-4 bg-white border rounded-lg p-4 shadow-sm'>
+                        <div className='flex items-center gap-2'>
+                          <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
+                            {getGroupIcon(group.type)}
+                          </div>
+                          <p className='text-sm font-semibold'>{group.name}</p>
+                        </div>
+                        {group.fields.map((field: Field) => (
+                          <div key={field.id} className=''>
+                            <Label>{field.label}</Label>
+                            {renderField(field)}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {hasChanges && (
+          <div className="fixed bottom-4 right-4">
+            <Button onClick={handleSave}>
+              {t('workflows.save')}
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
