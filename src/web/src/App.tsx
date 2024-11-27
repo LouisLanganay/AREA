@@ -124,6 +124,17 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path='/workflows/:id'
+            element={
+              <ProtectedRoute>
+                <Layout headerContent={<WorkflowHeader />} padding={false}>
+                  <EditWorkflow />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

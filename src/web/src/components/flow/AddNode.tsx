@@ -15,8 +15,9 @@ export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
       text-sm
       px-2
       py-1
+      w-[70px]
     `}>
-      <div className="flex items-center justify-between text-center">
+      <div className="flex items-center">
         <PlusCircleIcon className='w-4 h-4 mr-2' />
         Add
       </div>
