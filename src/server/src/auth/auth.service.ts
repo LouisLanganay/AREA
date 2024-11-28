@@ -4,8 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { compare } from 'bcrypt';
-import * as bcrypt from 'bcrypt';
+import { compare } from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -20,13 +20,20 @@ export class AuthService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async hashPassword(password: string) {
-    return await bcrypt.hash(password, 10);
+  async hashPassword(password: string): Promise<string> {
+    try {
+      const hashed = await bcrypt.hash(password, 10);
+      return hashed;
+    } catch (error) {
+      console.error('Erreur lors du hachage du mot de passe :', error);
+      throw new InternalServerErrorException('Password hashing failed');
+    }
   }
 
   async register(createUserDto: CreateUserDto) {
     // check if the mail is core
     createUserDto.password = await this.hashPassword(createUserDto.password);
+    console.log(createUserDto);
     const user = await this.usersService.create(createUserDto);
     if (!user) {
       throw new InternalServerErrorException('User not created');
