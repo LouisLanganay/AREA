@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -333,7 +332,7 @@ export default function Workflows() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant='outlinedestructive'
+                  variant='default'
                   size='sm'
                 >
                   {t('workflows.bulkActions')}
