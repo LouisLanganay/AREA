@@ -4,6 +4,10 @@ import GoogleIcon from '@/assets/google-icon.svg';
 import GitHubIcon from '@/assets/github-icon.svg';
 import DiscordIcon from '@/assets/discord-icon.svg';
 import AppleIcon from '@/assets/apple-icon.svg';
+import { register } from '@/api/Auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
 const providers = [
   {
@@ -24,7 +28,38 @@ const providers = [
   }
 ];
 
+// Add schema definition at the top level
+const registerSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  email: z.string().email('Please enter a valid email'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
+
 export default function Register() {
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
+  });
+
+  const handleSubmit = async (values: RegisterFormValues) => {
+    try {
+      await register(values.email, values.password, values.username);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className='flex min-h-screen items-center justify-center'>
       <div className='w-full max-w-md space-y-3 p-8'>
@@ -53,20 +88,20 @@ export default function Register() {
           <hr className='flex-1' />
         </div>
 
-        <form className='mt-8 space-y-4'>
+        <form className='mt-8 space-y-4' onSubmit={form.handleSubmit(handleSubmit)}>
           <div className='space-y-4'>
             <div>
               <label htmlFor='username' className='block text-sm font-medium'>
                 Username
               </label>
               <input
-                id='username'
-                name='username'
-                type='text'
-                required
+                {...form.register('username')}
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your username'
               />
+              {form.formState.errors.username && (
+                <p className='text-sm text-red-500 mt-1'>{form.formState.errors.username.message}</p>
+              )}
             </div>
 
             <div>
@@ -74,13 +109,14 @@ export default function Register() {
                 Email address
               </label>
               <input
-                id='email'
-                name='email'
+                {...form.register('email')}
                 type='email'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your email'
               />
+              {form.formState.errors.email && (
+                <p className='text-sm text-red-500 mt-1'>{form.formState.errors.email.message}</p>
+              )}
             </div>
 
             <div>
@@ -88,13 +124,14 @@ export default function Register() {
                 Password
               </label>
               <input
-                id='password'
-                name='password'
+                {...form.register('password')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your password'
               />
+              {form.formState.errors.password && (
+                <p className='text-sm text-red-500 mt-1'>{form.formState.errors.password.message}</p>
+              )}
             </div>
 
             <div>
@@ -102,13 +139,14 @@ export default function Register() {
                 Confirm Password
               </label>
               <input
-                id='confirmPassword'
-                name='confirmPassword'
+                {...form.register('confirmPassword')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Confirm your password'
               />
+              {form.formState.errors.confirmPassword && (
+                <p className='text-sm text-red-500 mt-1'>{form.formState.errors.confirmPassword.message}</p>
+              )}
             </div>
           </div>
 
