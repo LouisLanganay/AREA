@@ -1,0 +1,22 @@
+meta {
+  name: createUser
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "emailx@epitech.eu",
+    "password": "testtest",
+    "username": "User",
+    "displayName": "user",
+    "avatarUrl": "https://example.com/avatar.png"
+  }
+  
+}

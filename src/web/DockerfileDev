@@ -68,32 +68,4 @@ RUN npm install
 
 COPY . .
 
-#RUN npm run build
-
-#WORKDIR /web_service/android
-#RUN ./gradlew assembleDebug
-
-#WORKDIR /web_service
-
-#RUN java -jar uber-apk-signer-1.3.0.jar --apks android/app/build/outputs/apk/debug/app-debug.apk
-
-RUN npm run apk
-
-RUN keytool -genkeypair -v \
-    -keystore my-release-key.keystore \
-    -alias alias_name \
-    -keyalg RSA \
-    -keysize 2048 \
-    -validity 10000 \
-    -storepass to_change_pswd \
-    -keypass to_change_pswd \
-    -dname "CN=Linkit, OU=Dev, O=Linkit, L=Rennes, S=France, C=FR"
-
 EXPOSE 8081
-
-#CMD ["npm", "run", "build"]
-#CMD ["cd", "android"]
-#CMD ["touch", "test"]
-#CMD ["./gradlew", "assembleDebug"]
-#CMD ["cd", ".."]
-#CMD ["npm", "run", "dev"]
