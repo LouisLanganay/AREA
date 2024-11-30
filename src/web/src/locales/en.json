@@ -171,5 +171,42 @@
     "previous": "Previous",
     "next": "Next",
     "apps": "Apps"
+  },
+  "home": {
+    "navigation": {
+      "features": {
+        "title": "Features",
+        "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
+        "intro": "Create automated workflows between your favorite applications.",
+        "pricing": "Plans adapted to your needs, from free to enterprise.",
+        "integrations": "More than 100 compatible services for your automations."
+      },
+      "documentation": {
+        "title": "Documentation",
+        "api": "Complete documentation of our public API.",
+        "source": "Access our source code on GitHub.",
+        "mobile": "Download our mobile application."
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "solutions": "Advanced features for large organizations.",
+        "cases": "Discover how our clients use LinkIt.",
+        "contact": "Let's talk about your specific needs."
+      }
+    },
+    "auth": {
+      "signin": "Sign in",
+      "register": "Register"
+    },
+    "mobile": {
+      "discover": "Discover our mobile app.",
+      "getStarted": "Get started"
+    },
+    "title": {
+      "automate": "Automate.",
+      "iterate": "Iterate.",
+      "scale": "Scale."
+    },
+    "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone."
   }
 }

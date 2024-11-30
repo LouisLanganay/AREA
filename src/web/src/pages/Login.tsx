@@ -40,7 +40,7 @@ export default function Login() {
     try {
       const token = await loginUser();
       login(token);
-      navigate('/');
+      navigate('/workflows');
     } catch {
       setError('Failed to login');
     }
