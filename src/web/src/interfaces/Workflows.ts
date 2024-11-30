@@ -12,4 +12,24 @@ interface WorkflowNodeData {
   [key: string]: unknown;
 }
 
-export type { WorkflowNodeData };
+type WorkflowNode = {
+  id: string;
+  type: string;
+  position: { x: number; y: number };
+  data: WorkflowNodeData;
+};
+
+type WorkflowEdge = {
+  id: string;
+  source: string;
+  target: string;
+  type?: string;
+  animated?: boolean;
+  style?: React.CSSProperties;
+};
+
+const nodeWidth = 330;
+const nodeHeight = 100;
+
+export { nodeWidth, nodeHeight };
+export type { WorkflowNodeData, WorkflowNode, WorkflowEdge };
