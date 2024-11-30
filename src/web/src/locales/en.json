@@ -83,6 +83,13 @@
     "validationErrorTitle": "Validation Error",
     "validationErrorDescription": "Please fill in all required fields.",
     "invalidFields": "Error",
-    "resetNode": "Cancel Changes"
+    "resetNode": "Cancel Changes",
+    "searchServices": "Search Services...",
+    "nodeResetTitle": "Node Reset",
+    "nodeResetDescription": "Are you sure you want to reset the node?",
+    "nodeAddedTitle": "Node Added",
+    "nodeAddedDescription": "The node has been added to the workflow.",
+    "save": "Save changes",
+    "back": "Back"
   }
 }
