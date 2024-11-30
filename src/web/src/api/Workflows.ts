@@ -330,6 +330,7 @@ export const deleteWorkflow = async (id: string) => {
 };
 
 export const getWorkflow = async (id: string): Promise<Workflow> => {
+  console.info('Getting workflow:', id);
   //const response = await axios.get<Workflow>(`${API_BASE_URL}/workflows/${id}`);
   return     {
     "id": "github-push-workflow-1",
@@ -534,5 +535,5 @@ export const getWorkflow = async (id: string): Promise<Workflow> => {
         ]
       }
     ]
-  }
+  };
 };

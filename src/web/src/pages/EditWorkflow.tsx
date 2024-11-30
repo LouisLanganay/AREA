@@ -1,7 +1,5 @@
 import { getServices } from '@/api/Services';
 import { getWorkflow } from '@/api/Workflows';
-import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useToast } from '@/hooks/use-toast';
 import { WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
 import { edgeStyles, findNode, getLayoutedElements } from '@/utils/workflows';
@@ -55,7 +53,6 @@ export default function EditWorkflow() {
   const { t } = useTranslation();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
-  const [deleteNodeConfirmation, setDeleteNodeConfirmation] = useState<boolean>(false);
 
   const flattenNodesAndCreateEdges = (
     nodes: AreaNode[],
@@ -254,12 +251,14 @@ export default function EditWorkflow() {
   const handleAddNode = (parentId: string) => {
     setSelectedParentId(parentId);
     setIsCommandOpen(true);
+
+    console.info('Parent ID:', selectedParentId);
   };
 
   const handleSelectService = (service: Service, node: any) => {
     // TODO: Implement the logic to add a new node
-    console.log('Selected service:', service);
-    console.log('Selected node:', node);
+    console.info('Selected service:', service);
+    console.info('Selected node:', node);
     setIsCommandOpen(false);
   };
 
@@ -348,7 +347,6 @@ export default function EditWorkflow() {
   };
 
   const handleRemoveNode = (nodeId: string) => {
-    setDeleteNodeConfirmation(false);
     if (!updatedWorkflow) return;
 
     const removeNodeFromTree = (nodes: AreaNode[]): AreaNode[] => {

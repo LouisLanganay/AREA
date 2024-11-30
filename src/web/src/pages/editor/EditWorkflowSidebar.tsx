@@ -33,12 +33,12 @@ export function EditWorkflowSidebar({
 
   const getGroupIcon = (type: string) => {
     switch (type) {
-      case 'server':
-        return <ServerIcon className='w-4 h-4' />;
-      case 'message':
-        return <ChatBubbleBottomCenterTextIcon className='w-4 h-4' />;
-      default:
-        return <Cog6ToothIcon className='w-4 h-4' />;
+    case 'server':
+      return <ServerIcon className='w-4 h-4' />;
+    case 'message':
+      return <ChatBubbleBottomCenterTextIcon className='w-4 h-4' />;
+    default:
+      return <Cog6ToothIcon className='w-4 h-4' />;
     }
   };
 
@@ -47,76 +47,76 @@ export function EditWorkflowSidebar({
     const isInvalid = field.required && !currentValue;
 
     switch (field.type) {
-      case 'text':
-        return (
-          <Input
-            variantSize='sm'
-            type='text'
-            value={currentValue || ''}
-            onChange={(e) => onFieldChange(field.id, e.target.value)}
-            required={field.required}
-            className={isInvalid ? 'border-destructive !ring-0' : ''}
-          />
-        );
-      case 'number':
-        return (
-          <Input
-            type='number'
-            variantSize='sm'
-            value={currentValue || ''}
-            onChange={(e) => onFieldChange(field.id, parseFloat(e.target.value))}
-            required={field.required}
-            className={isInvalid ? 'border-destructive !ring-0' : ''}
-          />
-        );
-      case 'boolean':
-        return (
-          <Checkbox
-            checked={currentValue || false}
-            onCheckedChange={(checked) => onFieldChange(field.id, checked)}
-          />
-        );
-      case 'select':
-        return (
-          <Select value={currentValue} onValueChange={(value) => onFieldChange(field.id, value)}>
-            <SelectTrigger>
-              <SelectValue placeholder='Select an option' />
-            </SelectTrigger>
-            <SelectContent>
-              {field.options?.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        );
-      case 'date':
-        return (
-          <Calendar
-            mode='single'
-            selected={currentValue ? new Date(currentValue) : undefined}
-            onSelect={(date) => onFieldChange(field.id, date)}
-          />
-        );
-      case 'checkbox':
-        return (
-          <Checkbox
-            checked={currentValue || false}
-            onCheckedChange={(checked) => onFieldChange(field.id, checked)}
-          />
-        );
-      case 'color':
-        return (
-          <Input
-            type='color'
-            value={currentValue || '#000000'}
-            onChange={(e) => onFieldChange(field.id, e.target.value)}
-            required={field.required}
-          />
-        );
-      default:
-        return null;
+    case 'text':
+      return (
+        <Input
+          variantSize='sm'
+          type='text'
+          value={currentValue || ''}
+          onChange={(e) => onFieldChange(field.id, e.target.value)}
+          required={field.required}
+          className={isInvalid ? 'border-destructive !ring-0' : ''}
+        />
+      );
+    case 'number':
+      return (
+        <Input
+          type='number'
+          variantSize='sm'
+          value={currentValue || ''}
+          onChange={(e) => onFieldChange(field.id, parseFloat(e.target.value))}
+          required={field.required}
+          className={isInvalid ? 'border-destructive !ring-0' : ''}
+        />
+      );
+    case 'boolean':
+      return (
+        <Checkbox
+          checked={currentValue || false}
+          onCheckedChange={(checked) => onFieldChange(field.id, checked)}
+        />
+      );
+    case 'select':
+      return (
+        <Select value={currentValue} onValueChange={(value) => onFieldChange(field.id, value)}>
+          <SelectTrigger>
+            <SelectValue placeholder='Select an option' />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
+    case 'date':
+      return (
+        <Calendar
+          mode='single'
+          selected={currentValue ? new Date(currentValue) : undefined}
+          onSelect={(date) => onFieldChange(field.id, date)}
+        />
+      );
+    case 'checkbox':
+      return (
+        <Checkbox
+          checked={currentValue || false}
+          onCheckedChange={(checked) => onFieldChange(field.id, checked)}
+        />
+      );
+    case 'color':
+      return (
+        <Input
+          type='color'
+          value={currentValue || '#000000'}
+          onChange={(e) => onFieldChange(field.id, e.target.value)}
+          required={field.required}
+        />
+      );
+    default:
+      return null;
     }
   };
 
@@ -127,10 +127,10 @@ export function EditWorkflowSidebar({
           <div className='flex items-center gap-2'>
             <div className='p-1 rounded-md bg-muted border overflow-hidden'>
               {services.find(s => s.id === selectedNode.service.id)?.image && (
-                <img 
-                  src={services.find(s => s.id === selectedNode.service.id)?.image} 
-                  alt={selectedNode.service.name} 
-                  className='size-5 object-contain' 
+                <img
+                  src={services.find(s => s.id === selectedNode.service.id)?.image}
+                  alt={selectedNode.service.name}
+                  className='size-5 object-contain'
                 />
               )}
             </div>
@@ -198,4 +198,4 @@ export function EditWorkflowSidebar({
       </div>
     </div>
   );
-} 
+}

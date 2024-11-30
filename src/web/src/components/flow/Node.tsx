@@ -11,14 +11,14 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
 
   const getStatusColor = () => {
     switch (data.status) {
-      case 'success':
-        return 'bg-green-100 border-green-200';
-      case 'error':
-        return 'bg-red-100 border-red-200';
-      case 'pending':
-        return 'bg-yellow-100 border-yellow-200';
-      default:
-        return 'bg-white';
+    case 'success':
+      return 'bg-green-100 border-green-200';
+    case 'error':
+      return 'bg-red-100 border-red-200';
+    case 'pending':
+      return 'bg-yellow-100 border-yellow-200';
+    default:
+      return 'bg-white';
     }
   };
 
