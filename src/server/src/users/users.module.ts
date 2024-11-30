@@ -3,15 +3,14 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import * as process from 'node:process';
 
 @Module({
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: 'SECRET_KEY', // LE TOKEN HEHE
-      signOptions: {
-        expiresIn: '24h',
-      },
+      secret: process.env.JWT_TOKEN, // Remplacez par une clé plus sécurisée
+      signOptions: { expiresIn: '1h' },
     }),
   ],
   providers: [UsersService, PrismaService],

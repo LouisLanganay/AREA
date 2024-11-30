@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --port=8081",
     "build": "tsc -b && vite build && npx cap sync",
+    "apk": "cd android && ./gradlew assembleDebug",
     "lint": "eslint . --fix",
     "preview": "vite preview"
   },
@@ -15,6 +16,7 @@
     "@capacitor/core": "^6.1.2",
     "@dagrejs/dagre": "^1.1.4",
     "@heroicons/react": "^2.2.0",
+    "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -22,6 +24,7 @@
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-separator": "^1.1.0",
+    "@radix-ui/react-slider": "^1.2.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.1",
