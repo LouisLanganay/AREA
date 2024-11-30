@@ -1,0 +1,18 @@
+meta {
+  name: loginUser
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "email@epitech.eu",
+    "password": "testtest"
+  }
+}
