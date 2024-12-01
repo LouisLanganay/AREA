@@ -8,7 +8,6 @@ export class UsersService {
 
   async create(user: CreateUserDto) {
     await this.prismaService.user.create({ data: user });
-    console.log(user);
     return { message: 'User registered successfully', data: user };
   }
 

@@ -1,0 +1,37 @@
+meta {
+  name: createWorkflow
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/workflows
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "YouTube to Email",
+    "description": "Notify when a video is published",
+    "image": "https://example.com/workflow.png",
+    "enabled": true,
+    "nodes": [
+      {
+        "type": "action",
+        "name": "New Video Published",
+        "serviceName": "YouTube",
+        "fieldGroups": [],
+        "dependsOn": null
+      },
+      {
+        "type": "reaction",
+        "name": "Send Email",
+        "serviceName": "Email",
+        "fieldGroups": [],
+        "dependsOn": "trigger1"
+      }
+    ]
+  }
+  
+}
