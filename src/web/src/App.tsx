@@ -1,16 +1,17 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Layout from "./components/Layout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { AuthProvider, useAuth } from "@/auth/AuthContext";
-import { FontScaleProvider } from "@/context/FontScaleContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-import Home from "./pages/Home";
-import AdminPanel from "./pages/AdminPanel";
-import Settings from "./pages/Settings";
-import Services from "./pages/Services";
-import Workflows from "./pages/Workflows";
+import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import React from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import Layout from './components/Layout';
+import { FontScaleProvider } from './context/FontScaleContext';
+import { ThemeProvider } from './context/ThemeContext';
+import AdminPanel from './pages/AdminPanel';
+import EditWorkflow from './pages/EditWorkflow';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Services from './pages/Services';
+import Settings from './pages/Settings';
+import Workflows from './pages/Workflows';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -123,6 +124,17 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Workflows />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/workflows/:id'
+                element={
+                  <ProtectedRoute>
+                    <Layout header={false} padding={false}>
+                      <EditWorkflow />
                     </Layout>
                   </ProtectedRoute>
                 }
