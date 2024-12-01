@@ -55,7 +55,7 @@ export class AuthService {
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { email: user.email, id: user.id };
+    const payload = { id: user.id };
     await this.usersService.setLastConnection(user.id);
 
     await this.mailerService.sendEmail(
