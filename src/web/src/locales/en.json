@@ -87,7 +87,11 @@
       },
       "fontSize": {
         "label": "Font Size",
-        "description": "Adjust the font size for better readability."
+        "description": "Adjust the font size for better readability.",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "xLarge": "Extra Large"
       }
     },
     "notifications": {
