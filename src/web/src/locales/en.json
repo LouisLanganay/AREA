@@ -61,7 +61,10 @@
       "description": "Manage your account details and preferences.",
       "avatar": {
         "change": "Change Avatar",
-        "alt": "Profile Picture"
+        "alt": "Profile Picture",
+        "upload": "Avatar",
+        "description": "Upload a new profile picture.",
+        "save": "Save"
       },
       "fields": {
         "name": "Name",

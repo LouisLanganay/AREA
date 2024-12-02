@@ -57,6 +57,7 @@ export default function Settings() {
   const [avatarUrl, setAvatarUrl] = useState(
     "/placeholder.svg?height=80&width=80"
   );
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   const fontSizeOptions = [
     { label: "Petit", value: 0.8 },
@@ -141,9 +142,18 @@ export default function Settings() {
                     <User className="h-10 w-10" />
                   </AvatarFallback>
                 </Avatar>
-                <Dialog>
+                <Dialog
+                  open={isAvatarDialogOpen}
+                  onOpenChange={setIsAvatarDialogOpen}
+                >
                   <DialogTrigger asChild>
-                    <Button>{t("settings.account.avatar.change")}</Button>
+                    <Button
+                      onClick={() => {
+                        setIsAvatarDialogOpen(true);
+                      }}
+                    >
+                      {t("settings.account.avatar.change")}
+                    </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
@@ -169,7 +179,14 @@ export default function Settings() {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button>{t("settings.account.avatar.save")}</Button>
+                      <Button
+                        type="submit"
+                        onClick={() => {
+                          setIsAvatarDialogOpen(false);
+                        }}
+                      >
+                        {t("settings.account.avatar.save")}
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
