@@ -8,11 +8,13 @@ import { PrismaService } from './prisma/prisma.service';
 import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientErrorFilter } from './prisma/prismaHandlerError';
 import { ConfigModule } from '@nestjs/config';
+import { WorkflowModule } from './workflow/workflow.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    WorkflowModule,
     ConfigModule.forRoot({
       isGlobal: true, // Rendre les variables accessibles globalement
     }),

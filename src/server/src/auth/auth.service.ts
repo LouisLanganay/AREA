@@ -39,23 +39,28 @@ export class AuthService {
       throw new InternalServerErrorException('User not created');
     }
     await this.mailerService.sendEmail(
-      [user.data.email],
+      [user.email],
       'Inscription',
-      `Bonjour ${user.data.username}, vous vous êtes inscrit à ${new Date().toISOString()}`,
+      `Bonjour ${user.username}, vous vous êtes inscrit à ${new Date().toISOString()}`,
     );
-    return { message: user.message };
+    return this.jwtService.sign({ id: user.id });
   }
 
   async login(loginUserDto: LoginUserDto) {
     const user = await this.usersService.findForLogin(loginUserDto.id);
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException({
+        err_code: 'USER_NOT_FOUND',
+      });
+    }
+    if (!user.password) {
+      throw new UnauthorizedException({ err_code: 'USER_NOT_LOCAL_REG' });
     }
     const passwordMatch = await compare(loginUserDto.password, user.password);
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { email: user.email, id: user.id };
+    const payload = { id: user.id };
     await this.usersService.setLastConnection(user.id);
 
     await this.mailerService.sendEmail(
@@ -63,6 +68,26 @@ export class AuthService {
       'Connexion',
       `Bonjour ${user.email}, vous vous êtes connecté à ${new Date().toISOString()}`,
     );
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async UserGoogle(user: any) {
+    const userExist = await this.usersService.checkUserEmailExist(user.email);
+    console.log(userExist);
+    if (!userExist) {
+      const createUserDto = {
+        email: user.email,
+        username:
+          user.firstName + Math.floor(Math.random() * 100) + user.lastName,
+        displayName: user.firstName,
+      };
+      await this.usersService.registerExternal(createUserDto);
+    }
+    const userData = await this.usersService.findByEmail(user.email);
+    const payload = { id: userData.id };
+    await this.usersService.setLastConnection(payload.id);
     return {
       access_token: this.jwtService.sign(payload),
     };

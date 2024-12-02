@@ -17,6 +17,7 @@ export class PrismaClientErrorFilter implements ExceptionFilter {
         message: 'Email already exists',
       });
     } else {
+      console.error(exception);
       response.status(status).json({
         statusCode: status,
         message: 'Database actually unavailable',
