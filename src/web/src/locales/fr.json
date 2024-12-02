@@ -61,7 +61,10 @@
       "description": "Gérez les détails et les préférences de votre compte.",
       "avatar": {
         "change": "Changer d'avatar",
-        "alt": "Photo de profil"
+        "alt": "Photo de profil",
+        "upload": "Avatar",
+        "description": "Téléchargez une nouvelle photo de profil.",
+        "save": "Enregistrer"
       },
       "fields": {
         "name": "Nom",
@@ -72,8 +75,6 @@
       "languages": {
         "fr": "Français",
         "en": "Anglais",
-        "de": "Allemand",
-        "es": "Espagnol",
         "placeholder": "Sélectionnez une langue"
       }
     },
@@ -86,7 +87,11 @@
       },
       "fontSize": {
         "label": "Taille de la police",
-        "description": "Ajustez la taille de la police pour une meilleure lisibilité."
+        "description": "Ajustez la taille de la police pour une meilleure lisibilité.",
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande",
+        "xLarge": "Très grande"
       }
     },
     "notifications": {
@@ -152,5 +157,26 @@
         }
       }
     }
+  },
+  "workflows": {
+    "selectAll": "Tout sélectionner",
+    "selectRow": "Sélectionner une ligne",
+    "name": "Nom",
+    "enabled": "Activé",
+    "openMenu": "Ouvrir le menu",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "filterByName": "Filtrer par nom...",
+    "bulkActions": "Actions groupées",
+    "enableAll": "Tout activer",
+    "disableAll": "Tout désactiver",
+    "columns": "Colonnes",
+    "create": "Créer un Workflow",
+    "noResults": "Aucun résultat trouvé",
+    "selectedRows": "{{selected}} sur {{total}} lignes sélectionnées",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "apps": "Applications"
   }
 }

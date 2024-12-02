@@ -60,10 +60,10 @@ export default function Settings() {
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   const fontSizeOptions = [
-    { label: "Petit", value: 0.8 },
-    { label: "Normal", value: 1 },
-    { label: "Grand", value: 1.2 },
-    { label: "Très Grand", value: 1.5 },
+    { label: t("settings.appearance.fontSize.small"), value: 0.8 },
+    { label: t("settings.appearance.fontSize.medium"), value: 1 },
+    { label: t("settings.appearance.fontSize.large"), value: 1.2 },
+    { label: t("settings.appearance.fontSize.xLarge"), value: 1.5 },
   ];
 
   const handleAccountChanges = () => {
