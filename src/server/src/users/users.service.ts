@@ -7,8 +7,23 @@ export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(user: CreateUserDto) {
-    await this.prismaService.user.create({ data: user });
-    return { message: 'User registered successfully', data: user };
+    return await this.prismaService.user.create({ data: user });
+  }
+
+  async registerExternal(Data: {
+    email: string;
+    username: string;
+    displayName?: string;
+    avatarUrl?: string;
+  }) {
+    return this.prismaService.user.create({
+      data: {
+        email: Data.email,
+        username: Data.username,
+        displayName: Data.displayName,
+        avatarUrl: Data.avatarUrl,
+      },
+    });
   }
 
   async findByEmail(email: string) {
@@ -71,5 +86,10 @@ export class UsersService {
         lastConnection: new Date(),
       },
     });
+  }
+
+  async checkUserEmailExist(email: string): Promise<boolean> {
+    const user = await this.findByEmail(email);
+    return !!user;
   }
 }

@@ -5,9 +5,9 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
-import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
 import * as process from 'node:process';
+import { GoogleStrategy } from './google.strategy';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import * as process from 'node:process';
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, MailerService],
+  providers: [AuthService, JwtStrategy, MailerService, GoogleStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
