@@ -17,7 +17,7 @@ datasource db {
 model User {
   id             String     @id @default(uuid()) // Utilise un UUID comme identifiant unique
   email          String     @unique // Adresse email unique
-  password       String // Mot de passe
+  password       String? // Mot de passe
   username       String     @unique // Nom d'utilisateur unique
   displayName    String? // Optionnel
   avatarUrl      String? // URL de l'avatar, optionnel
@@ -25,6 +25,7 @@ model User {
   createdAt      DateTime   @default(now()) // Date de création, générée automatiquement
   updatedAt      DateTime   @updatedAt // Date de dernière mise à jour, mise à jour automatiquement
   lastConnection DateTime? // Dernière connexion de l'utilisateur, optionnel
+  tokens         Token[]
 
   @@map("users") // Nom personnalisé pour la table dans la base de données (facultatif)
 }
@@ -43,6 +44,7 @@ model Node {
   variables   Json? // Variables associées (facultatif)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  Token       Token[]
 }
 
 model Workflow {
@@ -56,4 +58,17 @@ model Workflow {
   nodes       Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Token {
+  id           Int       @id @default(autoincrement())
+  provider     String // Nom du fournisseur, par exemple "google", "github"
+  accessToken  String // Token d'accès pour l'API du fournisseur
+  refreshToken String? // Token de rafraîchissement (peut être null si non fourni par le fournisseur)
+  expiresAt    DateTime? // Date d'expiration du token d'accès
+  userId       String // Relation avec le modèle User
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  Node         Node?     @relation(fields: [nodeId], references: [id])
+  nodeId       String?
 }
