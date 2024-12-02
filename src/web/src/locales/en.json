@@ -61,7 +61,10 @@
       "description": "Manage your account details and preferences.",
       "avatar": {
         "change": "Change Avatar",
-        "alt": "Profile Picture"
+        "alt": "Profile Picture",
+        "upload": "Avatar",
+        "description": "Upload a new profile picture.",
+        "save": "Save"
       },
       "fields": {
         "name": "Name",
@@ -84,7 +87,11 @@
       },
       "fontSize": {
         "label": "Font Size",
-        "description": "Adjust the font size for better readability."
+        "description": "Adjust the font size for better readability.",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "xLarge": "Extra Large"
       }
     },
     "notifications": {
