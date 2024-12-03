@@ -33,22 +33,17 @@ export class AuthService {
   async register(createUserDto: CreateUserDto) {
     // check if the mail is core
     createUserDto.password = await this.hashPassword(createUserDto.password);
-    console.log(createUserDto);
     const user = await this.usersService.create(createUserDto);
     if (!user) {
       throw new InternalServerErrorException('User not created');
     }
-    await this.mailerService.sendEmail(
-      [user.email],
-      'Inscription',
-      `Bonjour ${user.username}, vous vous êtes inscrit à ${new Date().toISOString()}`,
-    );
+    await this.sendRegisterEmail(user);
     return this.jwtService.sign({ id: user.id });
   }
 
   async login(loginUserDto: LoginUserDto) {
     const user = await this.usersService.findForLogin(loginUserDto.id);
-    if (!user) {
+    if (!user || user.provider !== 'local') {
       throw new UnauthorizedException({
         err_code: 'USER_NOT_FOUND',
       });
@@ -63,29 +58,60 @@ export class AuthService {
     const payload = { id: user.id };
     await this.usersService.setLastConnection(user.id);
 
-    await this.mailerService.sendEmail(
-      [user.email],
-      'Connexion',
-      `Bonjour ${user.email}, vous vous êtes connecté à ${new Date().toISOString()}`,
-    );
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
   async UserGoogle(user: any) {
-    const userExist = await this.usersService.checkUserEmailExist(user.email);
-    console.log(userExist);
+    const userExist = await this.usersService.checkUserEmailExist(
+      user.email,
+      'google',
+    );
     if (!userExist) {
       const createUserDto = {
         email: user.email,
-        username:
-          user.firstName + Math.floor(Math.random() * 100) + user.lastName,
+        username: await this.usersService.getUnusedUsername(user.firstName),
         displayName: user.firstName,
+        provider: 'google',
+        avatarUrl: user.picture,
       };
       await this.usersService.registerExternal(createUserDto);
+      await this.sendRegisterEmail(createUserDto, 'google');
     }
-    const userData = await this.usersService.findByEmail(user.email);
+    const userData = await this.usersService.findByEmail(user.email, 'google');
+    const payload = { id: userData.id };
+    await this.usersService.setLastConnection(payload.id);
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
+  async UserDiscord(user: any) {
+    const userExist = await this.usersService.checkUserEmailExist(
+      user.email,
+      'discord',
+    );
+    if (!userExist) {
+      let avatar = null;
+      if (user.avatar)
+        avatar =
+          'https://cdn.discordapp.com/avatars/' +
+          user.id +
+          '/' +
+          user.avatar +
+          '.png';
+      const createUserDto = {
+        email: user.email,
+        username: await this.usersService.getUnusedUsername(user.username),
+        displayName: user.username,
+        avatarUrl: avatar,
+        provider: 'discord',
+      };
+      await this.usersService.registerExternal(createUserDto);
+      await this.sendRegisterEmail(createUserDto, 'discord');
+    }
+    const userData = await this.usersService.findByEmail(user.email, 'discord');
     const payload = { id: userData.id };
     await this.usersService.setLastConnection(payload.id);
     return {
@@ -100,5 +126,17 @@ export class AuthService {
     //   }
     //   // Implémentation de l'envoi d'email ou autre méthode pour gérer le mot de passe oublié
     //   return { message: 'Password reset link sent to your email' };
+  }
+
+  async sendRegisterEmail(
+    user: { email: string; username: string },
+    via?: string,
+  ) {
+    if (!via) via = 'local';
+    await this.mailerService.sendEmail(
+      [user.email],
+      'Inscription',
+      `Bonjour ${user.username}, vous vous êtes inscrit à ${new Date().toISOString()} via ${via}`,
+    );
   }
 }
