@@ -123,12 +123,6 @@ export function UserInfo({
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
-            <DropdownMenuItem
-              onClick={() => navigate('/settings')}
-            >
-              <Cog6ToothIcon className='size-4' />
-              <span>{t('sidebar.items.settings')}</span>
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={logout}>
               <ArrowLeftStartOnRectangleIcon className='size-4' />
               <span>{t('sidebar.items.logout')}</span>
