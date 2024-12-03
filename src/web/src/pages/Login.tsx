@@ -4,10 +4,14 @@ import GoogleIcon from '@/assets/google-icon.svg';
 import GitHubIcon from '@/assets/github-icon.svg';
 import DiscordIcon from '@/assets/discord-icon.svg';
 import AppleIcon from '@/assets/apple-icon.svg';
-import { useState } from 'react';
 import { useAuth } from '@/auth/AuthContext';
-import { loginUser } from '@/auth/authService';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { login_response } from '../../../shared/user/login_register_forgot';
+import { login as loginApi } from '@/api/Auth';
+import { useState } from 'react';
 
 const providers = [
   {
@@ -28,18 +32,29 @@ const providers = [
   }
 ];
 
+// Define the login schema
+const loginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+type LoginSchema = z.infer<typeof loginSchema>;
+
 export default function Login() {
-  const [email, setEmail] = useState('test@test.com');
-  const [password, setPassword] = useState('test');
-  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema)
+  });
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginSchema) => {
     try {
-      const token = await loginUser();
-      login(token);
+      const response: login_response = await loginApi({
+        id: data.email,
+        password: data.password,
+      });
+      login(response.access_token);
       navigate('/');
     } catch {
       setError('Failed to login');
@@ -74,7 +89,7 @@ export default function Login() {
           <hr className='flex-1' />
         </div>
 
-        <form className='mt-8 space-y-4' onSubmit={handleSubmit}>
+        <form className='mt-8 space-y-4' onSubmit={handleSubmit(onSubmit)}>
           {error && <div className="text-red-500 text-sm">{error}</div>}
           <div className='space-y-4'>
             <div>
@@ -82,15 +97,14 @@ export default function Login() {
                 Email address
               </label>
               <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                id='email'
-                name='email'
+                {...register('email')}
                 type='email'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your email'
               />
+              {errors.email && (
+                <p className='text-sm text-red-500 mt-1'>{errors.email.message}</p>
+              )}
             </div>
 
             <div>
@@ -98,15 +112,14 @@ export default function Login() {
                 Password
               </label>
               <input
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                id='password'
-                name='password'
+                {...register('password')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your password'
               />
+              {errors.password && (
+                <p className='text-sm text-red-500 mt-1'>{errors.password.message}</p>
+              )}
             </div>
           </div>
 
