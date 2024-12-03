@@ -5,6 +5,7 @@ import {
   HttpCode,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -12,6 +13,7 @@ import { LoginUserDto } from '../users/dto/login-user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
+import * as process from 'node:process';
 
 @Controller('auth')
 export class AuthController {
@@ -35,16 +37,35 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
-    console.log('googleAuth: ', req);
+  async googleAuth() {
     // Cette méthode redirige vers Google pour l'authentification
   }
 
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req) {
-    // Une fois redirigé, cette méthode traite les informations de l'utilisateur
+    const token = await this.authService.UserGoogle(req.user);
+    return this.redirectFrontend(req.res, token);
+  }
 
-    return this.authService.UserGoogle(req.user);
+  private async redirectFrontend(res, token) {
+    const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
+
+    res.body = {
+      access_token: token,
+    };
+    return res.redirect(frontendRedirectUrl);
+  }
+  @Get('discord')
+  @UseGuards(AuthGuard('discord'))
+  async discordAuth() {
+    // Cette méthode redirige vers Discord pour l'authentification
+  }
+
+  @Get('discord/redirect')
+  @UseGuards(AuthGuard('discord'))
+  async discordAuthRedirect(@Req() req, @Res() res) {
+    const token = await this.authService.UserDiscord(req.user);
+    return this.redirectFrontend(res, token);
   }
 }

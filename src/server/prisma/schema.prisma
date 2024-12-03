@@ -16,11 +16,12 @@ datasource db {
 
 model User {
   id             String     @id @default(uuid()) // Utilise un UUID comme identifiant unique
-  email          String     @unique // Adresse email unique
+  email          String // Adresse email
   password       String? // Mot de passe
   username       String     @unique // Nom d'utilisateur unique
   displayName    String? // Optionnel
   avatarUrl      String? // URL de l'avatar, optionnel
+  provider       String?    @default("local") // Nom du fournisseur d'authentification (ex: "google", "github")
   workflows      Workflow[] // Relation avec les workflows
   createdAt      DateTime   @default(now()) // Date de création, générée automatiquement
   updatedAt      DateTime   @updatedAt // Date de dernière mise à jour, mise à jour automatiquement
