@@ -207,6 +207,35 @@
       "iterate": "Iterate.",
       "scale": "Scale."
     },
-    "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone."
+    "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
+    "team": {
+      "title": "Meet our team",
+      "description": "We're a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.",
+      "roles": {
+        "frontend": "Frontend Developer",
+        "backend": "Backend Developer",
+        "backendAndDevOps": "Backend Developer and DevOps"
+      }
+    },
+    "features": {
+      "title": "Automate your workflows",
+      "subtitle": "Everything you need to automate your workflows",
+      "mobile": {
+        "title": "Mobile friendly",
+        "description": "Our mobile app is designed to be user-friendly and easy to use, with a focus on simplicity and efficiency."
+      },
+      "performance": {
+        "title": "Performance",
+        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays."
+      },
+      "scalability": {
+        "title": "Scalability",
+        "description": "Create unlimited workflows and automate as many tasks as you need. Our platform grows with your automation needs."
+      },
+      "connect": {
+        "title": "Connect Your Apps",
+        "description": "Seamlessly integrate your favorite apps like Discord, YouTube, and Google services. Create powerful automated workflows that work together."
+      }
+    }
   }
 }
