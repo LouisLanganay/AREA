@@ -8,6 +8,10 @@ import Home from './pages/Home';
 import AdminPanel from './pages/AdminPanel';
 import Services from './pages/Services';
 import Workflows from './pages/Workflows';
+import { ThemeProvider } from './context/ThemeContext';
+import EditWorkflow from './pages/EditWorkflow';
+import Settings from './pages/Settings';
+import { FontScaleProvider } from './context/FontScaleContext';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -114,29 +118,31 @@ function App() {
                 }
               />
 
-          <Route
-            path='/workflows'
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Workflows />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
+              <Route
+                path='/workflows'
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Workflows />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
 
-          <Route
-            path='/workflows/:id'
-            element={
-              <ProtectedRoute>
-                <Layout header={false} padding={false}>
-                  <EditWorkflow />
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+              <Route
+                path='/workflows/:id'
+                element={
+                  <ProtectedRoute>
+                    <Layout header={false} padding={false}>
+                      <EditWorkflow />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </FontScaleProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

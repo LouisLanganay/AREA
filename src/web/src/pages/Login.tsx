@@ -6,9 +6,9 @@ import DiscordIcon from '@/assets/discord-icon.svg';
 import AppleIcon from '@/assets/apple-icon.svg';
 import { useState } from 'react';
 import { useAuth } from '@/auth/AuthContext';
-import { loginUser } from '@/auth/authService';
 import { useNavigate } from 'react-router-dom';
-
+import { login as loginUser } from '@/api/Auth';
+import { login_response } from '../../../shared/user/login_register_forgot';
 const providers = [
   {
     name: 'Google',
@@ -38,8 +38,11 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = await loginUser();
-      login(token);
+      const data: login_response = await loginUser({
+        id: email,
+        password
+      });
+      login(data.access_token);
       navigate('/');
     } catch {
       setError('Failed to login');

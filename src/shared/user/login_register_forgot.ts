@@ -1,9 +1,13 @@
-interface login {
+interface login_request {
     id: string; // email or username
     password: string;
 }
 
-interface register {
+interface login_response {
+    access_token: string;
+}
+
+interface register_request {
     email: string;
     username: string;
     password: string;
@@ -11,7 +15,18 @@ interface register {
     avatarUrl?: string;
 }
 
+interface register_response {
+    access_token: string;
+}
+
 interface forgot {
     email: string;
 }
 
+export type {
+    login_request,
+    login_response,
+    register_request,
+    register_response,
+    forgot
+};

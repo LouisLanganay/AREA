@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import GoogleIcon from '@/assets/google-icon.svg';
 import GitHubIcon from '@/assets/github-icon.svg';
 import DiscordIcon from '@/assets/discord-icon.svg';
@@ -8,6 +8,8 @@ import { register } from '@/api/Auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { register_response } from '../../../shared/user/login_register_forgot';
+import { useAuth } from '@/auth/AuthContext';
 
 const providers = [
   {
@@ -42,6 +44,8 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function Register() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -54,7 +58,13 @@ export default function Register() {
 
   const handleSubmit = async (values: RegisterFormValues) => {
     try {
-      await register(values.email, values.password, values.username);
+      const data: register_response = await register({
+        email: values.email,
+        password: values.password,
+        username: values.username
+      });
+      login(data.access_token);
+      navigate('/');
     } catch (error) {
       console.error(error);
     }
