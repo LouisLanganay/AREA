@@ -1,6 +1,8 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -9,8 +11,11 @@ import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { v4 as uuidv4 } from 'uuid';
 import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { MailerService } from '../mailer/mailer.service';
+import * as process from 'node:process';
+import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +40,7 @@ export class AuthService {
     createUserDto.password = await this.hashPassword(createUserDto.password);
     const user = await this.usersService.create(createUserDto);
     if (!user) {
-      throw new InternalServerErrorException('User not created');
+      throw new InternalServerErrorException({ err_code: 'USER_NOT_CREATED' });
     }
     await this.sendRegisterEmail(user);
     return {
@@ -121,13 +126,42 @@ export class AuthService {
     };
   }
 
-  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    //   const user = await this.usersService.findByEmail(forgotPasswordDto.email);
-    //   if (!user) {
-    //     throw new UnauthorizedException('User not found');
-    //   }
-    //   // Implémentation de l'envoi d'email ou autre méthode pour gérer le mot de passe oublié
-    //   return { message: 'Password reset link sent to your email' };
+  async forgotPassword(email: string) {
+    const user = await this.usersService.findByEmail(email, 'local');
+
+    if (!user) {
+      throw new NotFoundException({
+        err_code: 'USER_NOT_FOUND',
+      });
+    }
+
+    const token = uuidv4();
+
+    if (!process.env.IP_FRONT) {
+      throw new InternalServerErrorException({
+        err_code: 'INTERNAL_FRONT_URL',
+      });
+    }
+    await this.usersService.resetOtherResetRequest(user.id);
+    console.log(user);
+    await this.usersService.createResetPassword(user.id, token);
+
+    const resetLink =
+      process.env.IP_FRONT + 'reset-password' + '?token=' + token;
+    const isSend = await this.mailerService.sendEmailWithTemplate(
+      [user.email],
+      'Réinitialisation de mot de passe',
+      'forgot_password',
+      { resetLink: resetLink, websiteLink: process.env.IP_FRONT },
+    );
+    if (isSend) {
+      throw new InternalServerErrorException({
+        message: 'Error sending email please try again or contact support',
+      });
+    }
+    return {
+      message: 'Email sent',
+    };
   }
 
   async sendRegisterEmail(
@@ -135,10 +169,44 @@ export class AuthService {
     via?: string,
   ) {
     if (!via) via = 'local';
-    await this.mailerService.sendEmail(
+    await this.mailerService.sendEmailWithTemplate(
       [user.email],
       'Inscription',
-      `Bonjour ${user.username}, vous vous êtes inscrit à ${new Date().toISOString()} via ${via}`,
+      'register',
+      {
+        firstName: user.username,
+        websiteLink: process.env.IP_FRONT,
+      },
     );
+  }
+
+  async resetPassword(data: ResetPasswordDto) {
+    const reset = await this.usersService.findToken(data.token);
+    if (!reset) {
+      throw new NotFoundException({ err_code: 'INVALID_TOKEN' });
+    }
+    if (reset.used) {
+      throw new BadRequestException({ err_code: 'TOKEN_EXPIRED' });
+    }
+    if (reset.expiresAt < new Date()) {
+      throw new NotFoundException({ err_code: 'Token expired' });
+    }
+    const hash = await this.hashPassword(data.password);
+    const user = await this.usersService.resetPassword(reset.userId, hash);
+    await this.usersService.resetToken(data.token);
+    if (!user) {
+      throw new NotFoundException({
+        err_code: "Employee requested doesn't exist",
+      });
+    }
+    await this.mailerService.sendEmailWithTemplate(
+      [user.email],
+      'Mot de passe Linkit réinitialisé avec succès',
+      'reset_password',
+      { username: user.username },
+    );
+    return {
+      message: 'Password reset',
+    };
   }
 }

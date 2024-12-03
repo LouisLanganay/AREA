@@ -11,7 +11,12 @@ interface register {
     avatarUrl?: string;
 }
 
-interface forgot {
+interface forgotRequest {
     email: string;
+}
+
+interface resetRequest {
+    password: string;
+    token: string;
 }
 
