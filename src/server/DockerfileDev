@@ -1,15 +1,23 @@
 FROM node:21.7.0
 
+# Installer Redis
+RUN apt-get update && apt-get install -y redis-server
+
+# Définir le dossier de travail
 WORKDIR /server
 
+# Copier les fichiers package.json et installer les dépendances
 COPY package*.json ./
-
 RUN npm i
 
-COPY  . .
+# Copier le reste des fichiers
+COPY . .
 
-EXPOSE 8080
-
+# Rendre le script de démarrage exécutable
 RUN chmod +x startup.sh
 
-CMD ["sh", "startup.sh"]
+# Exposer les ports nécessaires
+EXPOSE 8080 6379
+
+# Commande pour démarrer Redis et l'application Node.js
+CMD ["sh", "-c", "redis-server --daemonize yes --protected-mode no && sh startup.sh"]

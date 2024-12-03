@@ -9,6 +9,8 @@ import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientErrorFilter } from './prisma/prismaHandlerError';
 import { ConfigModule } from '@nestjs/config';
 import { WorkflowModule } from './workflow/workflow.module';
+import { BullModule } from '@nestjs/bullmq';
+import { WebhookModule } from './discordWebhook/discord-webhook.module';
 
 @Module({
   imports: [
@@ -16,8 +18,15 @@ import { WorkflowModule } from './workflow/workflow.module';
     UsersModule,
     WorkflowModule,
     ConfigModule.forRoot({
-      isGlobal: true, // Rendre les variables accessibles globalement
+      isGlobal: true,
     }),
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    WebhookModule,
   ],
   controllers: [AppController, AboutController],
   providers: [
