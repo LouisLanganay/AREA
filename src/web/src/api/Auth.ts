@@ -20,8 +20,6 @@ export const register = async (
   if (response.status !== 201)
     throw new Error('Failed to register');
 
-  console.log(response.data);
-
   return response.data;
 };
 
