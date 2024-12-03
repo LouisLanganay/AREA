@@ -4,6 +4,13 @@ import GoogleIcon from '@/assets/google-icon.svg';
 import GitHubIcon from '@/assets/github-icon.svg';
 import DiscordIcon from '@/assets/discord-icon.svg';
 import AppleIcon from '@/assets/apple-icon.svg';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { register as registerApi } from '@/api/Auth';
+import { useNavigate } from 'react-router-dom';
+import { register_response } from '../../../shared/user/login_register_forgot';
+import { useAuth } from '@/auth/AuthContext';
 
 const providers = [
   {
@@ -24,7 +31,42 @@ const providers = [
   }
 ];
 
+const registerSchema = z.object({
+  username: z.string().min(1, 'Username is required'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type RegisterSchema = z.infer<typeof registerSchema>;
+
 export default function Register() {
+  const { login } = useAuth();
+
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchema>({
+    resolver: zodResolver(registerSchema)
+  });
+
+  const onSubmit = async (data: RegisterSchema) => {
+    try {
+      const response: register_response = await registerApi({
+        email: data.email,
+        password: data.password,
+        username: data.username,
+      });
+
+      login(response.access_token);
+
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
+  };
+
   return (
     <div className='flex min-h-screen items-center justify-center'>
       <div className='w-full max-w-md space-y-3 p-8'>
@@ -53,20 +95,20 @@ export default function Register() {
           <hr className='flex-1' />
         </div>
 
-        <form className='mt-8 space-y-4'>
+        <form className='mt-8 space-y-4' onSubmit={handleSubmit(onSubmit)}>
           <div className='space-y-4'>
             <div>
               <label htmlFor='username' className='block text-sm font-medium'>
                 Username
               </label>
               <input
-                id='username'
-                name='username'
-                type='text'
-                required
+                {...register('username')}
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your username'
               />
+              {errors.username && (
+                <p className='text-sm text-red-500 mt-1'>{errors.username.message}</p>
+              )}
             </div>
 
             <div>
@@ -74,13 +116,14 @@ export default function Register() {
                 Email address
               </label>
               <input
-                id='email'
-                name='email'
+                {...register('email')}
                 type='email'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your email'
               />
+              {errors.email && (
+                <p className='text-sm text-red-500 mt-1'>{errors.email.message}</p>
+              )}
             </div>
 
             <div>
@@ -88,13 +131,14 @@ export default function Register() {
                 Password
               </label>
               <input
-                id='password'
-                name='password'
+                {...register('password')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Enter your password'
               />
+              {errors.password && (
+                <p className='text-sm text-red-500 mt-1'>{errors.password.message}</p>
+              )}
             </div>
 
             <div>
@@ -102,13 +146,14 @@ export default function Register() {
                 Confirm Password
               </label>
               <input
-                id='confirmPassword'
-                name='confirmPassword'
+                {...register('confirmPassword')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder='Confirm your password'
               />
+              {errors.confirmPassword && (
+                <p className='text-sm text-red-500 mt-1'>{errors.confirmPassword.message}</p>
+              )}
             </div>
           </div>
 

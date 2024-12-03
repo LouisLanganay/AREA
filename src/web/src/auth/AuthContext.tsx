@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { User } from '../../../shared/Users';
+import { getMe_response } from '../../../shared/user/user_route';
+import { getMe } from '@/api/User';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -17,16 +19,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null
   );
 
-  const login = (newToken: string) => {
-    const data: User = {
-      id: '1',
-      email: 'test@test.com',
-      displayName: 'Test User',
-      username: 'test',
-      createdAt: 0,
-      updatedAt: 0,
-      avatarUrl: 'https://i.pinimg.com/736x/0d/80/97/0d8097710f3027186444099111c6f93f.jpg',
-    };
+  const login = async (newToken: string) => {
+    const data: getMe_response = await getMe(newToken);
+    console.log(data);
     setToken(newToken);
     setUser(data);
     localStorage.setItem('token', newToken);

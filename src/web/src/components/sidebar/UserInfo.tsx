@@ -37,19 +37,25 @@ export function UserInfo({
                 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground border'
               )}
             >
-              <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden'>
-                <img
-                  src={user?.avatarUrl}
-                  alt={user?.username}
-                  className="h-full w-full object-cover"
-                />
+              <div className='flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
+                {user?.avatarUrl ? (
+                  <img
+                    src={user?.avatarUrl}
+                    alt={user?.username}
+                    className='h-full w-full object-cover'
+                  />
+                ) : (
+                  <span className='text-xs size-8 flex items-center justify-center'>
+                    {user?.username.slice(0, 2).toUpperCase()}
+                  </span>
+                )}
               </div>
               <div className='flex flex-col gap-0.5 leading-none'>
                 <span className='font-semibold'>
-                  {user?.displayName}
+                  {user?.displayName || user?.username}
                 </span>
                 <span className='text-xs text-muted-foreground'>
-                  id#{user?.id}
+                  {user?.email}
                 </span>
               </div>
               <ChevronUpDownIcon className='ml-auto' />
