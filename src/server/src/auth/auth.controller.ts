@@ -50,10 +50,6 @@ export class AuthController {
 
   private async redirectFrontend(res, token) {
     const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
-
-    res.body = {
-      access_token: token,
-    };
     return res.redirect(frontendRedirectUrl);
   }
   @Get('discord')

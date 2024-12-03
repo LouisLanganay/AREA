@@ -26,7 +26,7 @@ export class AuthService {
       return hashed;
     } catch (error) {
       console.error('Erreur lors du hachage du mot de passe :', error);
-      throw new InternalServerErrorException('Password hashing failed');
+      throw new InternalServerErrorException({ err_code: 'HACH_FAIL' });
     }
   }
 
@@ -38,7 +38,9 @@ export class AuthService {
       throw new InternalServerErrorException('User not created');
     }
     await this.sendRegisterEmail(user);
-    return this.jwtService.sign({ id: user.id });
+    return {
+      access_token: this.jwtService.sign({ id: user.id }),
+    };
   }
 
   async login(loginUserDto: LoginUserDto) {
