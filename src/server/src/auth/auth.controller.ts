@@ -14,6 +14,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as process from 'node:process';
+import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,8 +32,9 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @HttpCode(200)
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
+    await this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
   @Get('google')
@@ -63,5 +65,11 @@ export class AuthController {
   async discordAuthRedirect(@Req() req, @Res() res) {
     const token = await this.authService.UserDiscord(req.user);
     return this.redirectFrontend(res, token);
+  }
+
+  @HttpCode(200)
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body);
   }
 }

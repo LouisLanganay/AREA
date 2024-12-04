@@ -11,6 +11,15 @@ interface register_request {
     avatarUrl?: string;
 }
 
+interface forgotRequest {
+    email: string;
+}
+
+interface resetRequest {
+    password: string;
+    token: string;
+}
+
 interface login_response {
     access_token: string;
 }

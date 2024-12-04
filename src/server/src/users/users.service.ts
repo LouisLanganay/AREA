@@ -159,4 +159,53 @@ export class UsersService {
     }
     return username;
   }
+
+  async resetOtherResetRequest(userID: string) {
+    await this.prismaService.passwordReset.updateMany({
+      where: {
+        userId: userID,
+        used: false,
+      },
+      data: {
+        used: true,
+      },
+    });
+  }
+
+  async createResetPassword(userId: string, token: string) {
+    await this.prismaService.passwordReset.create({
+      data: {
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 2),
+        token,
+        userId: userId,
+        used: false,
+      },
+    });
+  }
+
+  async findToken(token: string) {
+    return this.prismaService.passwordReset.findUnique({
+      where: {
+        token,
+      },
+    });
+  }
+
+  async resetToken(token: string) {
+    this.prismaService.passwordReset.update({
+      where: { token: token },
+      data: { used: true },
+    });
+  }
+
+  async resetPassword(userId: string, newPassword: string) {
+    return this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
+  }
 }
