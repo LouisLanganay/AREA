@@ -20,8 +20,7 @@ export class PrismaClientErrorFilter implements ExceptionFilter {
     } else {
       console.error(exception);
       response.status(status).json({
-        statusCode: status,
-        message: 'Database actually unavailable',
+        err_code: 'DB_UNAVAILABLE',
       });
     }
   }

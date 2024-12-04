@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
@@ -8,24 +9,46 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
+  @ApiProperty({
+    description: "User's email address",
+    example: 'user@example.com',
+  })
   @IsEmail()
   @IsNotEmpty()
-  readonly email: string; // Adresse email obligatoire et unique
+  readonly email: string;
 
+  @ApiProperty({
+    description: "User's password (minimum 6 characters)",
+    example: 'password123',
+  })
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
-  password: string; // Mot de passe obligatoire
+  password: string;
 
+  @ApiProperty({
+    description: 'Unique username for the user',
+    example: 'username123',
+  })
   @IsString()
   @IsNotEmpty()
-  readonly username: string; // Nom d'utilisateur obligatoire et unique
+  readonly username: string;
 
+  @ApiProperty({
+    description: 'Display name for the user (optional)',
+    example: 'John Doe',
+    required: false,
+  })
   @IsOptional()
   @IsString()
-  readonly displayName?: string; // Nom d'affichage optionnel
+  readonly displayName?: string;
 
+  @ApiProperty({
+    description: "URL of the user's avatar (optional)",
+    example: 'https://example.com/avatar.png',
+    required: false,
+  })
   @IsOptional()
   @IsUrl()
-  readonly avatarUrl?: string; // URL de l'avatar optionnelle
+  readonly avatarUrl?: string;
 }
