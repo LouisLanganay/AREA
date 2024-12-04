@@ -1,0 +1,15 @@
+meta {
+  name: deleteUserConnected
+  type: http
+  seq: 6
+}
+
+delete {
+  url: http://localhost:8080/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMzNjI5NmI1LTE2ZjMtNDFlYi1hZDNmLTMyMjNjZTQ1ZTI1YyIsImlhdCI6MTczMzMyOTc3NiwiZXhwIjoxNzMzMzMzMzc2fQ.rXNpDgXmbq02vvZhb9v4-F4dYElmKbn9mtdGiI3496g
+}
