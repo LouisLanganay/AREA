@@ -42,7 +42,9 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
-      "logout": "Logout"
+      "logout": "Logout",
+      "addAccount": "Add Account",
+      "currentAccount": "Current"
     }
   },
   "settings": {
@@ -204,5 +206,56 @@
     "nodeAddedDescription": "The node has been added to the workflow.",
     "save": "Save changes",
     "back": "Back"
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "description": "Enter your credentials below to login",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "email": "Email address",
+    "password": "Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "or": "OR",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "forgotPassword": "Forgot password?"
+  },
+  "register": {
+    "createAccount": "Create an account",
+    "fillInDetails": "Fill in your details to create a new account",
+    "username": "Username",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "usernamePlaceholder": "Enter your username",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "or": "OR",
+    "usernameRequired": "Username is required",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordsDontMatch": "Passwords don't match"
+  },
+  "error": {
+    "USER_NOT_FOUND": "User not found"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "email": "Email address",
+    "emailPlaceholder": "Enter your email",
+    "emailInvalid": "Invalid email address",
+    "resetPassword": "Reset password",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email",
+    "checkEmailDescription": "If an account exists for this email, you will receive a password reset link shortly."
   }
 }

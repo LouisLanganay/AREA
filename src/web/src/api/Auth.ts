@@ -6,12 +6,10 @@ import {
   register_response
 } from '../../../shared/user/login_register_forgot';
 
-const API_BASE_URL = 'http://localhost:8080';
-
 export const register = async (
   request: register_request
 ): Promise<register_response> => {
-  const response = await axios.post<any>(`${API_BASE_URL}/auth/register`, {
+  const response = await axios.post<any>(`${import.meta.env.VITE_API_URL}/auth/register`, {
     email: request.email,
     password: request.password,
     username: request.username,
@@ -27,7 +25,7 @@ export const register = async (
 export const login = async (
   request: login_request
 ): Promise<login_response> => {
-  const response = await axios.post<any>(`${API_BASE_URL}/auth/login`, {
+  const response = await axios.post<any>(`${import.meta.env.VITE_API_URL}/auth/login`, {
     id: request.id,
     password: request.password,
   });
@@ -37,4 +35,8 @@ export const login = async (
   }
 
   return response.data;
+};
+
+export const forgotPassword = async (data: { email: string }) => {
+  return await axios.post('/api/auth/forgot-password', data);
 };
