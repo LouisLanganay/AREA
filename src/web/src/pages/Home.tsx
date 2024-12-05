@@ -13,7 +13,11 @@ import {
 import { Link } from 'react-router-dom';
 import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import DotPattern from '@/components/ui/dot-pattern';
-import { ArrowRightIcon, DevicePhoneMobileIcon, PlusIcon } from '@heroicons/react/24/solid';
+import {
+  ArrowRightIcon,
+  DevicePhoneMobileIcon,
+  RocketLaunchIcon
+} from '@heroicons/react/24/solid';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -157,10 +161,15 @@ export default function Home() {
           </NavigationMenu>
 
           <div className='flex-1 basis-0 flex items-center gap-4 justify-end'>
-            <Button variant='outline' onClick={() => navigate('/login')}>
+            <Button
+              variant='outline'
+              onClick={() => navigate('/login')}
+            >
               {t('home.auth.signin')}
             </Button>
-            <Button onClick={() => navigate('/register')}>
+            <Button
+              onClick={() => navigate('/register')}
+            >
               {t('home.auth.register')}
             </Button>
           </div>
@@ -326,6 +335,26 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+          <div className='flex flex-col justify-center gap-4 items-center text-center'>
+            <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-5xl max-w-xl'>
+              <span className='text-muted-foreground'>{t('home.cta.title1')} </span>{t('home.cta.title2')}
+            </h2>
+            <p className='text-lg sm:text-xl text-foreground font-medium max-w-md'>
+              {t('home.cta.description')}
+            </p>
+            <Button
+              variant='outline'
+              size='lg'
+              className='w-full sm:w-auto'
+              onClick={() => navigate('/workflows')}
+            >
+              {t('home.cta.button')}
+              <RocketLaunchIcon className='w-4 h-4' />
+            </Button>
           </div>
         </section>
       </div>

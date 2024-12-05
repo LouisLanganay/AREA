@@ -267,6 +267,12 @@
           "description": "Connect your Twitch account to automate your workflows and engage with your audience in real-time."
         }
       }
+    },
+    "cta": {
+      "title1": "Start automating",
+      "title2": "your workflows today.",
+      "description": "Create your first workflow in minutes with our easy workflow builder.",
+      "button": "Open Builder"
     }
   }
 }
