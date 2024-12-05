@@ -42,7 +42,9 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
-      "logout": "Logout"
+      "logout": "Logout",
+      "addAccount": "Add Account",
+      "currentAccount": "Current"
     }
   },
   "settings": {
@@ -61,7 +63,10 @@
       "description": "Manage your account details and preferences.",
       "avatar": {
         "change": "Change Avatar",
-        "alt": "Profile Picture"
+        "alt": "Profile Picture",
+        "upload": "Avatar",
+        "description": "Upload a new profile picture.",
+        "save": "Save"
       },
       "fields": {
         "name": "Name",
@@ -84,7 +89,11 @@
       },
       "fontSize": {
         "label": "Font Size",
-        "description": "Adjust the font size for better readability."
+        "description": "Adjust the font size for better readability.",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "xLarge": "Extra Large"
       }
     },
     "notifications": {
@@ -159,7 +168,6 @@
     "openMenu": "Open Menu",
     "actions": "Actions",
     "edit": "Edit",
-    "delete": "Delete",
     "filterByName": "Filter by name...",
     "bulkActions": "Bulk Actions",
     "enableAll": "Enable All",
@@ -170,7 +178,85 @@
     "selectedRows": "{{selected}} of {{total}} rows selected",
     "previous": "Previous",
     "next": "Next",
-    "apps": "Apps"
+    "apps": "Apps",
+    "runNow": "Run Now",
+    "disabled": "Disabled",
+    "delete": "Delete",
+    "confirmDeleteTitle": "Confirm deletion",
+    "confirmDelete": "Are you sure you want to delete the workflow '{{workflowName}}'?",
+    "linkCopied": "Link copied to clipboard",
+    "linkCopiedDescription": "You can now share the link to your workflow with others",
+    "updateErrorTitle": "Error updating workflow",
+    "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
+    "deleteErrorTitle": "Error deleting workflow",
+    "deleteErrorDescription": "An error occurred while deleting the workflow. Please try again.",
+    "typeNameToConfirm": "Type '{{workflowName}}' to confirm.",
+    "trigger": "Trigger",
+    "remove": "Remove Node",
+    "confirmRemove": "Confirm Remove ?",
+    "cancel": "Cancel",
+    "validationErrorTitle": "Validation Error",
+    "validationErrorDescription": "Please fill in all required fields.",
+    "invalidFields": "Error",
+    "resetNode": "Cancel Changes",
+    "searchServices": "Search Services...",
+    "nodeResetTitle": "Node Reset",
+    "nodeResetDescription": "Are you sure you want to reset the node?",
+    "nodeAddedTitle": "Node Added",
+    "nodeAddedDescription": "The node has been added to the workflow.",
+    "save": "Save changes",
+    "back": "Back"
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "description": "Enter your credentials below to login",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "email": "Email address",
+    "password": "Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "or": "OR",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "forgotPassword": "Forgot password?"
+  },
+  "register": {
+    "createAccount": "Create an account",
+    "fillInDetails": "Fill in your details to create a new account",
+    "username": "Username",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "usernamePlaceholder": "Enter your username",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "or": "OR",
+    "usernameRequired": "Username is required",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordsDontMatch": "Passwords don't match"
+  },
+  "error": {
+    "USER_NOT_FOUND": "User not found"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "email": "Email address",
+    "emailPlaceholder": "Enter your email",
+    "emailInvalid": "Invalid email address",
+    "resetPassword": "Reset password",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email",
+    "checkEmailDescription": "If an account exists for this email, you will receive a password reset link shortly."
   },
   "home": {
     "navigation": {

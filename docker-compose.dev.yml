@@ -1,30 +1,49 @@
 version: '3.8'
 
 services:
-  web_service:
+  client_web:
     container_name: linkit_web-service
     build:
       context: ./src/web/
       dockerfile: DockerfileDev
     ports:
-      - 8081:8081
+      - "8081:8081"
     volumes:
       - ./src/web:/web_service
       - ./src/shared:/shared
       - web_service_node_modules:/web_service/node_modules
+    depends_on:
+#      - client_mobile
+      - server
     command: >
       bash -c "
       npm install &&
       npm run build &&
-      cd android &&
-      ./gradlew assembleDebug &&
-      cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk src/ &&
       npm run dev
       "
 
+#  client_mobile:
+#    container_name: linkit_mobile-service
+#    build:
+#      context: ./src/web/
+#      dockerfile: DockerfileDev
+#    volumes:
+#      - ./src/web:/web_service
+#      - ./src/shared:/shared
+#      - mobile_service_node_modules:/web_service/node_modules
+#    command: >
+#      bash -c "
+#      npm install &&
+#      npm run build &&
+#      cd android &&
+#      ./gradlew assembleDebug &&
+#      cd .. &&
+#      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/ &&
+#      echo 'APK generated at /web_service/app-debug.apk'
+#      "
+
   database:
-    container_name: linkit_db
+    container_name: linkit_database
     image: mariadb:latest
     env_file:
       - .env
@@ -41,7 +60,7 @@ services:
       context: ./src/server/
       dockerfile: DockerfileDev
     ports:
-      - 8080:8080
+      - "8080:8080"
     volumes:
       - ./src/server:/server
       - ./src/shared:/shared
@@ -55,8 +74,8 @@ services:
 
 volumes:
   db-data:
+  mobile_service_node_modules:
   web_service_node_modules:
-    driver: local
 
 networks:
   app_network:

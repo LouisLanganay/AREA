@@ -3,11 +3,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
 import { UsersModule } from '../users/users.module';
-import { PrismaService } from '../prisma/prisma.service';
 import { MailerService } from '../mailer/mailer.service';
 import * as process from 'node:process';
+import { GoogleStrategy } from './strategy/google.strategy';
+import { DiscordStrategy } from './strategy/discord.strategy';
 
 @Module({
   imports: [
@@ -20,7 +21,13 @@ import * as process from 'node:process';
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, MailerService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    MailerService,
+    GoogleStrategy,
+    DiscordStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

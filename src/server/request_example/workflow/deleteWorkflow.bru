@@ -1,0 +1,15 @@
+meta {
+  name: deleteWorkflow
+  type: http
+  seq: 4
+}
+
+delete {
+  url: http://localhost:8080/workflows/e2d0c6fa-743f-4a70-95a0-c64189b46baf
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIyNWU2YzlhLTk2ZDEtNDE4MS1hYzJmLTc0MGJlNGVjNDZkOCIsImlhdCI6MTczMzA2NjYyMSwiZXhwIjoxNzMzMDcwMjIxfQ.Hf5TOg1uh59_NJlCd_0mZPSjxUA3Ast-6St7Qa3fScU
+}

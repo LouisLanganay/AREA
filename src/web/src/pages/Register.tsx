@@ -1,43 +1,78 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import GoogleIcon from '@/assets/google-icon.svg';
-import GitHubIcon from '@/assets/github-icon.svg';
-import DiscordIcon from '@/assets/discord-icon.svg';
-import AppleIcon from '@/assets/apple-icon.svg';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { register as registerApi } from '@/api/Auth';
+import { useNavigate } from 'react-router-dom';
+import { register_response } from '../../../shared/user/login_register_forgot';
+import { useAuth } from '@/auth/AuthContext';
+import { providers } from '@/utils/authProviders';
+import { error } from '../../../shared/error/error';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-const providers = [
-  {
-    name: 'Google',
-    icon: GoogleIcon
-  },
-  {
-    name: 'GitHub',
-    icon: GitHubIcon
-  },
-  {
-    name: 'Discord',
-    icon: DiscordIcon
-  },
-  {
-    name: 'Apple',
-    icon: AppleIcon
-  }
-];
 
 export default function Register() {
+  const { t } = useTranslation();
+  const registerSchema = z.object({
+    username: z.string().min(1, t('register.usernameRequired')),
+    email: z.string().email(t('register.emailInvalid')),
+    password: z.string().min(8, t('register.passwordMinLength')),
+    confirmPassword: z.string()
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('register.passwordsDontMatch'),
+    path: ["confirmPassword"],
+  });
+
+  type RegisterSchema = z.infer<typeof registerSchema>;
+  const { login } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchema>({
+    resolver: zodResolver(registerSchema)
+  });
+
+  const onSubmit = async (data: RegisterSchema) => {
+    setIsLoading(true);
+    try {
+      const response: register_response = await registerApi({
+        email: data.email,
+        password: data.password,
+        username: data.username,
+      });
+
+      login(response.access_token);
+      navigate('/');
+    } catch(error: any) {
+      const data = error.response.data as error;
+      setError(data.err_code);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className='flex min-h-screen items-center justify-center'>
       <div className='w-full max-w-md space-y-3 p-8'>
         <div className='text-center'>
-          <h2 className='text-3xl font-bold'>Create an account</h2>
+          <h2 className='text-3xl font-bold'>
+            {t('register.createAccount')}
+          </h2>
           <p className='mt-2 text-sm text-muted-foreground'>
-            Fill in your details to create your account
+            {t('register.fillInDetails')}
           </p>
         </div>
 
         <div className='flex flex-row items-center justify-center gap-2'>
           {providers.map(provider => (
-            <Button variant='outline' size='icon'>
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={() => window.location.href = provider.redirect || ''}
+            >
               <img
                 src={provider.icon}
                 alt={provider.name}
@@ -49,77 +84,88 @@ export default function Register() {
 
         <div className='flex flex-row items-center justify-center gap-2'>
           <hr className='flex-1' />
-          <span className='text-sm text-muted-foreground'>OR</span>
+          <span className='text-sm text-muted-foreground'>
+            {t('register.or')}
+          </span>
           <hr className='flex-1' />
         </div>
 
-        <form className='mt-8 space-y-4'>
+        <form className='mt-8 space-y-4' onSubmit={handleSubmit(onSubmit)}>
           <div className='space-y-4'>
             <div>
               <label htmlFor='username' className='block text-sm font-medium'>
-                Username
+                {t('register.username')}
               </label>
               <input
-                id='username'
-                name='username'
-                type='text'
-                required
+                {...register('username')}
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
-                placeholder='Enter your username'
+                placeholder={t('register.usernamePlaceholder')}
               />
+              {errors.username && (
+                <p className='text-sm text-red-500 mt-1'>{errors.username.message}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor='email' className='block text-sm font-medium'>
-                Email address
+                {t('register.email')}
               </label>
               <input
-                id='email'
-                name='email'
+                {...register('email')}
                 type='email'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
-                placeholder='Enter your email'
+                placeholder={t('register.emailPlaceholder')}
               />
+              {errors.email && (
+                <p className='text-sm text-red-500 mt-1'>{errors.email.message}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor='password' className='block text-sm font-medium'>
-                Password
+                {t('register.password')}
               </label>
               <input
-                id='password'
-                name='password'
+                {...register('password')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
-                placeholder='Enter your password'
+                placeholder={t('register.passwordPlaceholder')}
               />
+              {errors.password && (
+                <p className='text-sm text-red-500 mt-1'>{errors.password.message}</p>
+              )}
             </div>
 
             <div>
               <label htmlFor='confirmPassword' className='block text-sm font-medium'>
-                Confirm Password
+                {t('register.confirmPassword')}
               </label>
               <input
-                id='confirmPassword'
-                name='confirmPassword'
+                {...register('confirmPassword')}
                 type='password'
-                required
                 className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
-                placeholder='Confirm your password'
+                placeholder={t('register.confirmPasswordPlaceholder')}
               />
+              {errors.confirmPassword && (
+                <p className='text-sm text-red-500 mt-1'>{errors.confirmPassword.message}</p>
+              )}
             </div>
           </div>
 
-          <Button type='submit' className='w-full'>
-            Create account
+          {error && (
+            <p className='mt-2 text-sm text-red-500'>
+              {error}
+            </p>
+          )}
+
+          <Button type='submit' className='w-full' disabled={isLoading}>
+            {isLoading ? t('common.loading') : t('register.createAccount')}
           </Button>
         </form>
         <p className='text-sm text-muted-foreground'>
-          Already have an account?{' '}
+          {t('register.alreadyHaveAccount')}{' '}
           <Link to='/login' className='text-sm font-medium text-primary'>
-            Sign in
+            {t('register.signIn')}
           </Link>
         </p>
       </div>

@@ -54,12 +54,16 @@ export default function Settings() {
   const [notifications, setNotifications] = useState(true);
   const { toast } = useToast();
   const [language, setLanguage] = useState(i18n.language);
+  const [avatarUrl, setAvatarUrl] = useState(
+    "/placeholder.svg?height=80&width=80"
+  );
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   const fontSizeOptions = [
-    { label: "Petit", value: 0.8 },
-    { label: "Normal", value: 1 },
-    { label: "Grand", value: 1.2 },
-    { label: "Très Grand", value: 1.5 },
+    { label: t("settings.appearance.fontSize.small"), value: 0.8 },
+    { label: t("settings.appearance.fontSize.medium"), value: 1 },
+    { label: t("settings.appearance.fontSize.large"), value: 1.2 },
+    { label: t("settings.appearance.fontSize.xLarge"), value: 1.5 },
   ];
 
   const handleAccountChanges = () => {
@@ -86,8 +90,19 @@ export default function Settings() {
     });
   };
 
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
-    <div className="container mx-auto p-8">
+    <>
       <h1 className="text-3xl font-bold mb-6">{t("settings.title")}</h1>
       <Tabs defaultValue="account" className="space-y-4">
         <TabsList>
@@ -120,14 +135,61 @@ export default function Settings() {
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src="/placeholder.svg"
+                    src={avatarUrl}
                     alt={t("settings.account.avatar.alt")}
                   />
                   <AvatarFallback>
                     <User className="h-10 w-10" />
                   </AvatarFallback>
                 </Avatar>
-                <Button>{t("settings.account.avatar.change")}</Button>
+                <Dialog
+                  open={isAvatarDialogOpen}
+                  onOpenChange={setIsAvatarDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      onClick={() => {
+                        setIsAvatarDialogOpen(true);
+                      }}
+                    >
+                      {t("settings.account.avatar.change")}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>
+                        {t("settings.account.avatar.change")}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {t("settings.account.avatar.description")}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="avatar" className="text-right">
+                          {t("settings.account.avatar.upload")}
+                        </Label>
+                        <Input
+                          id="avatar"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        type="submit"
+                        onClick={() => {
+                          setIsAvatarDialogOpen(false);
+                        }}
+                      >
+                        {t("settings.account.avatar.save")}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="name">
@@ -467,6 +529,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
+    </>
   );
 }

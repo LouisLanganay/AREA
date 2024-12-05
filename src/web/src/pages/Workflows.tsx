@@ -280,7 +280,7 @@ export default function Workflows() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuLabel>{t('workflows.actions')}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`/workflows/edit/${workflow.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`/workflows/${workflow.id}`)}>
                 <PencilSquareIcon className='w-4 h-4' />
                 {t('workflows.edit')}
               </DropdownMenuItem>
@@ -332,7 +332,7 @@ export default function Workflows() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant='default'
+                  variant='destructiveOutline'
                   size='sm'
                 >
                   {t('workflows.bulkActions')}

@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -15,15 +15,72 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(uuid()) // Utilise un UUID comme identifiant unique
-  email          String    @unique // Adresse email unique
-  password       String // Mot de passe
-  username       String    @unique // Nom d'utilisateur unique
+  id             String          @id @default(uuid()) // Utilise un UUID comme identifiant unique
+  email          String // Adresse email
+  password       String? // Mot de passe
+  username       String          @unique // Nom d'utilisateur unique
   displayName    String? // Optionnel
   avatarUrl      String? // URL de l'avatar, optionnel
-  createdAt      DateTime  @default(now()) // Date de création, générée automatiquement
-  updatedAt      DateTime  @updatedAt // Date de dernière mise à jour, mise à jour automatiquement
+  provider       String?         @default("local") // Nom du fournisseur d'authentification (ex: "google", "github")
+  workflows      Workflow[] // Relation avec les workflows
+  createdAt      DateTime        @default(now()) // Date de création, générée automatiquement
+  updatedAt      DateTime        @updatedAt // Date de dernière mise à jour, mise à jour automatiquement
   lastConnection DateTime? // Dernière connexion de l'utilisateur, optionnel
+  tokens         Token[]
+  PasswordReset  PasswordReset[]
 
   @@map("users") // Nom personnalisé pour la table dans la base de données (facultatif)
+}
+
+model Node {
+  id          String   @id @default(uuid())
+  type        String // 'action' ou 'reaction'
+  name        String // Nom de l'action ou réaction (ex: "Send Email")
+  serviceName String // Nom du service (ex: "Email", "YouTube")
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id])
+  lastTrigger Int? // Dernier timestamp de déclenchement (facultatif)
+  dependsOn   String? // Référence au node parent (facultatif)
+  fieldGroups Json // Stocke les FieldGroup sous forme JSON
+  conditions  Json? // Conditions associées (facultatif)
+  variables   Json? // Variables associées (facultatif)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Token       Token[]
+}
+
+model Workflow {
+  id          String   @id @default(uuid())
+  userId      String // Clé étrangère vers la table User
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String
+  image       String
+  enabled     Boolean  @default(true) // Indique si le workflow est actif ou non
+  nodes       Node[] // Relation avec les nodes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Token {
+  id           Int       @id @default(autoincrement())
+  provider     String // Nom du fournisseur, par exemple "google", "github"
+  accessToken  String // Token d'accès pour l'API du fournisseur
+  refreshToken String? // Token de rafraîchissement (peut être null si non fourni par le fournisseur)
+  expiresAt    DateTime? // Date d'expiration du token d'accès
+  userId       String // Relation avec le modèle User
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  Node         Node?     @relation(fields: [nodeId], references: [id])
+  nodeId       String?
+}
+
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
