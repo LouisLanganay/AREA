@@ -236,6 +236,37 @@
         "title": "Connect Your Apps",
         "description": "Seamlessly integrate your favorite apps like Discord, YouTube, and Google services. Create powerful automated workflows that work together."
       }
+    },
+    "stack": {
+      "title1": "Integrate",
+      "title2": "automations with multiple services.",
+      "description": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations.",
+      "services": {
+        "discord": {
+          "title": "Discord",
+          "description": "Connect your Discord account to automate your workflows and stay connected with your community effortlessly."
+        },
+        "apple": {
+          "title": "Apple",
+          "description": "Connect your Apple account to automate your workflows and seamlessly integrate with your Apple ecosystem."
+        },
+        "google": {
+          "title": "Google",
+          "description": "Connect your Google account to automate your workflows and enhance productivity with Google services."
+        },
+        "github": {
+          "title": "Github",
+          "description": "Connect your Github account to automate your workflows and streamline your development process."
+        },
+        "youtube": {
+          "title": "Youtube",
+          "description": "Connect your Youtube account to automate your workflows and manage your video content more efficiently."
+        },
+        "twitch": {
+          "title": "Twitch",
+          "description": "Connect your Twitch account to automate your workflows and engage with your audience in real-time."
+        }
+      }
     }
   }
 }

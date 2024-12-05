@@ -13,7 +13,7 @@ import {
 import { Link } from 'react-router-dom';
 import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import DotPattern from '@/components/ui/dot-pattern';
-import { ArrowRightIcon, DevicePhoneMobileIcon } from '@heroicons/react/24/solid';
+import { ArrowRightIcon, DevicePhoneMobileIcon, PlusIcon } from '@heroicons/react/24/solid';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -23,27 +23,60 @@ export default function Home() {
     {
       name: 'Louis Langanay',
       role: t('home.team.roles.frontend'),
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      image: '/assets/team/louis.langanay@epitech.eu.jpg'
     },
     {
       name: 'Justine Loizel',
       role: t('home.team.roles.frontend'),
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      image: '/assets/team/justine.loizel@epitech.eu.jpg'
     },
     {
       name: 'Sebastien Bertil-Souchet',
       role: t('home.team.roles.backendAndDevOps'),
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      image: '/assets/team/sebastien.bertil-souchet@epitech.eu.jpg'
     },
     {
       name: 'Ewen Emeraud',
       role: t('home.team.roles.backend'),
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      image: '/assets/team/ewen.emeraud@epitech.eu.jpg'
     },
     {
       name: 'Tom Lefoix',
       role: t('home.team.roles.backend'),
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+      image: '/assets/team/tom.lefoix@epitech.eu.jpg'
+    }
+  ]
+
+  const stack = [
+    {
+      title: t('home.stack.services.discord.title'),
+      description: t('home.stack.services.discord.description'),
+      icon: '/assets/stack/discord-icon.svg'
+    },
+    {
+      title: t('home.stack.services.apple.title'),
+      description: t('home.stack.services.apple.description'),
+      icon: '/assets/stack/apple-icon.svg'
+    },
+    {
+      title: t('home.stack.services.google.title'),
+      description: t('home.stack.services.google.description'),
+      icon: '/assets/stack/google-icon.svg'
+    },
+    {
+      title: t('home.stack.services.github.title'),
+      description: t('home.stack.services.github.description'),
+      icon: '/assets/stack/github-icon.svg'
+    },
+    {
+      title: t('home.stack.services.youtube.title'),
+      description: t('home.stack.services.youtube.description'),
+      icon: '/assets/stack/youtube-icon.svg'
+    },
+    {
+      title: t('home.stack.services.twitch.title'),
+      description: t('home.stack.services.twitch.description'),
+      icon: '/assets/stack/twitch-icon.svg'
     }
   ]
 
@@ -135,12 +168,12 @@ export default function Home() {
       </header>
 
       <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
-        <DotPattern className='[mask-image:linear-gradient(to_bottom,white,white,white,white,white,transparent)] opacity-50' />
+        <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50' />
         <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-10 sm:py-20 md:py-32 lg:py-40 relative'>
           <div className='hidden sm:mb-8 sm:flex'>
             <div
               onClick={() => navigate('/client.apk')}
-              className='group cursor-pointer relative flex items-center gap-2 flex-row rounded-full px-2 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 bg-muted'
+              className='group cursor-pointer relative flex items-center gap-2 flex-row rounded-full px-2 py-1 text-sm/6 text-gray-600 ring-1 ring-for/10 hover:ring-for/20 bg-muted'
             >
               <div className='flex items-center gap-2 bg-primary/20 rounded-full p-1'>
                 <DevicePhoneMobileIcon className='w-4 h-4' />
@@ -151,13 +184,13 @@ export default function Home() {
           </div>
           <div className=''>
             <div className='flex flex-col'>
-              <h1 className='text-balance text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl'>
+              <h1 className='text-balance text-5xl font-semibold tracking-tight text-for sm:text-7xl'>
                 {t('home.title.automate')}
               </h1>
-              <h1 className='text-balance text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl'>
+              <h1 className='text-balance text-5xl font-semibold tracking-tight text-for sm:text-7xl'>
                 {t('home.title.scale')}
               </h1>
-              <h1 className='text-balance text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl'>
+              <h1 className='text-balance text-5xl font-semibold tracking-tight text-for sm:text-7xl'>
                 {t('home.title.iterate')}
               </h1>
             </div>
@@ -167,10 +200,10 @@ export default function Home() {
           </div>
         </section>
         <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
-          <h2 className='text-center text-base/7 font-semibold text-indigo-600'>
+          <h2 className='text-center text-base/7 font-semibold text-primary'>
             {t('home.features.title')}
           </h2>
-          <p className='mx-auto mt-2 max-w-2xl text-balance text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl'>
+          <p className='mx-auto mt-2 max-w-2xl text-balance text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl'>
             {t('home.features.subtitle')}
           </p>
           <div className='mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2'>
@@ -178,15 +211,15 @@ export default function Home() {
               <div className='absolute inset-px rounded-lg bg-white lg:rounded-l-[2rem]'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-l-[calc(2rem+1px)]'>
                 <div className='px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10'>
-                  <p className='mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center'>
+                  <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
                     {t('home.features.mobile.title')}
                   </p>
-                  <p className='mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center'>
+                  <p className='mt-2 max-w-lg text-sm/6 text-muted-foreground max-lg:text-center'>
                     {t('home.features.mobile.description')}
                   </p>
                 </div>
                 <div className='relative min-h-[30rem] w-full grow [container-type:inline-size] max-lg:mx-auto max-lg:max-w-sm'>
-                  <div className='absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl'>
+                  <div className='absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-for shadow-2xl'>
                     <img className='size-full object-cover object-top' src='https://tailwindui.com/plus/img/component-images/bento-03-mobile-friendly.png' alt=''/>
                   </div>
                 </div>
@@ -197,10 +230,10 @@ export default function Home() {
               <div className='absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem]'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
-                  <p className='mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center'>
+                  <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
                     {t('home.features.performance.title')}
                   </p>
-                  <p className='mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center'>
+                  <p className='mt-2 max-w-lg text-sm/6 text-muted-foreground max-lg:text-center'>
                     {t('home.features.performance.description')}
                   </p>
                 </div>
@@ -214,10 +247,10 @@ export default function Home() {
               <div className='absolute inset-px rounded-lg bg-white'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
-                  <p className='mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center'>
+                  <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
                     {t('home.features.scalability.title')}
                   </p>
-                  <p className='mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center'>
+                  <p className='mt-2 max-w-lg text-sm/6 text-muted-foreground max-lg:text-center'>
                     {t('home.features.scalability.description')}
                   </p>
                 </div>
@@ -231,10 +264,10 @@ export default function Home() {
               <div className='absolute inset-px rounded-lg bg-white'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
-                  <p className='mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center'>
+                  <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
                     {t('home.features.connect.title')}
                   </p>
-                  <p className='mt-2 text-sm/6 text-gray-600 max-lg:text-center'>
+                  <p className='mt-2 text-sm/6 text-muted-foreground max-lg:text-center'>
                     {t('home.features.connect.description')}
                   </p>
                 </div>
@@ -249,10 +282,10 @@ export default function Home() {
         <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='mx-auto grid gap-20 xl:grid-cols-3'>
             <div className='max-w-xl'>
-              <h2 className='text-pretty text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl'>
+              <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>
                 {t('home.team.title')}
               </h2>
-              <p className='mt-6 text-lg/8 text-gray-600'>
+              <p className='mt-6 text-lg/8 text-muted-foreground'>
                 {t('home.team.description')}
               </p>
             </div>
@@ -260,15 +293,39 @@ export default function Home() {
               {team.map((person) => (
                 <li key={person.name}>
                   <div className='flex items-center gap-x-6'>
-                    <img className='size-16 rounded-full' src={person.image} alt={person.name} />
+                    <img className='size-16 rounded-full object-cover' src={person.image} alt={person.name} />
                     <div>
-                      <h3 className='text-base/7 font-semibold tracking-tight text-gray-900'>{person.name}</h3>
+                      <h3 className='text-base/7 font-semibold tracking-tight text-foreground'>{person.name}</h3>
                       <p className='text-sm/6 font-semibold text-indigo-600'>{person.role}</p>
                     </div>
                   </div>
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+
+        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+          <div className='flex flex-col sm:flex-row justify-between gap-4'>
+            <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl max-w-md'>
+              <span className='text-muted-foreground'>{t('home.stack.title1')} </span>{t('home.stack.title2')}
+            </h2>
+            <p className='text-lg sm:text-xl text-foreground font-medium max-w-md'>
+              {t('home.stack.description')}
+            </p>
+          </div>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-16'>
+            {stack.map((item) => (
+              <div className='flex flex-row gap-4 border rounded-xl p-4 shadow-sm hover:scale-101 transition-transform duration-300'>
+                <div className='shrink-0 size-12 p-2 border rounded-lg flex items-center justify-center'>
+                  <img src={item.icon} alt={item.title} className='w-full h-full object-contain' />
+                </div>
+                <div className='flex flex-col flex-1 min-w-0'>
+                  <span className='text-md font-semibold truncate'>{item.title}</span>
+                  <p className='text-sm text-muted-foreground'>{item.description}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       </div>
