@@ -31,6 +31,10 @@ interface Service {
         name: string;
         description: string;
     }[];
+    auth?: {
+        uri: string;                  // ex: "api/auth/discord"
+        callback_uri: string;         // ex: "api/auth/discord/callback"
+    };
 }
 
 interface Condition {

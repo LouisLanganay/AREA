@@ -5,6 +5,7 @@ import {
   register_request,
   register_response
 } from '../../../shared/user/login_register_forgot';
+import { Service } from '../../../shared/Workflow';
 
 export const register = async (
   request: register_request
@@ -39,4 +40,19 @@ export const login = async (
 
 export const forgotPassword = async (data: { email: string }) => {
   return await axios.post('/api/auth/forgot-password', data);
+};
+
+export const oauthCallback = async (callback_uri: string, token: string, userToken: string) => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}${callback_uri}`, {
+    token: token,
+    headers: {
+      Authorization: `Bearer ${userToken}`
+    }
+  });
+
+  if (response.status !== 200) {
+    throw new Error('Failed to authenticate with service');
+  }
+
+  return response.data;
 };

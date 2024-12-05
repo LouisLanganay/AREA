@@ -48,7 +48,11 @@ export const getServices = async (): Promise<Service[]> => {
           name: "Add to Playlist",
           description: "Add a video to a playlist"
         }
-      ]
+      ],
+      auth: {
+        uri: "api/auth/youtube",
+        callback_uri: "api/auth/youtube/callback"
+      }
     },
     {
       id: "discord",
