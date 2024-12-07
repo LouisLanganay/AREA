@@ -69,6 +69,52 @@ export class DiscordService {
         return data;
     }
 
+    async getUserGuilds(accessToken: string): Promise<any> {
+        const userGuildsUrl = 'https://discord.com/api/v10/users/@me/guilds';
+
+        const response = await fetch(userGuildsUrl, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch user guilds from Discord');
+        }
+
+        const data = await response.json();
+
+        return data
+    }
+
+    // Méthode pour écrire dans un channel Discord
+    async sendMessageToChannel(channelId: string, message: string, userBddId: string): Promise<void> {
+        const sendMessageUrl = `https://discord.com/api/v10/channels/${channelId}/messages`;
+
+        const accessToken = await this.prisma.token.findUnique({
+            where: {userId_provider: {userId: userBddId, provider: 'discord'}},
+            select: {accessToken: true},
+        });
+
+        if (!accessToken) {
+            throw new BadRequestException('Access token not found');
+        }
+
+        const response = await fetch(sendMessageUrl, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bot ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: message }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send message to Discord channel');
+        }
+    }
+
     async discordCallback(code: string, req:any): Promise<any> {
         console.log('Discord OAuth callback received:', code);
         if (!code) {

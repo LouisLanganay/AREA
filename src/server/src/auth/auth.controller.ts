@@ -65,13 +65,6 @@ export class AuthController {
     return { redirectUrl };
   }
 
-  @Get('discord/redirect')
-  @UseGuards(AuthGuard('discord'))
-  async discordAuthRedirect(@Req() req, @Res() res) {
-    const token = await this.authService.UserDiscord(req.user);
-    return this.redirectFrontend(res, token);
-  }
-
   @Get('discord/callback')
   @UseGuards(AuthGuard('discord'))
   @UseGuards(AuthGuard('jwt'))

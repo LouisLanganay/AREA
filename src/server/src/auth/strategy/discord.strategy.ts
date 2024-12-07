@@ -11,7 +11,7 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
       clientID: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
       callbackURL: `${process.env.IP_REDIRECT}auth/discord/redirect`,
-      scope: ['identify', 'email'], // Scopes demandés
+      scope: ['identify', 'email', 'bot'], // Scopes demandés
     });
     console.log(
       'callbackURL: --' + `${process.env.IP_REDIRECT}auth/discord/redirect`,
