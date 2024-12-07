@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { WorkflowModule } from './workflow/workflow.module';
 import { BullModule } from '@nestjs/bullmq';
 import { WebhookModule } from './discordWebhook/discord-webhook.module';
+import {DiscordModule} from "./app-discord/discord-app.module";
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { WebhookModule } from './discordWebhook/discord-webhook.module';
       },
     }),
     WebhookModule,
+    DiscordModule
   ],
   controllers: [AppController, AboutController],
   providers: [
