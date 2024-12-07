@@ -42,7 +42,9 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
-      "logout": "Logout"
+      "logout": "Logout",
+      "addAccount": "Add Account",
+      "currentAccount": "Current"
     }
   },
   "settings": {
@@ -204,5 +206,159 @@
     "nodeAddedDescription": "The node has been added to the workflow.",
     "save": "Save changes",
     "back": "Back"
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "description": "Enter your credentials below to login",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "email": "Email address",
+    "password": "Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "or": "OR",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "forgotPassword": "Forgot password?"
+  },
+  "register": {
+    "createAccount": "Create an account",
+    "fillInDetails": "Fill in your details to create a new account",
+    "username": "Username",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "usernamePlaceholder": "Enter your username",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "or": "OR",
+    "usernameRequired": "Username is required",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordsDontMatch": "Passwords don't match"
+  },
+  "error": {
+    "USER_NOT_FOUND": "User not found"
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "email": "Email address",
+    "emailPlaceholder": "Enter your email",
+    "emailInvalid": "Invalid email address",
+    "resetPassword": "Reset password",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email",
+    "checkEmailDescription": "If an account exists for this email, you will receive a password reset link shortly."
+  },
+  "home": {
+    "navigation": {
+      "features": {
+        "title": "Features",
+        "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
+        "intro": "Create automated workflows between your favorite applications.",
+        "pricing": "Plans adapted to your needs, from free to enterprise.",
+        "integrations": "More than 100 compatible services for your automations."
+      },
+      "documentation": {
+        "title": "Documentation",
+        "api": "Complete documentation of our public API.",
+        "source": "Access our source code on GitHub.",
+        "mobile": "Download our mobile application."
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "solutions": "Advanced features for large organizations.",
+        "cases": "Discover how our clients use LinkIt.",
+        "contact": "Let's talk about your specific needs."
+      }
+    },
+    "auth": {
+      "signin": "Sign in",
+      "register": "Register"
+    },
+    "mobile": {
+      "discover": "Discover our mobile app.",
+      "getStarted": "Get started"
+    },
+    "title": {
+      "automate": "Automate.",
+      "iterate": "Iterate.",
+      "scale": "Scale."
+    },
+    "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
+    "team": {
+      "title": "Meet our team",
+      "description": "We're a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.",
+      "roles": {
+        "frontend": "Frontend Developer",
+        "backend": "Backend Developer",
+        "backendAndDevOps": "Backend Developer and DevOps"
+      }
+    },
+    "features": {
+      "title": "Automate your workflows",
+      "subtitle": "Everything you need to automate your workflows",
+      "mobile": {
+        "title": "Mobile friendly",
+        "description": "Our mobile app is designed to be user-friendly and easy to use, with a focus on simplicity and efficiency."
+      },
+      "performance": {
+        "title": "Performance",
+        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays."
+      },
+      "scalability": {
+        "title": "Scalability",
+        "description": "Create unlimited workflows and automate as many tasks as you need. Our platform grows with your automation needs."
+      },
+      "connect": {
+        "title": "Connect Your Apps",
+        "description": "Seamlessly integrate your favorite apps like Discord, YouTube, and Google services. Create powerful automated workflows that work together."
+      }
+    },
+    "stack": {
+      "title1": "Integrate",
+      "title2": "automations with multiple services.",
+      "description": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations.",
+      "services": {
+        "discord": {
+          "title": "Discord",
+          "description": "Connect your Discord account to automate your workflows and stay connected with your community effortlessly."
+        },
+        "apple": {
+          "title": "Apple",
+          "description": "Connect your Apple account to automate your workflows and seamlessly integrate with your Apple ecosystem."
+        },
+        "google": {
+          "title": "Google",
+          "description": "Connect your Google account to automate your workflows and enhance productivity with Google services."
+        },
+        "github": {
+          "title": "Github",
+          "description": "Connect your Github account to automate your workflows and streamline your development process."
+        },
+        "youtube": {
+          "title": "Youtube",
+          "description": "Connect your Youtube account to automate your workflows and manage your video content more efficiently."
+        },
+        "twitch": {
+          "title": "Twitch",
+          "description": "Connect your Twitch account to automate your workflows and engage with your audience in real-time."
+        }
+      }
+    },
+    "cta": {
+      "title1": "Start automating",
+      "title2": "your workflows today.",
+      "description": "Create your first workflow in minutes with our easy workflow builder.",
+      "button": "Open Builder"
+    }
   }
 }

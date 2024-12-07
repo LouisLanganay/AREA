@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { ServiceRegister, defaultFieldGroup, EventMonitor} from "./service/register.service";
 import { TestService, EventCheckFreezingTemperature } from "./service/meteo.service";
@@ -11,6 +12,13 @@ async function bootstrap() {
 
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
+  const config = new DocumentBuilder()
+    .setTitle('API linkit')
+    .setDescription('API documentation for linkit project')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('doc', app, document);
 
   const user_1 = new ServiceRegister();
   user_1.addService(TestService);

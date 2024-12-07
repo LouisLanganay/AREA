@@ -102,7 +102,7 @@ export default function AdminPanel() {
   );
 
   return (
-    <div className="container mx-auto p-8">
+    <>
       <h2 className="text-2xl font-bold mb-4">{t("admin.title")}</h2>
       <Card>
         <CardHeader>
@@ -315,6 +315,6 @@ export default function AdminPanel() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
