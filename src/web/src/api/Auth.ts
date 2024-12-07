@@ -38,5 +38,9 @@ export const login = async (
 };
 
 export const forgotPassword = async (data: { email: string }) => {
-  return await axios.post('/api/auth/forgot-password', data);
+  return await axios.post(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, data);
 };
+
+export const resetPassword = async (data: { token: string, password: string }) => {
+  return await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, data);
+}

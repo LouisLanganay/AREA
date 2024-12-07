@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { error } from '../../../shared/error/error';
 import { forgotPassword } from '@/api/Auth';
+import { ArrowLeftCircleIcon, Loader2 } from 'lucide-react';
+import { ArrowRightCircleIcon, EnvelopeOpenIcon } from '@heroicons/react/24/solid';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -15,7 +17,7 @@ export default function ForgotPassword() {
   });
 
   type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
-  
+
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -44,15 +46,19 @@ export default function ForgotPassword() {
       <div className='flex min-h-screen items-center justify-center'>
         <div className='w-full max-w-md space-y-4 p-8'>
           <div className='text-center'>
-            <h2 className='text-2xl font-bold text-primary'>
+            <h2 className='text-2xl font-bold text-primary flex items-center justify-center'>
               {t('forgotPassword.checkEmail')}
+              <EnvelopeOpenIcon className='size-6 ml-2' />
             </h2>
             <p className='mt-2 text-sm text-muted-foreground'>
               {t('forgotPassword.checkEmailDescription')}
             </p>
           </div>
           <Button asChild className='w-full'>
-            <Link to='/login'>{t('forgotPassword.backToLogin')}</Link>
+            <Link to='/login'>
+              {t('forgotPassword.backToLogin')}
+              <ArrowLeftCircleIcon className='size-6' />
+            </Link>
           </Button>
         </div>
       </div>
@@ -94,7 +100,11 @@ export default function ForgotPassword() {
           )}
 
           <Button type='submit' className='w-full' disabled={isLoading}>
-            {isLoading ? t('common.loading') : t('forgotPassword.resetPassword')}
+            {t('forgotPassword.resetPassword')}
+            {isLoading ?
+              <Loader2 className='w-4 h-4 animate-spin' /> :
+              <ArrowRightCircleIcon className='w-4 h-4' />
+            }
           </Button>
         </form>
 
@@ -106,4 +116,4 @@ export default function ForgotPassword() {
       </div>
     </div>
   );
-} 
+}

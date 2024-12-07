@@ -11,8 +11,8 @@ interface Account {
 interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
+  login: (token: string) => Promise<Account>;
+  logout: () => Promise<boolean>;
   user: User | null;
   accounts: Account[];
   addAccount: (token: string) => void;
@@ -38,6 +38,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const addAccount = async (newToken: string) => {
+    const existingAccount = accounts.find(acc => acc.token === newToken);
+    if (existingAccount)
+      return existingAccount;
+
     const data: getMe_response = await getMe(newToken);
     const newAccount: Account = {
       user: data,
@@ -62,37 +66,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const removeAccount = (accountToken: string) => {
     const updatedAccounts = accounts.filter(acc => acc.token !== accountToken);
     saveAccounts(updatedAccounts);
-
-    if (token === accountToken) {
-      if (updatedAccounts.length > 0) {
-        switchAccount(updatedAccounts[0].token);
-      } else {
-        logout();
-      }
-    }
   };
 
   const isCurrentAccount = (accountToken: string) => {
     return token === accountToken;
   };
 
-  const login = async (newToken: string) => {
+  const login = async (newToken: string): Promise<Account> => {
     const account = await addAccount(newToken);
     setToken(account.token);
     setUser(account.user);
     localStorage.setItem('token', account.token);
     localStorage.setItem('user', JSON.stringify(account.user));
+    return account;
   };
 
-  const logout = () => {
+  const logout = async (): Promise<boolean> => {
     const currentAccount = accounts.find(acc => acc.token === token);
-    if (currentAccount)
-      removeAccount(currentAccount.token);
+    const updatedAccounts = accounts.filter(acc => acc.token !== token);
+    if (currentAccount) {
+      saveAccounts(updatedAccounts);
+    }
 
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+
+    if (updatedAccounts.length > 0) {
+      switchAccount(updatedAccounts[0].token);
+      return true;
+    }
+    return false;
   };
 
   return (
