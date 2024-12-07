@@ -115,7 +115,7 @@ export class ServiceRegister {
 
 export class EventMonitor {
 
-    async checkEvent(event: Event, params: FieldGroup): Promise<void> {
+    async checkAction(event: Event, params: FieldGroup): Promise<void> {
 
         if (!event) {
             throw new Error(`Event with ID "${event.id}" not found.`);
@@ -134,7 +134,7 @@ export class EventMonitor {
 
     startMonitoring(event: Event, params: FieldGroup, interval: number): void {
         setInterval(() => {
-            this.checkEvent(event, params).catch(console.error);
+            this.checkAction(event, params).catch(console.error);
         }, interval);
     }
 }
