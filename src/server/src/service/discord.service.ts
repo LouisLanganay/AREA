@@ -1,7 +1,7 @@
 import { Service, Event } from '../../../shared/Workflow';
 
 export const EventgetMessageDiscord: Event = {
-    type: 'Action',
+    type: "Action",
     id: "getMessageDiscord",
     name: "Get Message",
     description: "Retrieve a message from a Discord channel",
@@ -27,12 +27,13 @@ export const EventgetMessageDiscord: Event = {
         ],
     execute: () => {
         console.log("Executing 'Get Message' action for Discord");
+        return true;
     }
 }
 
 export const EventnotifyUserDiscord: Event = {
-    type: 'Reaction',
-        id: "notifyUserDiscord",
+    type: "Reaction",
+    id: "notifyUserDiscord",
     name: "Notify User",
     description: "Send a notification to a user",
     parameters: [
@@ -57,6 +58,7 @@ export const EventnotifyUserDiscord: Event = {
     ],
     execute: () => {
         console.log("Executing 'Notify User' reaction for Discord");
+        return false;
     }
 }
 
@@ -66,5 +68,9 @@ export const discordService: Service = {
     description: "Messaging service for teams",
     loginRequired: true,
     image: "https://discord.com/img/logo.png",
-    Event: []
+    Event: [],
+    auth: {
+        uri: "api/auth/discord",
+        callback_uri: "api/auth/discord/callback"
+    }
 };

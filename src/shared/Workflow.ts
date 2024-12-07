@@ -21,7 +21,8 @@ interface Event {
     name: string;
     description: string;
     parameters: FieldGroup[];
-    execute: () => void;
+    execute?: (parameters: FieldGroup[]) => void;
+    check?: (parameters: FieldGroup[]) => Promise<boolean>;
 }
 
 interface Service {
@@ -31,6 +32,10 @@ interface Service {
     loginRequired: boolean;          // ex: true
     image?: string;                  // ex: "https://slack.com/img/logos/slack-logo-horizontal.png"
     Event?: Event[];
+    auth?: {
+        uri: string;                  // ex: "api/auth/discord"
+        callback_uri: string;         // ex: "api/auth/discord/callback"
+    };
 }
 
 interface Condition {

@@ -1,5 +1,13 @@
-import { Service, Event } from '../../../shared/Workflow';
+import {Service, Event, FieldGroup} from '../../../shared/Workflow';
 import { Injectable } from '@nestjs/common';
+
+export const defaultFieldGroup: FieldGroup = {
+    id: "default",
+    name: "Default",
+    description: "Default Field Group",
+    type: "default",
+    fields: []
+}
 
 @Injectable()
 export class ServiceRegister {
@@ -46,28 +54,34 @@ export class ServiceRegister {
             throw new Error(`Service with ID "${serviceId}" not found.`);
         }
 
+        if (!service.Event) {
+            service.Event = [];
+        }
+
+        if (service.Event.some(e => e.id === event.id)) {
+            throw new Error(`Event with ID "${event.id}" already exists in service "${serviceId}".`);
+        }
+
         const clonedEvent: Event = {
             ...event,
             parameters: event.parameters.map(group => ({
                 ...group,
-                fields: [...group.fields]
+                fields: [...group.fields],
             })),
-            execute: event.execute
+            execute: event.execute || (() => {
+                console.log(`Execution not supposed to be call for "${event.name}" of type "${event.type}"`);
+            }),
+            check: event.check || (async () => {
+                console.log(`Checker not supposed to be call for "${event.name}" of type ${event.type}"`);
+                return true;
+            }),
         };
 
-        if (service.Event.some(e => e.id === clonedEvent.id)) {
-            throw new Error(`Event with ID "${clonedEvent.id}" already exists in service "${serviceId}".`);
-        }
-
-        if (!clonedEvent.execute) {
-            clonedEvent.execute = () => {
-                console.log(`Executing event "${clonedEvent.name}" of type "${clonedEvent.type}" with parameters:`, clonedEvent.parameters);
-            };
-        }
-
         service.Event.push(clonedEvent);
+
         this.services.set(serviceId, service);
     }
+
 
     removeEventFromService(serviceId: string, eventId: string): void {
         const service = this.getServiceById(serviceId);
@@ -96,5 +110,31 @@ export class ServiceRegister {
             throw new Error(`Service with ID "${serviceId}" not found.`);
         }
         return service.Event.filter(event => event.type === type);
+    }
+}
+
+export class EventMonitor {
+
+    async checkEvent(event: Event, params: FieldGroup): Promise<void> {
+
+        if (!event) {
+            throw new Error(`Event with ID "${event.id}" not found.`);
+        }
+
+        if (typeof event.execute === "function") {
+            const result = event.check([params]);
+
+            if (result) {
+                console.log(`Condition met for event "${event.name}".`);
+            } else {
+                console.log(`Condition not met for event "${event.name}".`);
+            }
+        }
+    }
+
+    startMonitoring(event: Event, params: FieldGroup, interval: number): void {
+        setInterval(() => {
+            this.checkEvent(event, params).catch(console.error);
+        }, interval);
     }
 }
