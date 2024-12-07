@@ -1,7 +1,7 @@
 interface Field {
     id: string;
-    type: 'text' | 'number' | 'boolean' | 'select' | 'date' | 'checkbox' | 'color';
-    label: string;                    // ex: "Server"
+    type: 'string' | 'number' | 'boolean' | 'select' | 'date' | 'checkbox' | 'color';
+    description: string;                    // ex: "Server"
     value?: any;                      // ex: "167628734852438"
     required: boolean;                // ex: true
     options?: any[];
@@ -15,22 +15,23 @@ interface FieldGroup {
     fields: Field[];
 }
 
+interface Event {
+    type : 'Action' | 'Reaction'
+    id: string;
+    name: string;
+    description: string;
+    parameters: FieldGroup[];
+    execute?: (parameters: FieldGroup[]) => void;
+    check?: (parameters: FieldGroup[]) => Promise<boolean>;
+}
+
 interface Service {
     id: string;
     name: string;                    // ex: "Slack"
-    description: string;             // ex: "Send a message to a channel"
-    enabled: boolean;                // ex: true
+    description: string;             // ex: "Message"
+    loginRequired: boolean;          // ex: true
     image?: string;                  // ex: "https://slack.com/img/logos/slack-logo-horizontal.png"
-    actions?: {
-        id: string;
-        name: string;
-        description: string;
-    }[];
-    reactions?: {
-        id: string;
-        name: string;
-        description: string;
-    }[];
+    Event?: Event[];
     auth?: {
         uri: string;                  // ex: "api/auth/discord"
         callback_uri: string;         // ex: "api/auth/discord/callback"
@@ -87,5 +88,6 @@ export type {
     Condition,
     Node,
     Workflow,
-    Variable
+    Variable,
+    Event
 }
