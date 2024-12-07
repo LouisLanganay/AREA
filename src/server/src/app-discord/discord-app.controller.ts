@@ -12,21 +12,21 @@ export class DiscordController {
     private readonly clientSecret = "7cwRsrTAddfOx996as3VuNnjISJE1YGe";
     private readonly discordUrl = "https://discord.com/oauth2/authorize?client_id=" + this.clientId + "&redirect_uri=" + this.redirectUri + "&response_type=code&scope=identify%20email";
 
-    @Get('authorize')
-    generateAuthUrl(@Res() res: Response): void {
-        const base = 'https://discord.com/oauth2/authorize';
-        const params = new URLSearchParams({
-            response_type: 'code',
-            client_id: this.clientId,
-            permissions: '8',
-            integration_type: '0',
-            redirect_uri: this.redirectUri,
-            scope: 'bot applications.commands identify email',
-        });
-
-        console.log('Redirecting to Discord OAuth:', `${base}?${params.toString()}`);
-        res.redirect(`${base}?${params.toString()}`);
-    }
+    // @Get('authorize')
+    // generateAuthUrl(@Res() res: Response): void {
+    //     const base = 'https://discord.com/oauth2/authorize';
+    //     const params = new URLSearchParams({
+    //         response_type: 'code',
+    //         client_id: this.clientId,
+    //         permissions: '8',
+    //         integration_type: '0',
+    //         redirect_uri: this.redirectUri,
+    //         scope: 'bot applications.commands identify email',
+    //     });
+    //
+    //     console.log('Redirecting to Discord OAuth:', `${base}?${params.toString()}`);
+    //     res.redirect(`${base}?${params.toString()}`);
+    // }
 
     @Get('callback')
     async handleDiscordCallback(
@@ -77,25 +77,12 @@ export class DiscordController {
             });
 
             const userData = await userResponse.json();
-            const email = userData.email;
+            const email: string = userData.email;
             console.log('User data email:', email);
             if (!email) {
                 throw new Error("Email not found in the Discord token response.");
             }
 
-            // Rechercher l'utilisateur dans la base de données en utilisant l'email
-            const user = await this.prisma.user.findUnique({
-                where: { email },
-            });
-
-            if (!user) {
-                throw new Error('User not found');
-            }
-            const userId = user.id;
-            //ajoute l'id de l'user avec un delim a la fin du token pour le retrouver plus facilement
-            const tokensWithUserId = email + ' ' + tokens.access_token;
-            console.log('tokensWithUserId:', tokensWithUserId);
-            // Upsert le token pour l'utilisateur dans la base de données
             await this.prisma.token.upsert({
                 where: {
                     userId_provider: { userId, provider: 'discord' }

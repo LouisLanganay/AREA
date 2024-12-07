@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@nestjs/swagger": "^8.1.0",
+    "passport-discord": "^0.1.4"
+  }
+}

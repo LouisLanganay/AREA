@@ -9,6 +9,8 @@ import { MailerService } from '../mailer/mailer.service';
 import * as process from 'node:process';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { DiscordStrategy } from './strategy/discord.strategy';
+import {DiscordService} from "../app-discord/discord-app.service";
+import { PrismaModule } from '../prisma/prisma.module'
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { DiscordStrategy } from './strategy/discord.strategy';
     }),
     UsersModule, // Module pour la gestion des utilisateurs
     PassportModule,
+    PrismaModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -27,6 +30,7 @@ import { DiscordStrategy } from './strategy/discord.strategy';
     MailerService,
     GoogleStrategy,
     DiscordStrategy,
+    DiscordService,
   ],
   exports: [AuthService],
 })
