@@ -13,14 +13,14 @@ export class PrismaClientErrorFilter implements ExceptionFilter {
     const status = HttpStatus.SERVICE_UNAVAILABLE;
 
     if (exception.code === 'P2002') {
+      console.error(exception);
       response.status(HttpStatus.CONFLICT).json({
-        message: 'Email already exists',
+        err_code: 'EMAIL_ALREADY_USE',
       });
     } else {
       console.error(exception);
       response.status(status).json({
-        statusCode: status,
-        message: 'Database actually unavailable',
+        err_code: 'DB_UNAVAILABLE',
       });
     }
   }

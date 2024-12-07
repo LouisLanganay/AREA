@@ -1,5 +1,12 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { User } from '../../../shared/Users';
+import { getMe_response } from '../../../shared/user/user_route';
+import { getMe } from '@/api/User';
+
+interface Account {
+  user: User | null;
+  token: string;
+}
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -7,6 +14,11 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   user: User | null;
+  accounts: Account[];
+  addAccount: (token: string) => void;
+  switchAccount: (token: string) => void;
+  removeAccount: (token: string) => void;
+  isCurrentAccount: (token: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -16,24 +28,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(
     localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null
   );
+  const [accounts, setAccounts] = useState<Account[]>(
+    localStorage.getItem('accounts') ? JSON.parse(localStorage.getItem('accounts')!) : []
+  );
 
-  const login = (newToken: string) => {
-    const data: User = {
-      id: '1',
-      email: 'test@test.com',
-      displayName: 'Test User',
-      username: 'test',
-      createdAt: 0,
-      updatedAt: 0,
-      avatarUrl: 'https://i.pinimg.com/736x/0d/80/97/0d8097710f3027186444099111c6f93f.jpg',
+  const saveAccounts = (newAccounts: Account[]) => {
+    setAccounts(newAccounts);
+    localStorage.setItem('accounts', JSON.stringify(newAccounts));
+  };
+
+  const addAccount = async (newToken: string) => {
+    const data: getMe_response = await getMe(newToken);
+    const newAccount: Account = {
+      user: data,
+      token: newToken
     };
-    setToken(newToken);
-    setUser(data);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(data));
+
+    const updatedAccounts = [...accounts.filter(acc => acc.user?.id !== data.id), newAccount];
+    saveAccounts(updatedAccounts);
+    return newAccount;
+  };
+
+  const switchAccount = (accountToken: string) => {
+    const account = accounts.find(acc => acc.token === accountToken);
+    if (account) {
+      setToken(account.token);
+      setUser(account.user);
+      localStorage.setItem('token', account.token);
+      localStorage.setItem('user', JSON.stringify(account.user));
+    }
+  };
+
+  const removeAccount = (accountToken: string) => {
+    const updatedAccounts = accounts.filter(acc => acc.token !== accountToken);
+    saveAccounts(updatedAccounts);
+
+    if (token === accountToken) {
+      if (updatedAccounts.length > 0) {
+        switchAccount(updatedAccounts[0].token);
+      } else {
+        logout();
+      }
+    }
+  };
+
+  const isCurrentAccount = (accountToken: string) => {
+    return token === accountToken;
+  };
+
+  const login = async (newToken: string) => {
+    const account = await addAccount(newToken);
+    setToken(account.token);
+    setUser(account.user);
+    localStorage.setItem('token', account.token);
+    localStorage.setItem('user', JSON.stringify(account.user));
   };
 
   const logout = () => {
+    const currentAccount = accounts.find(acc => acc.token === token);
+    if (currentAccount)
+      removeAccount(currentAccount.token);
+
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
@@ -48,6 +103,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         login,
         logout,
+        accounts,
+        addAccount,
+        switchAccount,
+        removeAccount,
+        isCurrentAccount,
       }}
     >
       {children}
@@ -55,9 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context)
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
+  }
   return context;
-}
+};

@@ -15,6 +15,7 @@ export class UsersService {
     username: string;
     displayName?: string;
     avatarUrl?: string;
+    provider: string;
   }) {
     return this.prismaService.user.create({
       data: {
@@ -22,14 +23,23 @@ export class UsersService {
         username: Data.username,
         displayName: Data.displayName,
         avatarUrl: Data.avatarUrl,
+        provider: Data.provider,
       },
     });
   }
 
-  async findByEmail(email: string) {
-    return this.prismaService.user.findUnique({
+  async findByEmail(email: string, provider?: string) {
+    if (!provider) provider = 'local';
+    return this.prismaService.user.findFirst({
       where: {
-        email: email,
+        AND: [
+          {
+            email: email,
+          },
+          {
+            provider: provider,
+          },
+        ],
       },
     });
   }
@@ -73,6 +83,7 @@ export class UsersService {
         id: true,
         email: true,
         password: true,
+        provider: true,
       },
     });
   }
@@ -88,8 +99,113 @@ export class UsersService {
     });
   }
 
-  async checkUserEmailExist(email: string): Promise<boolean> {
-    const user = await this.findByEmail(email);
+  async checkUserEmailExist(
+    email: string,
+    provider?: string,
+  ): Promise<boolean> {
+    if (!provider) provider = 'local';
+    const user = await this.prismaService.user.findFirst({
+      where: {
+        AND: [
+          {
+            email: email,
+          },
+          {
+            provider: provider,
+          },
+        ],
+      },
+      select: {
+        id: true,
+      },
+    });
     return !!user;
+  }
+
+  async checkUserUsernameExist(username: string): Promise<boolean> {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        username: username,
+      },
+      select: {
+        id: true,
+      },
+    });
+    return !!user;
+  }
+
+  async getUserInfo(id: string) {
+    return this.prismaService.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        displayName: true,
+        avatarUrl: true,
+        createdAt: true,
+        lastConnection: true,
+      },
+    });
+  }
+
+  async getUnusedUsername(username: string) {
+    let user = await this.checkUserUsernameExist(username);
+    while (user) {
+      username = username + Math.floor(Math.random() * 100);
+      user = await this.checkUserUsernameExist(username);
+    }
+    return username;
+  }
+
+  async resetOtherResetRequest(userID: string) {
+    await this.prismaService.passwordReset.updateMany({
+      where: {
+        userId: userID,
+        used: false,
+      },
+      data: {
+        used: true,
+      },
+    });
+  }
+
+  async createResetPassword(userId: string, token: string) {
+    await this.prismaService.passwordReset.create({
+      data: {
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 2),
+        token,
+        userId: userId,
+        used: false,
+      },
+    });
+  }
+
+  async findToken(token: string) {
+    return this.prismaService.passwordReset.findUnique({
+      where: {
+        token,
+      },
+    });
+  }
+
+  async resetToken(token: string) {
+    this.prismaService.passwordReset.update({
+      where: { token: token },
+      data: { used: true },
+    });
+  }
+
+  async resetPassword(userId: string, newPassword: string) {
+    return this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
   }
 }

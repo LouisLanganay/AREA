@@ -1,6 +1,6 @@
 import { AuthProvider, useAuth } from '@/auth/AuthContext';
-import React from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './components/Layout';
 import { FontScaleProvider } from './context/FontScaleContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -29,6 +29,21 @@ function Logout() {
   return <Navigate to="/login" replace />;
 }
 
+function LoginSuccess() {
+  const { login } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+
+    if (token)
+      login(token);
+  }, [location]);
+
+  return <Navigate to="/" replace />;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -39,9 +54,7 @@ function App() {
               <Route
                 path="/login"
                 element={
-                  <PublicRoute>
-                    <Login />
-                  </PublicRoute>
+                  <Login />
                 }
               />
 
@@ -66,11 +79,7 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Home />
-                    </Layout>
-                  </ProtectedRoute>
+                  <Home />
                 }
               ></Route>
 
@@ -137,6 +146,13 @@ function App() {
                       <EditWorkflow />
                     </Layout>
                   </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/login-success'
+                element={
+                  <LoginSuccess />
                 }
               />
             </Routes>

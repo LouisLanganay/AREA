@@ -5,6 +5,7 @@ import {
   HttpCode,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -12,6 +13,8 @@ import { LoginUserDto } from '../users/dto/login-user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
+import * as process from 'node:process';
+import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -29,22 +32,44 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @HttpCode(200)
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return this.authService.forgotPassword(forgotPasswordDto);
+    await this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
-    console.log('googleAuth: ', req);
+  async googleAuth() {
     // Cette méthode redirige vers Google pour l'authentification
   }
 
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req) {
-    // Une fois redirigé, cette méthode traite les informations de l'utilisateur
+    const token = await this.authService.UserGoogle(req.user);
+    return this.redirectFrontend(req.res, token);
+  }
 
-    return this.authService.UserGoogle(req.user);
+  private async redirectFrontend(res, token) {
+    const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
+    return res.redirect(frontendRedirectUrl);
+  }
+  @Get('discord')
+  @UseGuards(AuthGuard('discord'))
+  async discordAuth() {
+    // Cette méthode redirige vers Discord pour l'authentification
+  }
+
+  @Get('discord/redirect')
+  @UseGuards(AuthGuard('discord'))
+  async discordAuthRedirect(@Req() req, @Res() res) {
+    const token = await this.authService.UserDiscord(req.user);
+    return this.redirectFrontend(res, token);
+  }
+
+  @HttpCode(200)
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body);
   }
 }
