@@ -44,8 +44,8 @@ export default function Register() {
         username: data.username,
       });
 
-      login(response.access_token);
-      navigate('/');
+      await login(response.access_token);
+      navigate('/workflows');
     } catch(error: any) {
       const data = error.response.data as error;
       setError(data.err_code);
