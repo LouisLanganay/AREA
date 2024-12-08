@@ -44,20 +44,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { updateUser } from "@/api/User";
+import { useAuth } from "@/auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
   const { t } = useTranslation();
+  const { user, token } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    displayName: user?.displayName || "",
+    email: user?.email || "",
+  });
+  const navigate = useNavigate();
   const { fontScale, setFontScale } = useFontScale();
   const { theme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState(true);
   const { toast } = useToast();
   const [language, setLanguage] = useState(i18n.language);
-  const [avatarUrl, setAvatarUrl] = useState(
-    "/placeholder.svg?height=80&width=80"
-  );
-  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const fontSizeOptions = [
     { label: t("settings.appearance.fontSize.small"), value: 0.8 },
@@ -66,9 +71,31 @@ export default function Settings() {
     { label: t("settings.appearance.fontSize.xLarge"), value: 1.5 },
   ];
 
-  const handleAccountChanges = () => {
-    i18n.changeLanguage(language);
-    localStorage.setItem("language", language);
+  const handleAccountChanges = async () => {
+    if (!user || !token) return;
+    try {
+      setIsLoading(true);
+      await updateUser(token, {
+        ...user,
+        ...formData
+      });
+
+      i18n.changeLanguage(language);
+      localStorage.setItem("language", language);
+
+      toast({
+        title: t("settings.account.saveSuccess"),
+        description: t("settings.account.saveSuccessDescription"),
+      });
+    } catch (error) {
+      toast({
+        title: t("settings.account.saveError"),
+        description: t("settings.account.saveErrorDescription"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleFontScaleChange = (value: number) => {
@@ -90,15 +117,11 @@ export default function Settings() {
     });
   };
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setAvatarUrl(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleFormChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    const hasFormChanges = value !== (user?.[field as keyof typeof user] || "");
+    const hasLanguageChanged = language !== i18n.language;
+    setHasChanges(hasFormChanges || hasLanguageChanged);
   };
 
   return (
@@ -112,14 +135,8 @@ export default function Settings() {
           <TabsTrigger value="appearance">
             {t("settings.tabs.appearance")}
           </TabsTrigger>
-          <TabsTrigger value="notifications">
-            {t("settings.tabs.notifications")}
-          </TabsTrigger>
           <TabsTrigger value="security">
             {t("settings.tabs.security")}
-          </TabsTrigger>
-          <TabsTrigger value="automation">
-            {t("settings.tabs.automation")}
           </TabsTrigger>
         </TabsList>
 
@@ -132,76 +149,28 @@ export default function Settings() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage
-                    src={avatarUrl}
-                    alt={t("settings.account.avatar.alt")}
-                  />
-                  <AvatarFallback>
-                    <User className="h-10 w-10" />
-                  </AvatarFallback>
-                </Avatar>
-                <Dialog
-                  open={isAvatarDialogOpen}
-                  onOpenChange={setIsAvatarDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      onClick={() => {
-                        setIsAvatarDialogOpen(true);
-                      }}
-                    >
-                      {t("settings.account.avatar.change")}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>
-                        {t("settings.account.avatar.change")}
-                      </DialogTitle>
-                      <DialogDescription>
-                        {t("settings.account.avatar.description")}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="avatar" className="text-right">
-                          {t("settings.account.avatar.upload")}
-                        </Label>
-                        <Input
-                          id="avatar"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleAvatarChange}
-                          className="col-span-3"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button
-                        type="submit"
-                        onClick={() => {
-                          setIsAvatarDialogOpen(false);
-                        }}
-                      >
-                        {t("settings.account.avatar.save")}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
               <div className="space-y-2">
                 <Label htmlFor="name">
                   {t("settings.account.fields.name")}
                 </Label>
-                <Input id="name" placeholder="John Doe" />
+                <Input
+                  id="name"
+                  value={formData.displayName}
+                  onChange={(e) => handleFormChange("displayName", e.target.value)}
+                  placeholder="John Doe"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">
                   {t("settings.account.fields.email")}
                 </Label>
-                <Input id="email" type="email" placeholder="john@example.com" />
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleFormChange("email", e.target.value)}
+                  placeholder="john@example.com"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="language">
@@ -228,8 +197,11 @@ export default function Settings() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button onClick={handleAccountChanges}>
-                {t("settings.account.save")}
+              <Button
+                onClick={handleAccountChanges}
+                disabled={isLoading || !hasChanges}
+              >
+                {isLoading ? t("settings.account.saving") : t("settings.account.save")}
               </Button>
             </CardFooter>
           </Card>
@@ -296,73 +268,6 @@ export default function Settings() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("settings.notifications.title")}</CardTitle>
-              <CardDescription>
-                {t("settings.notifications.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="email-notifications">
-                    {t("settings.notifications.email.label")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("settings.notifications.email.description")}
-                  </p>
-                </div>
-                <Switch
-                  id="email-notifications"
-                  checked={notifications}
-                  onCheckedChange={setNotifications}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label htmlFor="push-notifications">
-                    {t("settings.notifications.push.label")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("settings.notifications.push.description")}
-                  </p>
-                </div>
-                <Switch id="push-notifications" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="notification-frequency">
-                  {t("settings.notifications.frequency.label")}
-                </Label>
-                <Select>
-                  <SelectTrigger id="notification-frequency">
-                    <SelectValue
-                      placeholder={t(
-                        "settings.notifications.frequency.placeholder"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="realtime">
-                      {t("settings.notifications.frequency.options.realtime")}
-                    </SelectItem>
-                    <SelectItem value="hourly">
-                      {t("settings.notifications.frequency.options.hourly")}
-                    </SelectItem>
-                    <SelectItem value="daily">
-                      {t("settings.notifications.frequency.options.daily")}
-                    </SelectItem>
-                    <SelectItem value="weekly">
-                      {t("settings.notifications.frequency.options.weekly")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
         <TabsContent value="security">
           <Card>
             <CardHeader>
@@ -372,158 +277,57 @@ export default function Settings() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button>{t("settings.security.password.change")}</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>
-                      {t("settings.security.password.change")}
-                    </DialogTitle>
-                    <DialogDescription>
-                      {t("settings.security.password.description")}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleChangePassword}>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label
-                          htmlFor="current-password"
-                          className="text-right"
-                        >
-                          {t("settings.security.password.current")}
-                        </Label>
-                        <Input
-                          id="current-password"
-                          type="password"
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="new-password" className="text-right">
-                          {t("settings.security.password.new")}
-                        </Label>
-                        <Input
-                          id="new-password"
-                          type="password"
-                          className="col-span-3"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label
-                          htmlFor="confirm-password"
-                          className="text-right"
-                        >
-                          {t("settings.security.password.confirm")}
-                        </Label>
-                        <Input
-                          id="confirm-password"
-                          type="password"
-                          className="col-span-3"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button type="submit">
-                        {t("settings.security.password.change")}
-                      </Button>
-                    </DialogFooter>
-                  </form>
-                </DialogContent>
-              </Dialog>
-              <div className="flex items-center justify-between pt-4">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="two-factor">
-                    {t("settings.security.twoFactor.label")}
+                  <Label htmlFor="dark-mode">
+                    {t("settings.security.password.label")}
                   </Label>
                   <p className="text-sm text-muted-foreground">
-                    {t("settings.security.twoFactor.description")}
+                    {t("settings.security.password.description")}
                   </p>
                 </div>
-                <Switch id="two-factor" />
+                <Button
+                  onClick={() => {
+                    navigate("/forgot-password");
+                  }}
+                >
+                  {t("settings.security.password.change")}
+                </Button>
               </div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="dark-mode">
                     {t("settings.security.delete.label")}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      {t("settings.security.delete.confirmation.title")}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t("settings.security.delete.confirmation.description")}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>
-                      {t("settings.cancel")}
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteAccount}>
-                      {t("settings.confirm")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="automation">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("settings.automation.title")}</CardTitle>
-              <CardDescription>
-                {t("settings.automation.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="execution-limit">
-                  {t("settings.automation.executionLimit.label")}
-                </Label>
-                <Input id="execution-limit" type="number" placeholder="1000" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="api-key">
-                  {t("settings.automation.apiKey.label")}
-                </Label>
-                <Input
-                  id="api-key"
-                  type="password"
-                  placeholder={t("settings.automation.apiKey.label")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="retry-attempts">
-                  {t("settings.automation.retryAttempts.label")}
-                </Label>
-                <Select>
-                  <SelectTrigger id="retry-attempts">
-                    <SelectValue
-                      placeholder={t(
-                        "settings.automation.retryAttempts.placeholder"
-                      )}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">
-                      {t("settings.automation.retryAttempts.options.1")}
-                    </SelectItem>
-                    <SelectItem value="3">
-                      {t("settings.automation.retryAttempts.options.3")}
-                    </SelectItem>
-                    <SelectItem value="5">
-                      {t("settings.automation.retryAttempts.options.5")}
-                    </SelectItem>
-                    <SelectItem value="10">
-                      {t("settings.automation.retryAttempts.options.10")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t("settings.security.delete.description")}
+                  </p>
+                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                      {t("settings.security.delete.label")}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t("settings.security.delete.confirmation.title")}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t("settings.security.delete.confirmation.description")}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        {t("settings.cancel")}
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteAccount}>
+                        {t("settings.confirm")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </CardContent>
           </Card>

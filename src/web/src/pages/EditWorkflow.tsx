@@ -23,6 +23,7 @@ import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
+import { useAuth } from '@/auth/AuthContext';
 
 const nodeTypes = {
   node: Node,
@@ -53,6 +54,7 @@ export default function EditWorkflow() {
   const { t } = useTranslation();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const flattenNodesAndCreateEdges = (
     nodes: AreaNode[],
@@ -164,8 +166,8 @@ export default function EditWorkflow() {
         const fetchedServices = await getServices();
         setServices(fetchedServices);
 
-        if (!id) return;
-        const workflow = await getWorkflow(id);
+        if (!id || !token) return;
+        const workflow = await getWorkflow(id, token);
         if (!workflow) {
           navigate('/workflows');
           return;

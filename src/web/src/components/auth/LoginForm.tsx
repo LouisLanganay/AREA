@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { login as loginApi } from '@/api/Auth';
 import { providers } from '@/utils/authProviders';
-import { login_response } from '../../../../shared/user/login_register_forgot';
-import { error } from '../../../../shared/error/error';
+import { loginResponse } from '@/interfaces/api/Auth';
+import { apiError } from '@/interfaces/api/Errors';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -33,14 +33,14 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   const onSubmit = async (data: LoginSchema) => {
     setIsLoading(true);
     try {
-      const response: login_response = await loginApi({
+      const response: loginResponse = await loginApi({
         id: data.email,
         password: data.password,
       });
       login(response.access_token);
       onSuccess?.();
     } catch(error: any) {
-      const data = error.response.data as error;
+      const data = error.response.data as apiError;
       setError(t('error.' + data.err_code));
     } finally {
       setIsLoading(false);

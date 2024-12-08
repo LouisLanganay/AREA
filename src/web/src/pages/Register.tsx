@@ -5,13 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { register as registerApi } from '@/api/Auth';
 import { useNavigate } from 'react-router-dom';
-import { register_response } from '../../../shared/user/login_register_forgot';
 import { useAuth } from '@/auth/AuthContext';
 import { providers } from '@/utils/authProviders';
-import { error } from '../../../shared/error/error';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import { registerResponse } from '@/interfaces/api/Auth';
+import { apiError } from '@/interfaces/api/Errors';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -38,7 +37,7 @@ export default function Register() {
   const onSubmit = async (data: RegisterSchema) => {
     setIsLoading(true);
     try {
-      const response: register_response = await registerApi({
+      const response: registerResponse = await registerApi({
         email: data.email,
         password: data.password,
         username: data.username,
@@ -47,7 +46,7 @@ export default function Register() {
       await login(response.access_token);
       navigate('/workflows');
     } catch(error: any) {
-      const data = error.response.data as error;
+      const data = error.response.data as apiError;
       setError(data.err_code);
     } finally {
       setIsLoading(false);
