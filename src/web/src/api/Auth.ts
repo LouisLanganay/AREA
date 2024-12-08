@@ -39,7 +39,7 @@ export const login = async (
 };
 
 export const forgotPassword = async (data: { email: string }) => {
-  return await axios.post('/api/auth/forgot-password', data);
+  return await axios.post(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, data);
 };
 
 export const oauthCallback = async (callback_uri: string, token: string, userToken: string) => {

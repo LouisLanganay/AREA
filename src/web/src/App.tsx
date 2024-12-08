@@ -1,6 +1,6 @@
 import { AuthProvider, useAuth } from '@/auth/AuthContext';
 import React, { useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import { FontScaleProvider } from './context/FontScaleContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -12,6 +12,8 @@ import Register from './pages/Register';
 import Services from './pages/Services';
 import Settings from './pages/Settings';
 import Workflows from './pages/Workflows';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -20,7 +22,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? children : <Navigate to="/" replace />;
+  return !isAuthenticated ? children : <Navigate to="/workflows" replace />;
 }
 
 function Logout() {
@@ -32,16 +34,27 @@ function Logout() {
 function LoginSuccess() {
   const { login } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
 
-    if (token)
-      login(token);
+    if (token) {
+      const handleLogin = async () => {
+        try {
+          await login(token);
+          navigate('/workflows');
+        } catch (error) {
+          console.error('Login failed:', error);
+          navigate('/login');
+        }
+      };
+      handleLogin();
+    }
   }, [location]);
 
-  return <Navigate to="/" replace />;
+  return <div>Loading...</div>;
 }
 
 function App() {
@@ -54,16 +67,16 @@ function App() {
               <Route
                 path="/login"
                 element={
-                  <Login />
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
                 }
               />
 
               <Route
                 path="/register"
                 element={
-                  <PublicRoute>
-                    <Register />
-                  </PublicRoute>
+                  <Register />
                 }
               />
 
@@ -79,11 +92,7 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Home />
-                    </Layout>
-                  </ProtectedRoute>
+                  <Home />
                 }
               ></Route>
 
@@ -157,6 +166,20 @@ function App() {
                 path='/login-success'
                 element={
                   <LoginSuccess />
+                }
+              />
+
+              <Route
+                path='/forgot-password'
+                element={
+                  <ForgotPassword />
+                }
+              />
+
+              <Route
+                path='/reset-password'
+                element={
+                  <ResetPassword />
                 }
               />
             </Routes>

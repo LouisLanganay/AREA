@@ -6,10 +6,13 @@ COPY package*.json ./
 
 RUN npm i
 
-COPY  . .
+COPY . .
 
 EXPOSE 8080
 
-RUN chmod +x startup.sh
-
-CMD ["sh", "startup.sh"]
+CMD echo "------------------------------------" && \
+    echo "Before Prisma Migrate" && \
+    sh -c 'until npx prisma migrate deploy; do echo "Retrying Prisma Migrate"; sleep 5; done' && \
+    npx prisma generate && \
+    echo "After Prisma Migrate" && \
+    npm run dev
