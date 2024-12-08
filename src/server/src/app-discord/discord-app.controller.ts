@@ -8,25 +8,25 @@ export class DiscordController {
     constructor(private prisma: PrismaService) {}
 
     private readonly clientId = "1314144283053522974";
-    private readonly redirectUri = 'http://127.0.0.1:8080/discord-app/callback';
+    private readonly redirectUri = 'http://127.0.0.1:8080/auth/discord/callback';
     private readonly clientSecret = "7cwRsrTAddfOx996as3VuNnjISJE1YGe";
     private readonly discordUrl = "https://discord.com/oauth2/authorize?client_id=" + this.clientId + "&redirect_uri=" + this.redirectUri + "&response_type=code&scope=identify%20email";
+    // "https://discord.com/oauth2/authorize?client_id=1314144283053522974&redirect_uri=http://127.0.0.1:8080/auth/discord/callback&response_type=code&scope=identify%20email"
+    @Get('authorize')
+    generateAuthUrl(@Res() res: Response): void {
+        const base = 'https://discord.com/oauth2/authorize';
+        const params = new URLSearchParams({
+            response_type: 'code',
+            client_id: this.clientId,
+            permissions: '8',
+            integration_type: '0',
+            redirect_uri: this.redirectUri,
+            scope: 'bot applications.commands identify email',
+        });
 
-    // @Get('authorize')
-    // generateAuthUrl(@Res() res: Response): void {
-    //     const base = 'https://discord.com/oauth2/authorize';
-    //     const params = new URLSearchParams({
-    //         response_type: 'code',
-    //         client_id: this.clientId,
-    //         permissions: '8',
-    //         integration_type: '0',
-    //         redirect_uri: this.redirectUri,
-    //         scope: 'bot applications.commands identify email',
-    //     });
-    //
-    //     console.log('Redirecting to Discord OAuth:', `${base}?${params.toString()}`);
-    //     res.redirect(`${base}?${params.toString()}`);
-    // }
+        console.log('Redirecting to Discord OAuth:', `${base}?${params.toString()}`);
+        res.redirect(`${base}?${params.toString()}`);
+    }
 
     @Get('callback')
     async handleDiscordCallback(

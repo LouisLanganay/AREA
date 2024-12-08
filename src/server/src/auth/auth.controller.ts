@@ -65,6 +65,7 @@ export class AuthController {
   }
 
   @Get('discord/callback')
+  @UseGuards(AuthGuard('jwt'))
   async getDiscordCallback(
       @Body('code') code: string,
       @Req() req: any,
