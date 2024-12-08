@@ -9,17 +9,20 @@ import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientErrorFilter } from './prisma/prismaHandlerError';
 import { ConfigModule } from '@nestjs/config';
 import { WorkflowModule } from './workflow/workflow.module';
+import { ServiceController } from "./service/route/service.controller";
+import { ServiceModule } from "./service/route/service.module";
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     WorkflowModule,
+    ServiceModule,
     ConfigModule.forRoot({
       isGlobal: true, // Rendre les variables accessibles globalement
     }),
   ],
-  controllers: [AppController, AboutController],
+  controllers: [AppController, AboutController, ServiceController],
   providers: [
     AppService,
     PrismaService,
