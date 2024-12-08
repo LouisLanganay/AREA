@@ -6,15 +6,15 @@ import * as process from 'node:process';
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
   constructor() {
-    console.log('url: s', `${process.env.IP_REDIRECT}auth/discord/redirect`);
+    console.log('url: s', `${process.env.IP_REDIRECT}auth/discord/callback`);
     super({
       clientID: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
-      callbackURL: `${process.env.IP_REDIRECT}auth/discord/redirect`,
+      callbackURL: `${process.env.IP_REDIRECT}auth/discord/callback`,
       scope: ['identify', 'email', 'bot'], // Scopes demandés
     });
     console.log(
-      'callbackURL: --' + `${process.env.IP_REDIRECT}auth/discord/redirect`,
+      'callbackURL: --' + `${process.env.IP_REDIRECT}auth/discord/callback`,
     );
   }
 

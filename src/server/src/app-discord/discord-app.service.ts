@@ -2,12 +2,12 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import fetch from 'node-fetch';  // Importation de node-fetch
 import { PrismaService } from '../prisma/prisma.service'
 import {Prisma} from '@prisma/client';
-import process from "node:process";
+import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
 export class DiscordService {
-    constructor(private prisma: PrismaService) {}
+    constructor(private prisma: PrismaService, private configService: ConfigService) {}
 
     // Méthode pour échanger le code d'autorisation contre des tokens
     async exchangeCodeForTokens(
@@ -121,11 +121,15 @@ export class DiscordService {
             throw new BadRequestException('Code or userId is missing');
         }
 
+        console.log('DISCORD_CLIENT_ID:', this.configService.get<string>('DISCORD_CLIENT_ID'));
+        console.log('DISCORD_CLIENT_SECRET:', this.configService.get<string>('DISCORD_CLIENT_SECRET'));
+        console.log('IP_REDIRECT:', `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`);
+
         const tokens = await this.exchangeCodeForTokens(
             code,
-            process.env.DISCORD_CLIENT_ID,
-            process.env.DISCORD_CLIENT_SECRET,
-            `${process.env.IP_REDIRECT}auth/discord/redirect`
+            this.configService.get<string>('DISCORD_CLIENT_ID'),
+            this.configService.get<string>('DISCORD_CLIENT_SECRET'),
+            `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`,
         );
 
         console.log('tokens:', tokens);
