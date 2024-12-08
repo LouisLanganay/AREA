@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -45,7 +46,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: "Update the current user's information" })
-  @Post('update')
+  @Put('update')
   @ApiBody({
     type: updateUserDto,
   })
