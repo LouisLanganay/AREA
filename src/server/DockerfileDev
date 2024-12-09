@@ -20,4 +20,10 @@ RUN chmod +x startup.sh
 EXPOSE 8080 6379
 
 # Commande pour démarrer Redis et l'application Node.js
-CMD ["sh", "-c", "redis-server --daemonize yes --protected-mode no && sh startup.sh"]
+CMD sh -c 'redis-server --daemonize yes --protected-mode no && \
+                      echo "------------------------------------" && \
+                      echo "Before Prisma Migrate" && \
+                      until npx prisma migrate deploy; do echo "Retrying Prisma Migrate"; sleep 5; done && \
+                      npx prisma generate && \
+                      echo "After Prisma Migrate" && \
+                      npm run dev'
