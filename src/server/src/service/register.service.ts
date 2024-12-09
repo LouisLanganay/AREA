@@ -1,5 +1,6 @@
 import { Service, Event, FieldGroup, Node } from '../../../shared/Workflow';
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 
 export const defaultFieldGroup: FieldGroup = {
   id: 'default',
@@ -12,6 +13,7 @@ export const defaultFieldGroup: FieldGroup = {
 @Injectable()
 export class ServiceRegister {
   private services: Map<string, Service> = new Map();
+  constructor(private readonly prismaService: PrismaService) {}
 
   addService(service: Service): void {
     if (this.services.has(service.id)) {
@@ -35,8 +37,23 @@ export class ServiceRegister {
     return Array.from(this.services.keys());
   }
 
-  getAllServices(): Service[] {
-    return Array.from(this.services.values());
+  async getAllServices(userId: string) {
+    const serviceArray = Array.from(this.services.values());
+
+    return await Promise.all(
+      serviceArray.map(async (service) => {
+        const token = await this.prismaService.token.findFirst({
+          where: {
+            provider: service.id,
+            userId: userId,
+          },
+        });
+        return {
+          ...service,
+          enable: !!token,
+        };
+      }),
+    );
   }
 
   updateService(serviceId: string, updates: Partial<Service>): void {
