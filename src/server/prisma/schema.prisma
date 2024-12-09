@@ -34,6 +34,7 @@ model User {
 
 model Node {
   id          String   @id @default(uuid())
+  id_node     String // link in service
   type        String // 'action' ou 'reaction'
   name        String // Nom de l'action ou réaction (ex: "Send Email")
   serviceName String // Nom du service (ex: "Email", "YouTube")

@@ -14,9 +14,10 @@ export class WorkflowService {
         description: data.description,
         image: data.image,
         enabled: data.enabled,
-        userId, // Associer le workflow à un utilisateur
+        userId,
         nodes: {
           create: data.nodes.map((node) => ({
+            id_node: node.id_node,
             type: node.type,
             name: node.name,
             serviceName: node.serviceName,

@@ -9,6 +9,9 @@ import { Type } from 'class-transformer';
 
 class NodeDto {
   @IsString()
+  id_node: string;
+
+  @IsString()
   type: string; // 'action' ou 'reaction'
 
   @IsString()
