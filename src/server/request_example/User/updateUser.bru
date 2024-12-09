@@ -1,0 +1,21 @@
+meta {
+  name: updateUser
+  type: http
+  seq: 5
+}
+
+post {
+  url: http://localhost:8080/users/update
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMzNjI5NmI1LTE2ZjMtNDFlYi1hZDNmLTMyMjNjZTQ1ZTI1YyIsImlhdCI6MTczMzMyOTc3NiwiZXhwIjoxNzMzMzMzMzc2fQ.rXNpDgXmbq02vvZhb9v4-F4dYElmKbn9mtdGiI3496g
+}
+
+body:json {
+  {
+    "displayName": "coucou"
+  }
+}

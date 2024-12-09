@@ -1,6 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { updateUserDto } from './dto/update-user.dto';
+import { find } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -70,12 +76,12 @@ export class UsersService {
   async findForLogin(UsernameOrEmail: string) {
     return this.prismaService.user.findFirst({
       where: {
-        OR: [
+        AND: [
           {
-            username: UsernameOrEmail,
+            provider: 'local',
           },
           {
-            email: UsernameOrEmail,
+            OR: [{ username: UsernameOrEmail }, { email: UsernameOrEmail }],
           },
         ],
       },
@@ -207,5 +213,35 @@ export class UsersService {
         password: newPassword,
       },
     });
+  }
+
+  async updateUser(data: updateUserDto, id: string) {
+    if (data.email != null) {
+      const user = await this.prismaService.user.findUnique({
+        where: { id },
+        select: { provider: true },
+      });
+      if (!user) throw new NotFoundException({ err_code: 'NOT_FOUND_USER' });
+      if (user.provider !== 'local')
+        throw new ForbiddenException({ err_code: 'THIRD_PART_CHANGE_EMAIL' });
+    }
+    const updatedUser = await this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data,
+    });
+
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      username: updatedUser.username,
+      displayName: updatedUser.displayName,
+      avatarUrl: updatedUser.avatarUrl,
+    };
+  }
+
+  async deleteUser(id: string) {
+    await this.prismaService.user.delete({ where: { id } });
   }
 }

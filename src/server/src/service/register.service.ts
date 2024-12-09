@@ -1,4 +1,4 @@
-import {Service, Event, FieldGroup} from '../../../shared/Workflow';
+import {Service, Event, FieldGroup, Node} from '../../../shared/Workflow';
 import { Injectable } from '@nestjs/common';
 
 export const defaultFieldGroup: FieldGroup = {
@@ -111,10 +111,51 @@ export class ServiceRegister {
         }
         return service.Event.filter(event => event.type === type);
     }
+
+    transformEventToNode(serviceId: string, eventId: string): Node {
+        const service = this.getServiceById(serviceId);
+        if (!service) {
+            throw new Error(`Service with ID "${serviceId}" not found.`);
+        }
+
+        const event = service.Event?.find(e => e.id === eventId);
+        if (!event) {
+            throw new Error(`Event with ID "${eventId}" not found in service "${serviceId}".`);
+        }
+
+        const node: Node = {
+            id: `node-${event.id}`,
+            type: event.type === 'Action' ? 'action' : 'reaction',
+            name: event.name,
+            description: event.description,
+            service: {
+                id: service.id,
+                name: service.name,
+                description: service.description,
+            },
+            fieldGroups: event.parameters,
+            nodes: [],
+            variables: [],
+            last_trigger: undefined,
+        };
+
+        return node;
+    }
+
+    addChildNode(parentNode: Node, childNode: Node): void {
+        if (!parentNode || !childNode) {
+            throw new Error("Parent Node and Child Node must be provided.");
+        }
+
+        if (parentNode.nodes.some(node => node.id === childNode.id)) {
+            throw new Error(`Child Node with ID "${childNode.id}" already exists in Parent Node "${parentNode.id}".`);
+        }
+
+        parentNode.nodes.push(childNode);
+    }
 }
 
 export class EventMonitor {
-
     async checkAction(event: Event, params: FieldGroup): Promise<void> {
 
         if (!event) {

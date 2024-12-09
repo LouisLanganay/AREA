@@ -12,12 +12,15 @@ import { WorkflowModule } from './workflow/workflow.module';
 import { BullModule } from '@nestjs/bullmq';
 import { WebhookModule } from './discordWebhook/discord-webhook.module';
 import {DiscordModule} from "./app-discord/discord-app.module";
+import { ServiceController } from "./service/route/service.controller";
+import { ServiceModule } from "./service/route/service.module";
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     WorkflowModule,
+    ServiceModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,7 +33,7 @@ import {DiscordModule} from "./app-discord/discord-app.module";
     WebhookModule,
     DiscordModule
   ],
-  controllers: [AppController, AboutController],
+  controllers: [AppController, AboutController, ServiceController],
   providers: [
     AppService,
     PrismaService,
