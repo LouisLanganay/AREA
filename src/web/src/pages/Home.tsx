@@ -18,7 +18,6 @@ import {
   MoonIcon,
   SunIcon,
   Bars3Icon,
-  XMarkIcon,
   ChevronDownIcon,
   UserPlusIcon,
   UserIcon
