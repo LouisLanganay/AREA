@@ -34,13 +34,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFontScale } from "@/context/FontScaleContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
-import i18n from "@/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -51,14 +50,27 @@ export default function Settings() {
   const { fontScale, setFontScale } = useFontScale();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
-  const [language, setLanguage] = useState(i18n.language);
   const [hasChanges, setHasChanges] = useState(false);
+  const [language, setLanguage] = useState(i18n.language);
 
   const fontSizeOptions = [
     { label: t("settings.appearance.fontSize.small"), value: 0.8 },
     { label: t("settings.appearance.fontSize.medium"), value: 1 },
     { label: t("settings.appearance.fontSize.large"), value: 1.2 },
     { label: t("settings.appearance.fontSize.xLarge"), value: 1.5 },
+  ];
+
+  const languageOptions = [
+    {
+      value: 'fr',
+      label: t("settings.appearance.language.fr"),
+      flag: "/assets/flags/fr.svg"
+    },
+    {
+      value: 'en',
+      label: t("settings.appearance.language.en"),
+      flag: "/assets/flags/en.svg"
+    }
   ];
 
   const handleAccountChanges = async () => {
@@ -69,9 +81,6 @@ export default function Settings() {
         ...user,
         ...formData
       });
-
-      i18n.changeLanguage(language);
-      localStorage.setItem("language", language);
 
       toast({
         title: t("settings.account.saveSuccess"),
@@ -104,6 +113,12 @@ export default function Settings() {
     const hasFormChanges = value !== (user?.[field as keyof typeof user] || "");
     const hasLanguageChanged = language !== i18n.language;
     setHasChanges(hasFormChanges || hasLanguageChanged);
+  };
+
+  const handleSetLanguage = (value: string) => {
+    localStorage.setItem('language', value);
+    i18n.changeLanguage(value);
+    setLanguage(value);
   };
 
   return (
@@ -140,6 +155,7 @@ export default function Settings() {
                   value={formData.displayName}
                   onChange={(e) => handleFormChange("displayName", e.target.value)}
                   placeholder="John Doe"
+                  variantSize="sm"
                 />
               </div>
               <div className="space-y-2">
@@ -152,36 +168,15 @@ export default function Settings() {
                   value={formData.email}
                   onChange={(e) => handleFormChange("email", e.target.value)}
                   placeholder="john@example.com"
+                  variantSize="sm"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="language">
-                  {t("settings.account.fields.language")}
-                </Label>
-                <Select
-                  onValueChange={(value) => setLanguage(value)}
-                  value={language}
-                >
-                  <SelectTrigger id="language">
-                    <SelectValue
-                      placeholder={t("settings.account.languages.placeholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fr">
-                      {t("settings.account.languages.fr")}
-                    </SelectItem>
-                    <SelectItem value="en">
-                      {t("settings.account.languages.en")}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </CardContent>
             <CardFooter>
               <Button
                 onClick={handleAccountChanges}
                 disabled={isLoading || !hasChanges}
+                size="sm"
               >
                 {isLoading ? t("settings.account.saving") : t("settings.account.save")}
               </Button>
@@ -225,7 +220,10 @@ export default function Settings() {
                     handleFontScaleChange(Number(value))
                   }
                 >
-                  <SelectTrigger id="font-size">
+                  <SelectTrigger
+                    id="font-size"
+                    variantSize="sm"
+                  >
                     <SelectValue
                       placeholder={t("settings.appearance.fontSize.label")}
                     />
@@ -244,6 +242,38 @@ export default function Settings() {
                 <p className="text-sm text-muted-foreground">
                   {t("settings.appearance.fontSize.description")} (
                   {Math.round(fontScale * 100)}%)
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="language">
+                  {t("settings.appearance.language.label")}
+                </Label>
+                <Select
+                  onValueChange={(value) => handleSetLanguage(value)}
+                  value={language}
+                >
+                  <SelectTrigger id="language" variantSize="sm">
+                    <SelectValue
+                      placeholder={t("settings.appearance.language.placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languageOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={option.flag}
+                            alt={`${option.label} flag`}
+                            className="w-4 h-4 object-contain"
+                          />
+                          {option.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">
+                  {t("settings.appearance.language.description")}
                 </p>
               </div>
             </CardContent>
@@ -272,6 +302,7 @@ export default function Settings() {
                   onClick={() => {
                     navigate("/forgot-password");
                   }}
+                  size="sm"
                 >
                   {t("settings.security.password.change")}
                 </Button>
@@ -287,7 +318,7 @@ export default function Settings() {
                 </div>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
+                    <Button variant="destructive" size="sm">
                       {t("settings.security.delete.label")}
                     </Button>
                   </AlertDialogTrigger>

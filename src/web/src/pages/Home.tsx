@@ -16,9 +16,16 @@ import DotPattern from '@/components/ui/dot-pattern';
 import {
   RocketLaunchIcon,
   MoonIcon,
-  SunIcon
+  SunIcon,
+  Bars3Icon,
+  XMarkIcon,
+  ChevronDownIcon,
+  UserPlusIcon,
+  UserIcon
 } from '@heroicons/react/24/solid';
 import { useTheme } from '@/context/ThemeContext';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useState } from 'react';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -86,6 +93,174 @@ export default function Home() {
     }
   ]
 
+  const MobileNav = () => {
+    const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+
+    const toggleSubmenu = (menu: string) => {
+      setOpenSubmenu(openSubmenu === menu ? null : menu);
+    };
+
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Bars3Icon className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="p-2 pt-10 w-[300px] sm:w-[400px] overflow-y-auto">
+          <nav className="flex flex-col">
+            <div className="flex flex-col gap-4">
+              <div>
+                <Button
+                  variant="ghost"
+                  className="justify-between w-full"
+                  onClick={() => toggleSubmenu('features')}
+                >
+                  {t('home.navigation.features.title')}
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                    openSubmenu === 'features' ? 'rotate-180' : ''
+                  }`} />
+                </Button>
+                {openSubmenu === 'features' && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/docs')}
+                    >
+                      {t('home.navigation.features.intro')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/pricing')}
+                    >
+                      {t('home.navigation.features.pricing')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/integrations')}
+                    >
+                      {t('home.navigation.features.integrations')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <Button
+                  variant="ghost"
+                  className="justify-between w-full"
+                  onClick={() => toggleSubmenu('documentation')}
+                >
+                  {t('home.navigation.documentation.title')}
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                    openSubmenu === 'documentation' ? 'rotate-180' : ''
+                  }`} />
+                </Button>
+                {openSubmenu === 'documentation' && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/api-docs')}
+                    >
+                      {t('home.navigation.documentation.api')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/github')}
+                    >
+                      {t('home.navigation.documentation.source')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/mobile')}
+                    >
+                      {t('home.navigation.documentation.mobile')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <Button
+                  variant="ghost"
+                  className="justify-between w-full"
+                  onClick={() => toggleSubmenu('enterprise')}
+                >
+                  {t('home.navigation.enterprise.title')}
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                    openSubmenu === 'enterprise' ? 'rotate-180' : ''
+                  }`} />
+                </Button>
+                {openSubmenu === 'enterprise' && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/enterprise')}
+                    >
+                      {t('home.navigation.enterprise.solutions')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/case-studies')}
+                    >
+                      {t('home.navigation.enterprise.cases')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/contact')}
+                    >
+                      {t('home.navigation.enterprise.contact')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <hr className="my-4" />
+
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className="justify-start truncate"
+                onClick={() => navigate('/login')}
+              >
+                <UserIcon className="h-5 w-5" />
+                {t('home.auth.signin')}
+              </Button>
+              <Button
+                className="justify-start truncate"
+                onClick={() => navigate('/register')}
+              >
+                <UserPlusIcon className="h-5 w-5" />
+                {t('home.auth.register')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="justify-start truncate"
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              >
+                {theme === 'light' ? (
+                  <><MoonIcon className="h-5 w-5" />{t('home.theme.dark')}</>
+                ) : (
+                  <><SunIcon className="h-5 w-5" />{t('home.theme.light')}</>
+                )}
+              </Button>
+            </div>
+          </nav>
+        </SheetContent>
+      </Sheet>
+    );
+  };
+
   return (
     <div className='min-h-screen bg-background'>
       <header className='border-b z-40'>
@@ -96,7 +271,7 @@ export default function Home() {
             </div>
           </div>
 
-          <NavigationMenu>
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.features.title')}</NavigationMenuTrigger>
@@ -162,7 +337,7 @@ export default function Home() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <div className='flex-1 basis-0 flex items-center gap-4 justify-end'>
+          <div className='hidden md:flex flex-1 basis-0 items-center gap-4 justify-end'>
             <Button
               variant='ghost'
               size='icon'
@@ -186,12 +361,14 @@ export default function Home() {
               {t('home.auth.register')}
             </Button>
           </div>
+
+          <MobileNav />
         </div>
       </header>
 
       <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
         <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50 dark:opacity-20' />
-        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-10 sm:py-20 md:py-32 lg:py-40 relative'>
+        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative'>
           <div className=''>
             <div className='flex flex-col'>
               <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
