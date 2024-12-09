@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+	darkMode: 'selector',
   theme: {
   	extend: {
   		fontFamily: {
@@ -20,6 +21,7 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+				transparent: '#00000000',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -72,5 +74,4 @@ export default {
   	}
   },
   plugins: [require("tailwindcss-animate")],
-  darkMode: ['class', "class"],
 };

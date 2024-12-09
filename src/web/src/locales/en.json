@@ -96,36 +96,13 @@
         "xLarge": "Extra Large"
       }
     },
-    "notifications": {
-      "title": "Notification Preferences",
-      "description": "Manage how you receive notifications.",
-      "email": {
-        "label": "Email Notifications",
-        "description": "Receive notifications via email."
-      },
-      "push": {
-        "label": "Push Notifications",
-        "description": "Receive push notifications on your devices."
-      },
-      "frequency": {
-        "label": "Notification Frequency",
-        "placeholder": "Select frequency",
-        "options": {
-          "realtime": "Real-time",
-          "hourly": "Hourly Summary",
-          "daily": "Daily Summary",
-          "weekly": "Weekly Summary"
-        }
-      }
-    },
     "security": {
       "title": "Security Settings",
       "description": "Manage your account's security and access.",
       "password": {
-        "change": "Change Password",
-        "current": "Current Password",
-        "new": "New Password",
-        "confirm": "Confirm Password"
+        "label": "Change Password",
+        "description": "Change your password to enhance your account's security.",
+        "change": "Change Password"
       },
       "twoFactor": {
         "label": "Two-Factor Authentication",
@@ -133,10 +110,7 @@
       },
       "delete": {
         "label": "Delete Account",
-        "confirmation": {
-          "title": "Are you absolutely sure?",
-          "description": "This action cannot be undone. It will permanently delete your account and remove your data from our servers."
-        }
+        "description": "Permanently delete your account and remove your data from our servers."
       }
     },
     "automation": {

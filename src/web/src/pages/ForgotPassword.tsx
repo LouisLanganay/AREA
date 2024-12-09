@@ -5,10 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { error } from '../../../shared/error/error';
 import { forgotPassword } from '@/api/Auth';
 import { ArrowLeftCircleIcon, Loader2 } from 'lucide-react';
 import { ArrowRightCircleIcon, EnvelopeOpenIcon } from '@heroicons/react/24/solid';
+import { apiError } from '@/interfaces/api/Errors';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ export default function ForgotPassword() {
       });
       setIsSubmitted(true);
     } catch(error: any) {
-      const data = error.response.data as error;
+      const data = error.response.data as apiError;
       setError(t('error.' + data.err_code));
     } finally {
       setIsLoading(false);
