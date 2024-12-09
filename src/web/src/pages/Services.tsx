@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Service } from '../../../shared/Workflow';
 import { useEffect, useState } from 'react';
-import { getServices } from '@/api/Services';
+import { getServiceAuth, getServices } from '@/api/Services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlusIcon } from '@heroicons/react/24/solid';
@@ -34,10 +34,15 @@ export default function Services() {
     fetchServices();
   }, []);
 
-  function handleOAuth(service: Service) {
-    if (service.auth) {
+  async function handleOAuth(service: Service) {
+    if (!service.auth || !userToken)
+      return;
+    try {
+      const auth = await getServiceAuth(service.auth.uri, userToken);
       localStorage.setItem('oauth_service_id', service.id);
-      window.location.href = service.auth.uri;
+      window.location.href = auth.redirectUrl;
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -110,7 +115,7 @@ export default function Services() {
                   </p>
                 </div>
               </div>
-              {service.enabled ? (
+              {!service.auth ? (
                 <Button
                   variant='secondary'
                   className='w-full'
