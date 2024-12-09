@@ -60,9 +60,9 @@ export class AuthController {
   //retourne le dans le body le lien de redirection
   @Get('discord')
   async discordAuth() {
-    const redirectUrl = this.discordService.getRedirectUrl();
+    const redirectUrl = await this.discordService.getRedirectUrl();
     console.log('Redirecting to Discord OAuth:', redirectUrl);
-    return redirectUrl ;
+    return {redirectUrl: redirectUrl} ;
   }
 
   @Get('discord/callback')
