@@ -70,7 +70,7 @@ export const discordService: Service = {
     image: "https://discord.com/img/logo.png",
     Event: [],
     auth: {
-        uri: "api/auth/discord",
-        callback_uri: "api/auth/discord/callback"
+        uri: "/auth/discord",
+        callback_uri: "/auth/discord/callback"
     }
 };
