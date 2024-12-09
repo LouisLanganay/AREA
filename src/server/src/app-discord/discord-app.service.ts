@@ -115,6 +115,21 @@ export class DiscordService {
         }
     }
 
+    async getRedirectUrl(): Promise<string> {
+        // Return l'url d'autehenfication de Discord
+        const base = 'https://discord.com/oauth2/authorize';
+        const params = new URLSearchParams({
+            client_id: this.configService.get<string>('DISCORD_CLIENT_ID'),
+            response_type: 'code',
+            permissions: '8',
+            integration_type: '0',
+            scope: 'bot applications.commands identify email',
+            redirect_uri: `${this.configService.get<string>('IP_FRONT_REDIRECT')}services`,
+        });
+        console.log('Redirecting to Discord OAuth:', `${base}?${params.toString()}`);
+        return `${base}?${params.toString()}`;
+    }
+
     async discordCallback(code: string, req:any): Promise<any> {
         console.log('Discord OAuth callback received:', code);
         if (!code) {

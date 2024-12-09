@@ -60,14 +60,17 @@ export class AuthController {
   //retourne le dans le body le lien de redirection
   @Get('discord')
   async discordAuth() {
-    const redirectUrl = `${process.env.IP_REDIRECT}auth/discord/callback`;
-    return { redirectUrl };
+    const redirectUrl = this.discordService.getRedirectUrl();
+    console.log('Redirecting to Discord OAuth:', redirectUrl);
+    return redirectUrl ;
   }
 
   @Get('discord/callback')
   @UseGuards(AuthGuard('jwt'))
   async getDiscordCallback(
+      // code dans le body
       @Body('code') code: string,
+      // req en classique
       @Req() req: any,
   ): Promise<any> {
     console.log('Discord OAuth callback received:', code);
