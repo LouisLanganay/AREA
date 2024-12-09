@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Workflow } from '../../../shared/Workflow';
 import { getWorkflowResponse } from '@/interfaces/api/Workflows';
+import { Workflow } from '@/interfaces/Workflows';
 
 export const getWorkflows = async (): Promise<Workflow[]> => {
   //const response = await axios.get<Service[]>(`${import.meta.env.VITE_API_URL}/services`);

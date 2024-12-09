@@ -23,7 +23,6 @@ import {
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { User } from '../../../../shared/Users';
 import { Badge } from '../ui/badge';
 import {
   Dialog,
@@ -34,6 +33,7 @@ import {
 import { useState } from 'react';
 import { LoginForm } from '../auth/LoginForm';
 import { useNavigate } from 'react-router-dom';
+import { User } from '@/interfaces/User';
 
 export function UserInfo({
   user,

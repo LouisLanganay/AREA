@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Service } from '../../../shared/Workflow';
 import { ServiceAuth } from '@/interfaces/api/Service';
+import { Service } from '@/interfaces/Services';
 
 export const getServices = async (): Promise<Service[]> => {
   const response = await axios.get<Service[]>(`${import.meta.env.VITE_API_URL}/services`);

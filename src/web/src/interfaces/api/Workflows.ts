@@ -1,4 +1,4 @@
-import { Workflow } from "../../../../shared/Workflow";
+import { Workflow } from "../Workflows";
 
 interface getWorkflowResponse extends Workflow {}
 

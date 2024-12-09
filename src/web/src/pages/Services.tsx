@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { Service } from '../../../shared/Workflow';
 import { useEffect, useState } from 'react';
 import { getServiceAuth, getServices } from '@/api/Services';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { oauthCallback } from '@/api/Auth';
+import { Service } from '@/interfaces/Services';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -68,7 +68,7 @@ export default function Services() {
         return;
 
       try {
-        const response = await oauthCallback(service.auth.callback_uri, token, userToken);
+        await oauthCallback(service.auth.callback_uri, token, userToken);
         // TODO: Handle response
         localStorage.removeItem('oauth_service_id');
         const updatedServices = await getServices();
@@ -115,7 +115,7 @@ export default function Services() {
                   </p>
                 </div>
               </div>
-              {!service.auth ? (
+              {service.enabled ? (
                 <Button
                   variant='secondary'
                   className='w-full'

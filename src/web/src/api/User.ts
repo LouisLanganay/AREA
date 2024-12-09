@@ -1,17 +1,12 @@
-import axios from 'axios';
-import { User } from '../../../shared/Users';
-import { getMeResponse } from '@/interfaces/api/User';
-
-export const getUser = async (userId: string): Promise<User> => {
-  const response = await axios.get<User>(`${import.meta.env.VITE_API_URL}/users/${userId}`);
-  return response.data;
-};
+import { getMeResponse } from "@/interfaces/api/User";
+import { User } from "@/interfaces/User";
+import axios from "axios";
 
 export const getMe = async (token: string): Promise<getMeResponse> => {
-  const response = await axios.get<any>(`${import.meta.env.VITE_API_URL}/users/me`, {
+  const response = await axios.get<getMeResponse>(`${import.meta.env.VITE_API_URL}/users/me`, {
     headers: {
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
 
   if (response.status !== 200) {
@@ -21,11 +16,11 @@ export const getMe = async (token: string): Promise<getMeResponse> => {
   return response.data;
 };
 
-export const updateUser = async (token: string, user: User): Promise<User> => {
-  const response = await axios.put<User>(`${import.meta.env.VITE_API_URL}/users/update`, user, {
+export const updateUser = async (token: string, user: User): Promise<void> => {
+  const response = await axios.put(`${import.meta.env.VITE_API_URL}/users/update`, user, {
     headers: {
-      Authorization: `Bearer ${token}`,
-    },
+      Authorization: `Bearer ${token}`
+    }
   });
 
   if (response.status !== 200) {
@@ -34,4 +29,3 @@ export const updateUser = async (token: string, user: User): Promise<User> => {
 
   return response.data;
 };
-

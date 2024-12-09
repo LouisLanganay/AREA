@@ -31,7 +31,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { deleteWorkflow, getWorkflows, updateWorkflow } from '@/api/Workflows';
-import { Node, Service, Workflow } from '../../../shared/Workflow';
 import { useNavigate } from 'react-router-dom';
 import { ArrowsUpDownIcon, CheckIcon, ChevronDownIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -41,6 +40,8 @@ import { useTranslation } from 'react-i18next';
 import { getServices } from '@/api/Services';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Node, Workflow } from '@/interfaces/Workflows';
+import { Service } from '@/interfaces/Services';
 
 export default function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);

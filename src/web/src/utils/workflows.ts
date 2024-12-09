@@ -1,5 +1,4 @@
-import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight } from '@/interfaces/Workflows';
-import { Node, Workflow } from '../../../shared/Workflow';
+import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Node } from '@/interfaces/Workflows';
 import dagre from '@dagrejs/dagre';
 import { ConnectionLineType } from '@xyflow/react';
 

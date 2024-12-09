@@ -55,7 +55,7 @@ export const forgotPassword = async (
 
 export const oauthCallback = async (callback_uri: string, token: string, userToken: string) => {
   const response = await axios.post(`${import.meta.env.VITE_API_URL}${callback_uri}`, {
-    token: token,
+    code: token,
     headers: {
       Authorization: `Bearer ${userToken}`
     }
