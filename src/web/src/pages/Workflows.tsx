@@ -42,6 +42,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Node, Workflow } from '@/interfaces/Workflows';
 import { Service } from '@/interfaces/Services';
+import { useAuth } from '@/auth/AuthContext';
 
 export default function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -52,6 +53,7 @@ export default function Workflows() {
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchWorkflows = async () => {
@@ -64,8 +66,9 @@ export default function Workflows() {
     };
 
     const fetchServices = async () => {
+      if (!token) return;
       try {
-        const data = await getServices();
+        const data = await getServices(token);
         setServices(data);
       } catch (error) {
         console.error('Failed to fetch services', error);

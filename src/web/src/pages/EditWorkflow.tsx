@@ -162,8 +162,9 @@ export default function EditWorkflow() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) return;
       try {
-        const fetchedServices = await getServices();
+        const fetchedServices = await getServices(token);
         setServices(fetchedServices);
 
         if (!id || !token) return;

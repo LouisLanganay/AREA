@@ -2,8 +2,12 @@ import axios from 'axios';
 import { ServiceAuth } from '@/interfaces/api/Service';
 import { Service } from '@/interfaces/Services';
 
-export const getServices = async (): Promise<Service[]> => {
-  const response = await axios.get<Service[]>(`${import.meta.env.VITE_API_URL}/services`);
+export const getServices = async (token: string): Promise<Service[]> => {
+  const response = await axios.get<Service[]>(`${import.meta.env.VITE_API_URL}/services`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 
   if (response.status !== 200) {
     throw new Error('Failed to get services');

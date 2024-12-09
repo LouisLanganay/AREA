@@ -5,17 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '@/auth/AuthContext';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { oauthCallback } from '@/api/Auth';
 import { Service } from '@/interfaces/Services';
+import { toast } from '@/hooks/use-toast';
 
 export default function Services() {
   const { t } = useTranslation();
   const [services, setServices] = useState<Service[]>([]);
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get('code');
   const { token: userToken } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token && localStorage.getItem('oauth_service_id'))
@@ -24,8 +26,9 @@ export default function Services() {
 
   useEffect(() => {
     const fetchServices = async () => {
+      if (!userToken) return;
       try {
-        const services = await getServices();
+        const services = await getServices(userToken);
         setServices(services);
       } catch (error) {
         console.error(error);
@@ -59,6 +62,8 @@ export default function Services() {
     const handleOAuthCallback = async () => {
       const serviceId = localStorage.getItem('oauth_service_id');
 
+      console.log("handleOAuthCallback", token, serviceId);
+
       if (!token || !serviceId)
         return;
 
@@ -71,12 +76,23 @@ export default function Services() {
         await oauthCallback(service.auth.callback_uri, token, userToken);
         // TODO: Handle response
         localStorage.removeItem('oauth_service_id');
-        const updatedServices = await getServices();
+        const updatedServices = await getServices(userToken);
         setServices(updatedServices);
-      } catch (error) {
+      } catch (error: any) {
+        localStorage.removeItem('oauth_service_id');
         console.error('OAuth callback error:', error);
+        if (error?.response?.status === 500) {
+          toast({
+            title: t('error.INTERNAL_SERVER_ERROR'),
+            description: t('error.INTERNAL_SERVER_ERROR_DESCRIPTION'),
+            variant: 'destructive',
+          });
+        }
+        navigate('/services');
       }
     };
+
+    console.log("handleOAuthCallback");
 
     handleOAuthCallback();
   }, [token, services]);

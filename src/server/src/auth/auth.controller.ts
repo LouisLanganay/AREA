@@ -65,7 +65,7 @@ export class AuthController {
     return {redirectUrl: redirectUrl} ;
   }
 
-  @Get('discord/callback')
+  @Post('discord/callback')
   @UseGuards(AuthGuard('jwt'))
   async getDiscordCallback(
       // code dans le body
