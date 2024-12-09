@@ -1,4 +1,4 @@
-import { User } from "../../../../shared/Users";
+import { User } from "../User";
 
 interface getMeResponse extends User {};
 

@@ -1,38 +1,5 @@
-import i18n from "@/i18n";
-import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import { useFontScale } from "@/context/FontScaleContext";
-import { useTheme } from "@/context/ThemeContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { updateUser } from "@/api/User";
+import { useAuth } from "@/auth/AuthContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,9 +11,32 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFontScale } from "@/context/FontScaleContext";
+import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
-import { updateUser } from "@/api/User";
-import { useAuth } from "@/auth/AuthContext";
+import i18n from "@/i18n";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
@@ -106,14 +96,6 @@ export default function Settings() {
     toast({
       title: t("settings.security.delete.confirmation.title"),
       description: t("settings.security.delete.confirmation.description"),
-    });
-  };
-
-  const handleChangePassword = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    toast({
-      title: t("settings.security.password.change"),
-      description: t("settings.security.password.changed"),
     });
   };
 

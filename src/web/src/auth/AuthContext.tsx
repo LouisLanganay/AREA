@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { User } from '../../../shared/Users';
-import { getMe_response } from '../../../shared/user/user_route';
+import { getMeResponse } from '@/interfaces/api/User';
 import { getMe } from '@/api/User';
+import { User } from '@/interfaces/User';
 
 interface Account {
   user: User | null;
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (existingAccount)
       return existingAccount;
 
-    const data: getMe_response = await getMe(newToken);
+    const data: getMeResponse = await getMe(newToken);
     const newAccount: Account = {
       user: data,
       token: newToken
