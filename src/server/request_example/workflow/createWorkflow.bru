@@ -11,13 +11,13 @@ post {
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImYzMjgwNjUyLTFjNWYtNDllNS1hZWRkLWY1N2M1N2E1ZDA0MCIsImlhdCI6MTczMzY3OTMwOSwiZXhwIjoxNzMzNjgyOTA5fQ.uDLhUEBiOssog7ZJUTSXqj8w9vX4fOTmBXLc-So6tkM
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNkZjZlZGYxLTE4YzItNDU1Mi1hMmMyLWQwMmEzYjQyZmM4NCIsImlhdCI6MTczMzc1MDY5MywiZXhwIjoxNzMzNzU0MjkzfQ.EATyZczWX0NeHGOBbXHZBSIOOMJpgXYA_RPcroSrCC8
 }
 
 body:json {
   {
-    "name": "Meteo to Discordl",
-    "description": "Notify when temp is lower than 10°C at Rennes",
+    "name": "Meteo Yongin to Discord",
+    "description": "Notify when temp is lower than 10°C at GPS pos",
     "image": "https://example.com/workflow.png",
     "enabled": true,
     "nodes": [
@@ -38,14 +38,14 @@ body:json {
                 "type": "number",
                 "required": true,
                 "description": "The latitude format : xx.xxx",
-                "value": 48.12
+                "value": 37.3194
               },
               {
                 "id": "longitude",
                 "type": "number",
                 "required": true,
                 "description": "The longitude format : xx.xxx",
-                "value": -1.7025
+                "value": 37.3194
               }
             ]
           }
@@ -53,12 +53,12 @@ body:json {
         "dependsOn": null
       },
       {
-        "id_node": "notifyUserDiscord,",
+        "id_node": "notifyUserDiscord",
         "type": "reaction",
         "name": "Notify On Discord",
         "serviceName": "discord",
         "fieldGroups": [],
-        "dependsOn": "trigger1"
+        "dependsOn": "checkFreezingTemperature"
       }
     ]
   }

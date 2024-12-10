@@ -16,11 +16,12 @@ interface FieldGroup {
 }
 
 interface Event {
-    type : 'Action' | 'Reaction'
-    id: string;
+    type : 'action' | 'reaction'
+    id_node: string;
     name: string;
     description: string;
-    parameters: FieldGroup[];
+    serviceName: string;
+    fieldGroups: FieldGroup[];
     execute?: (parameters: FieldGroup[]) => void;
     check?: (parameters: FieldGroup[]) => Promise<boolean>;
 }
