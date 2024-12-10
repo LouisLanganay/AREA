@@ -11,7 +11,7 @@ export class EventMonitor {
 
   async checkAction(event: Event, params: FieldGroup): Promise<void> {
     if (!event) {
-      throw new Error(`Event with ID "${event.id}" not found.`);
+      throw new Error(`Event with ID "${event.id_node}" not found.`);
     }
 
     if (typeof event.execute === 'function') {
@@ -42,7 +42,7 @@ export class EventMonitor {
 
         if (service) {
 
-          const event = service.Event.find((e) => e.id === action.id_node);
+          const event = service.Event.find((e) => e.id_node === action.id_node);
 
           if (event) {
             let nodeFieldGroup: FieldGroup;

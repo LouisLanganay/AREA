@@ -75,15 +75,15 @@ export class ServiceRegister {
       service.Event = [];
     }
 
-    if (service.Event.some((e) => e.id === event.id)) {
+    if (service.Event.some((e) => e.id_node === event.id_node)) {
       throw new Error(
-        `Event with ID "${event.id}" already exists in service "${serviceId}".`,
+        `Event with ID "${event.id_node}" already exists in service "${serviceId}".`,
       );
     }
 
     const clonedEvent: Event = {
       ...event,
-      parameters: event.parameters.map((group) => ({
+      fieldGroups: event.fieldGroups.map((group) => ({
         ...group,
         fields: [...group.fields],
       })),
@@ -115,7 +115,7 @@ export class ServiceRegister {
       throw new Error(`Service with ID "${serviceId}" not found.`);
     }
     const initialLength = service.Event.length;
-    service.Event = service.Event.filter((event) => event.id !== eventId);
+    service.Event = service.Event.filter((event) => event.id_node !== eventId);
     if (initialLength === service.Event.length) {
       throw new Error(
         `Event with ID "${eventId}" not found in service "${serviceId}".`,
@@ -129,12 +129,12 @@ export class ServiceRegister {
     if (!service) {
       throw new Error(`Service with ID "${serviceId}" not found.`);
     }
-    return service.Event.find((event) => event.id === eventId);
+    return service.Event.find((event) => event.id_node === eventId);
   }
 
   getAllEventByTypeInService(
     serviceId: string,
-    type: 'Action' | 'Reaction',
+    type: 'action' | 'reaction',
   ): Event[] | undefined {
     const service = this.getServiceById(serviceId);
     if (!service) {
@@ -149,7 +149,7 @@ export class ServiceRegister {
       throw new Error(`Service with ID "${serviceId}" not found.`);
     }
 
-    const event = service.Event?.find((e) => e.id === eventId);
+    const event = service.Event?.find((e) => e.id_node === eventId);
     if (!event) {
       throw new Error(
         `Event with ID "${eventId}" not found in service "${serviceId}".`,
@@ -157,8 +157,8 @@ export class ServiceRegister {
     }
 
     const node: Node = {
-      id: `node-${event.id}`,
-      type: event.type === 'Action' ? 'action' : 'reaction',
+      id: `node-${event.id_node}`,
+      type: event.type,
       name: event.name,
       description: event.description,
       service: {
@@ -166,7 +166,7 @@ export class ServiceRegister {
         name: service.name,
         description: service.description,
       },
-      fieldGroups: event.parameters,
+      fieldGroups: event.fieldGroups,
       nodes: [],
       variables: [],
       last_trigger: undefined,
