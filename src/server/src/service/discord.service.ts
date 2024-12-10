@@ -89,7 +89,7 @@ export const discordService: Service = {
   name: 'Discord',
   description: 'Messaging service for teams',
   loginRequired: true,
-  image: 'https://discord.com/img/logo.png',
+  image: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
   Event: [],
   auth: {
     uri: 'api/auth/discord',
