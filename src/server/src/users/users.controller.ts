@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   Param,
+  Patch,
   Post,
   Put,
   Req,
@@ -48,7 +50,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: "Update the current user's information" })
-  @Put('update')
+  @Patch('update/:id')
   @ApiBody({
     type: updateUserDto,
   })
@@ -71,7 +73,14 @@ export class UsersController {
   })
   @HttpCode(200)
   @UseGuards(AuthGuard('jwt'))
-  async updateUser(@Req() req, @Body() body: updateUserDto) {
+  async updateUser(
+    @Req() req,
+    @Body() body: updateUserDto,
+    @Param('id') id: string,
+  ) {
+    if (req.user.id !== id) {
+      throw new ForbiddenException({ err_code: 'USER_FORBIDDEN_EDIT' });
+    }
     return await this.userService.updateUser(body, req.user.id);
   }
 
