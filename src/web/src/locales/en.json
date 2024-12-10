@@ -153,7 +153,25 @@
     "enableAll": "Enable All",
     "disableAll": "Disable All",
     "columns": "Columns",
-    "create": "Create Workflow",
+    "create": "Create new workflow",
+    "creation": {
+      "info": {
+        "title": "Create New Workflow",
+        "subtitle": "Enter basic information about your workflow",
+        "name": "Name",
+        "description": "Description",
+        "namePlaceholder": "Enter workflow name",
+        "descriptionPlaceholder": "Enter workflow description"
+      },
+      "cancel": "Cancel",
+      "nextStep": "Next Step",
+      "trigger": {
+        "title": "Select Trigger",
+        "description": "Choose an event that will trigger your workflow",
+        "back": "Back",
+        "create": "Create Workflow"
+      }
+    },
     "noResults": "No results found",
     "selectedRows": "{{selected}} of {{total}} rows selected",
     "previous": "Previous",
@@ -185,7 +203,13 @@
     "nodeAddedTitle": "Node Added",
     "nodeAddedDescription": "The node has been added to the workflow.",
     "save": "Save changes",
-    "back": "Back"
+    "back": "Back",
+    "deleteSuccess": "Workflow deleted successfully",
+    "deleteSuccessDescription": "The workflow has been deleted.",
+    "createSuccess": "Workflow created successfully",
+    "createSuccessDescription": "The workflow has been created.",
+    "createError": "Error creating workflow",
+    "createErrorDescription": "An error occurred while creating the workflow. Please try again."
   },
   "login": {
     "title": "Sign in to your account",

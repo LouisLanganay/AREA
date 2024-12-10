@@ -28,7 +28,7 @@ async function defineAllService(app: any) {
   allService.addEventToService('testService', EventCheckFreezingTemperature);
 
   const monitor = new EventMonitor();
-  await monitor.monitoringAllActions(allService.getAllServices());
+  await monitor.monitoringAllActions(await allService.getAllServices());
 }
 
 async function bootstrap() {

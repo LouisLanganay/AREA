@@ -60,7 +60,7 @@ export class AuthService {
     }
     const passwordMatch = await compare(loginUserDto.password, user.password);
     if (!passwordMatch) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException({ err_code: 'INVALID_CREDENTIAL' });
     }
     const payload = { id: user.id };
     await this.usersService.setLastConnection(user.id);
@@ -156,6 +156,7 @@ export class AuthService {
     );
     if (isSend) {
       throw new InternalServerErrorException({
+        err_code: 'FAIL_SEND_MAIL',
         message: 'Error sending email please try again or contact support',
       });
     }
@@ -189,14 +190,14 @@ export class AuthService {
       throw new BadRequestException({ err_code: 'TOKEN_EXPIRED' });
     }
     if (reset.expiresAt < new Date()) {
-      throw new NotFoundException({ err_code: 'Token expired' });
+      throw new NotFoundException({ err_code: 'TOKEN_EXPIRED' });
     }
     const hash = await this.hashPassword(data.password);
     const user = await this.usersService.resetPassword(reset.userId, hash);
     await this.usersService.resetToken(data.token);
     if (!user) {
       throw new NotFoundException({
-        err_code: "Employee requested doesn't exist",
+        err_code: 'USER_NOT_FOUND_RESET',
       });
     }
     await this.mailerService.sendEmailWithTemplate(
