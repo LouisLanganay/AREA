@@ -138,13 +138,13 @@ export class DiscordService {
 
         console.log('DISCORD_CLIENT_ID:', this.configService.get<string>('DISCORD_CLIENT_ID'));
         console.log('DISCORD_CLIENT_SECRET:', this.configService.get<string>('DISCORD_CLIENT_SECRET'));
-        console.log('IP_REDIRECT:', `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`);
+        console.log('IP_REDIRECT:', `${this.configService.get<string>('IP_FRONT_REDIRECT')}services`);
 
         const tokens = await this.exchangeCodeForTokens(
             code,
             this.configService.get<string>('DISCORD_CLIENT_ID'),
             this.configService.get<string>('DISCORD_CLIENT_SECRET'),
-            `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`,
+            `${this.configService.get<string>('IP_FRONT_REDIRECT')}services`,
         );
 
         console.log('tokens:', tokens);
