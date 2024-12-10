@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { error } from '../../../shared/error/error';
 import { login as loginApi } from '@/api/Auth';
 import { useState } from 'react';
 import { providers } from '@/utils/authProviders';
-import { login_response } from '../../../shared/user/login_register_forgot';
 import { useTranslation } from 'react-i18next';
+import { loginResponse } from '@/interfaces/api/Auth';
+import { apiError } from '@/interfaces/api/Errors';
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { useOAuth } from '@/hooks/useOAuth';
 
 
 export default function Login() {
@@ -27,19 +29,20 @@ export default function Login() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { openOAuthUrl } = useOAuth();
 
 
   const onSubmit = async (data: LoginSchema) => {
     setIsLoading(true);
     try {
-      const response: login_response = await loginApi({
+      const response: loginResponse = await loginApi({
         id: data.email,
         password: data.password,
       });
       login(response.access_token);
       navigate('/');
     } catch(error: any) {
-      const data = error.response.data as error;
+      const data = error.response.data as apiError;
       setError(t('error.' + data.err_code));
     } finally {
       setIsLoading(false);
@@ -48,6 +51,15 @@ export default function Login() {
 
   return (
     <div className='flex min-h-screen items-center justify-center'>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 md:hidden"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeftIcon className="h-5 w-5" />
+      </Button>
+
       <div className='w-full max-w-md space-y-4 p-8'>
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>
@@ -64,7 +76,7 @@ export default function Login() {
               variant='outline'
               size='icon'
               key={provider.name}
-              onClick={() => window.location.href = provider.redirect || ''}
+              onClick={() => openOAuthUrl(provider.redirect || '')}
             >
               <img
                 src={provider.icon}
