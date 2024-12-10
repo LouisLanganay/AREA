@@ -1,10 +1,9 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
-  Post, Query,
+  Post,
   Req,
   Res,
   UseGuards,
@@ -16,11 +15,10 @@ import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
-import {DiscordService} from "../app-discord/discord-app.service";
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly discordService: DiscordService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
@@ -56,28 +54,17 @@ export class AuthController {
     const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
     return res.redirect(frontendRedirectUrl);
   }
-
-  //retourne le dans le body le lien de redirection
   @Get('discord')
+  @UseGuards(AuthGuard('discord'))
   async discordAuth() {
-    const redirectUrl = await this.discordService.getRedirectUrl();
-    console.log('Redirecting to Discord OAuth:', redirectUrl);
-    return {redirectUrl: redirectUrl} ;
+    // Cette méthode redirige vers Discord pour l'authentification
   }
 
-  @Post('discord/callback')
-  @UseGuards(AuthGuard('jwt'))
-  async getDiscordCallback(
-      // code dans le body
-      @Body('code') code: string,
-      // req en classique
-      @Req() req: any,
-  ): Promise<any> {
-    console.log('Discord OAuth callback received:', code);
-    if (!code) {
-      throw new BadRequestException('Code or userId is missing');
-    }
-    await this.discordService.discordCallback(code, req);
+  @Get('discord/redirect')
+  @UseGuards(AuthGuard('discord'))
+  async discordAuthRedirect(@Req() req, @Res() res) {
+    const token = await this.authService.UserDiscord(req.user);
+    return this.redirectFrontend(res, token);
   }
 
   @HttpCode(200)

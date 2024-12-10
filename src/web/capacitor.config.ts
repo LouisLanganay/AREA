@@ -1,22 +1,10 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.your.app',
-  appName: 'Your App',
+  appId: 'com.example.app',
+  appName: 'area',
   webDir: 'dist',
-  server: {
-    androidScheme: 'https',
-    allowNavigation: [
-      'http://localhost:8080',
-      'accounts.google.com',
-      'discord.com'
-    ]
-  },
-  plugins: {
-    Browser: {
-      presentationStyle: 'popover'
-    }
-  }
+  bundledWebRuntime: false
 };
 
 export default config;

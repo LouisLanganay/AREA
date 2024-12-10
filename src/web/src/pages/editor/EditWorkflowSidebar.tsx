@@ -1,14 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { Node as AreaNode, Field, FieldGroup, Service } from '../../../../shared/Workflow';
 import { XMarkIcon, ServerIcon, ChatBubbleBottomCenterTextIcon, Cog6ToothIcon, ArchiveBoxArrowDownIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { Service } from '@/interfaces/Services';
-import { Field, FieldGroup } from '@/interfaces/Workflows';
-import { Node as AreaNode } from '@/interfaces/Workflows';
 
 interface EditWorkflowSidebarProps {
   selectedNode: AreaNode | null;
@@ -49,7 +47,7 @@ export function EditWorkflowSidebar({
     const isInvalid = field.required && !currentValue;
 
     switch (field.type) {
-    case 'string':
+    case 'text':
       return (
         <Input
           variantSize='sm'
@@ -164,7 +162,7 @@ export function EditWorkflowSidebar({
                   {group.fields.map((field: Field) => (
                     <div key={field.id} className='space-y-1'>
                       <Label className='flex items-center gap-1'>
-                        {field.description}
+                        {field.label}
                         {field.required && (
                           <span className='text-sm text-destructive'>*</span>
                         )}

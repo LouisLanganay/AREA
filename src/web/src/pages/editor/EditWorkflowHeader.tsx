@@ -25,8 +25,8 @@ import { isEqual } from 'lodash';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Workflow } from '../../../../shared/Workflow';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Workflow } from '@/interfaces/Workflows';
 
 export function WorkflowHeader({
   workflow,

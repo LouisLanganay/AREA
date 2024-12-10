@@ -12,8 +12,8 @@ import Register from './pages/Register';
 import Services from './pages/Services';
 import Settings from './pages/Settings';
 import Workflows from './pages/Workflows';
-import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
