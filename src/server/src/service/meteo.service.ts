@@ -59,7 +59,7 @@ export const EventCheckFreezingTemperature: Event = {
       console.log(
         `Temperature at location (${latitude}, ${longitude}): ${temperature}°C`,
       );
-      return temperature < 0;
+      return temperature < 10;
     } catch (error) {
       console.error('Error fetching weather data:', error.message);
       throw error;

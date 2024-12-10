@@ -20,7 +20,7 @@ export class EventMonitor {
     }
 
     if (typeof event.execute === 'function') {
-      const result = event.check([params]);
+      const result = await event.check([params]);
 
       if (result) {
         await this.executeDependentNodes(
@@ -203,8 +203,6 @@ export class EventMonitor {
 
             handledWorkflows.add(workflow.id);
           });
-        } else {
-          console.log('No new workflows to handle.');
         }
       } catch (error) {
         console.error('Error while processing workflows:', error);
