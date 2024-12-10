@@ -1,13 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ServiceRegister } from '../register.service';
-import { Service } from '../../../../shared/Workflow';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('services')
 export class ServiceController {
   constructor(private readonly serviceRegister: ServiceRegister) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  getAllServices(): Service[] {
-    return this.serviceRegister.getAllServices();
+  async getAllServices(@Req() req) {
+    return this.serviceRegister.getAllServices(req.user.id);
   }
 }

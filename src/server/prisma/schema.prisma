@@ -74,6 +74,8 @@ model Token {
   createdAt    DateTime  @default(now())
   Node         Node?     @relation(fields: [nodeId], references: [id])
   nodeId       String?
+
+  @@unique([userId, provider]) // Ajoute cette ligne pour créer une clé composite unique
 }
 
 model PasswordReset {

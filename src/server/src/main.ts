@@ -17,7 +17,7 @@ import {
 import { FieldGroup } from '../../shared/Workflow';
 import { updateUserDto } from './users/dto/update-user.dto';
 
-async function setupAllService(app: any) {
+async function defineAllService(app: any) {
   const allService = app.get(ServiceRegister);
 
   allService.addService(discordService);
@@ -28,7 +28,7 @@ async function setupAllService(app: any) {
   allService.addEventToService('testService', EventCheckFreezingTemperature);
 
   const monitor = new EventMonitor();
-  await monitor.monitoringWorkflows(allService.getAllServices());
+  await monitor.monitoringAllActions(allService.getAllServices());
 }
 
 async function bootstrap() {
@@ -44,7 +44,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
 
-  await setupAllService(app);
+  await defineAllService(app);
 
   // =============== FOR TEST ONLY =============== //
   // console.log('============== DEBUG ================');
@@ -114,7 +114,7 @@ async function bootstrap() {
   //     user_1_event.execute([params]);
   //   } else {
   // const monitor = new EventMonitor();
-  // await monitor.monitoringWorkflows();
+  // await monitor.monitoringAllActions();
   // monitor.startMonitoring(user_1_event, params, 60000);
   // }
   // }

@@ -4,7 +4,9 @@ import {
   Delete,
   Get,
   HttpCode,
+  Param,
   Post,
+  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import {
   ApiTags,
   ApiResponse,
   ApiBody,
+  ApiParam,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDetailSuccess } from './dto/request.doc';
@@ -45,7 +48,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: "Update the current user's information" })
-  @Post('update')
+  @Put('update')
   @ApiBody({
     type: updateUserDto,
   })
@@ -83,5 +86,24 @@ export class UsersController {
   @Delete()
   async deleteUser(@Req() req: any) {
     await this.userService.deleteUser(req.user.id);
+  }
+
+  @ApiOperation({ summary: 'Check if a username is already in use' })
+  @ApiResponse({
+    status: 200,
+    description: 'The availability of the username was successfully checked.',
+    schema: {
+      example: { used: true }, // Exemple de réponse
+    },
+  })
+  @ApiParam({
+    name: 'username',
+    description: 'The username to check for availability',
+    required: true,
+    type: String,
+  })
+  @Get('/use/:username')
+  async checkUsername(@Param('username') username: string) {
+    return { used: await this.userService.checkUserUsernameExist(username) };
   }
 }
