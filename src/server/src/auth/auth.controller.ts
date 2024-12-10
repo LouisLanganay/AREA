@@ -4,9 +4,9 @@ import {
   Controller,
   Get,
   HttpCode,
-  Post, Query,
+  Post,
+  Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -16,25 +16,127 @@ import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
-import {DiscordService} from "../app-discord/discord-app.service";
+import { DiscordService } from '../app-discord/discord-app.service';
+import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly discordService: DiscordService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly discordService: DiscordService,
+  ) {}
 
   @Post('register')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiBody({
+    type: CreateUserDto,
+    examples: {
+      example1: {
+        summary: 'Example registration',
+        value: {
+          email: 'newuser@example.com',
+          password: 'password123',
+          username: 'newuser',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully.',
+    schema: {
+      example: {
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request.',
+  })
   async register(@Body() createUserDto: CreateUserDto) {
     return this.authService.register(createUserDto);
   }
 
   @HttpCode(200)
   @Post('login')
+  @ApiOperation({ summary: 'Login a user' })
+  @ApiBody({
+    type: LoginUserDto,
+    examples: {
+      example1: {
+        summary: 'Example login',
+        value: {
+          email: 'existinguser@example.com',
+          password: 'password123',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User logged in successfully.',
+    schema: {
+      example: {
+        access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized.',
+    schema: {
+      example: {
+        err_code: 'ERR_CODE',
+      },
+    },
+  })
   async login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
   }
 
   @Post('forgot-password')
   @HttpCode(200)
+  @ApiOperation({ summary: 'Request a password reset' })
+  @ApiBody({
+    type: ForgotPasswordDto,
+    examples: {
+      example1: {
+        summary: 'Example forgot password request',
+        value: {
+          email: 'user@example.com',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Email sent',
+    schema: {
+      example: {
+        message: 'Email sent',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+    schema: {
+      example: {
+        err_code: 'USER_NOT_FOUND',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: {
+      example: {
+        err_code: 'INTERNAL_FRONT_URL',
+      },
+    },
+  })
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     await this.authService.forgotPassword(forgotPasswordDto.email);
   }
@@ -62,16 +164,16 @@ export class AuthController {
   async discordAuth() {
     const redirectUrl = await this.discordService.getRedirectUrl();
     console.log('Redirecting to Discord OAuth:', redirectUrl);
-    return {redirectUrl: redirectUrl} ;
+    return { redirectUrl: redirectUrl };
   }
 
   @Post('discord/callback')
   @UseGuards(AuthGuard('jwt'))
   async getDiscordCallback(
-      // code dans le body
-      @Body('code') code: string,
-      // req en classique
-      @Req() req: any,
+    // code dans le body
+    @Body('code') code: string,
+    // req en classique
+    @Req() req: any,
   ): Promise<any> {
     console.log('Discord OAuth callback received:', code);
     if (!code) {
@@ -82,6 +184,46 @@ export class AuthController {
 
   @HttpCode(200)
   @Post('reset-password')
+  @ApiOperation({ summary: 'Reset user password' })
+  @ApiBody({
+    type: ResetPasswordDto,
+    examples: {
+      example1: {
+        summary: 'Example reset password request',
+        value: {
+          token: 'some-reset-token',
+          password: 'newpassword123',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset successfully',
+    schema: {
+      example: {
+        message: 'Password reset',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+    schema: {
+      example: {
+        err_code: 'TOKEN_EXPIRED',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Token not found or expired',
+    schema: {
+      example: {
+        err_code: 'INVALID_TOKEN',
+      },
+    },
+  })
   async resetPassword(@Body() body: ResetPasswordDto) {
     return this.authService.resetPassword(body);
   }

@@ -14,8 +14,12 @@ export class PrismaClientErrorFilter implements ExceptionFilter {
 
     if (exception.code === 'P2002') {
       console.error(exception);
+      const { target } = exception.meta;
       response.status(HttpStatus.CONFLICT).json({
-        err_code: 'EMAIL_ALREADY_USE',
+        err_code:
+          target === 'users_username_key'
+            ? 'USERNAME_ALREADY_USE'
+            : 'FIELD_ALREADY_USE',
       });
     } else {
       console.error(exception);
