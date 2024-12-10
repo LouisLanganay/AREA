@@ -8,7 +8,7 @@ export class WorkflowService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createWorkflow(data: CreateWorkflowDto, userId: string) {
-    await this.prisma.workflow.create({
+    return this.prisma.workflow.create({
       data: {
         name: data.name,
         description: data.description,

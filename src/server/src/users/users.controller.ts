@@ -7,8 +7,6 @@ import {
   HttpCode,
   Param,
   Patch,
-  Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
