@@ -60,9 +60,9 @@ export class WorkflowService {
     });
 
     if (!workflow || workflow.userId !== userId) {
-      throw new ForbiddenException(
-        'You are not authorized to access this workflow',
-      );
+      throw new ForbiddenException({
+        err_code: 'WORKFLOW_INVALID_PERM',
+      });
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId: _, ...rest } = workflow;
@@ -105,12 +105,10 @@ export class WorkflowService {
     });
 
     if (!workflow) {
-      throw new ForbiddenException('Workflow not found');
+      throw new ForbiddenException({ err_code: 'WORKFLOW_UNKNOWN' });
     }
     if (workflow.userId !== userId) {
-      throw new ForbiddenException(
-        'You are not authorized to modify this workflow',
-      );
+      throw new ForbiddenException({ err_code: 'WORKFLOW_INVALID_PERM' });
     }
 
     return this.prisma.workflow.update({
@@ -126,18 +124,16 @@ export class WorkflowService {
       select: { id: true },
     });
 
-    console.log('workflow: ', workflow);
     if (!workflow) {
-      throw new ForbiddenException(
-        'You are not authorized to delete this workflow',
-      );
+      throw new ForbiddenException({
+        err_code: 'WORKFLOW_INVALID_PERM',
+      });
     }
 
     await this.prisma.node.deleteMany({ where: { workflowId: id } });
-    const test = await this.prisma.workflow.delete({
+    await this.prisma.workflow.delete({
       where: { id: workflow.id },
       include: { nodes: true },
     });
-    console.log('test: ', test);
   }
 }
