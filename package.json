@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@nestjs/swagger": "^8.1.0",
-    "dotenv": "^16.4.7",
-    "passport-discord": "^0.1.4"
-  }
-}
