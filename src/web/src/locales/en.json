@@ -81,6 +81,12 @@
       }
     },
     "appearance": {
+      "language": {
+        "fr": "French",
+        "en": "English",
+        "label": "Language",
+        "description": "Select the language for the application."
+      },
       "title": "Appearance",
       "description": "Customize the application's appearance.",
       "darkMode": {
@@ -235,6 +241,10 @@
     "checkEmailDescription": "If an account exists for this email, you will receive a password reset link shortly."
   },
   "home": {
+    "theme": {
+      "dark": "Switch to dark mode",
+      "light": "Switch to light mode"
+    },
     "navigation": {
       "features": {
         "title": "Features",

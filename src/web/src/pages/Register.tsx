@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { registerResponse } from '@/interfaces/api/Auth';
 import { apiError } from '@/interfaces/api/Errors';
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -55,6 +56,15 @@ export default function Register() {
 
   return (
     <div className='flex min-h-screen items-center justify-center'>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 md:hidden"
+        onClick={() => navigate(-1)}
+      >
+        <ArrowLeftIcon className="h-5 w-5" />
+      </Button>
+
       <div className='w-full max-w-md space-y-3 p-8'>
         <div className='text-center'>
           <h2 className='text-3xl font-bold'>
