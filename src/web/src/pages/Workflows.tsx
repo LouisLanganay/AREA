@@ -31,7 +31,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { deleteWorkflow, getWorkflows, updateWorkflow } from '@/api/Workflows';
-import { Node, Service, Workflow } from '../../../shared/Workflow';
 import { useNavigate } from 'react-router-dom';
 import { ArrowsUpDownIcon, CheckIcon, ChevronDownIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -41,6 +40,9 @@ import { useTranslation } from 'react-i18next';
 import { getServices } from '@/api/Services';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Node, Workflow } from '@/interfaces/Workflows';
+import { Service } from '@/interfaces/Services';
+import { useAuth } from '@/auth/AuthContext';
 
 export default function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -51,6 +53,7 @@ export default function Workflows() {
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { token } = useAuth();
 
   useEffect(() => {
     const fetchWorkflows = async () => {
@@ -63,8 +66,9 @@ export default function Workflows() {
     };
 
     const fetchServices = async () => {
+      if (!token) return;
       try {
-        const data = await getServices();
+        const data = await getServices(token);
         setServices(data);
       } catch (error) {
         console.error('Failed to fetch services', error);
@@ -317,8 +321,8 @@ export default function Workflows() {
 
   return (
     <div className='w-full'>
-      <div className='flex items-center py-4'>
-        <div className='flex items-center gap-2 flex-1'>
+      <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4'>
+        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:flex-1'>
           <Input
             placeholder={t('workflows.filterByName')}
             variantSize='sm'
@@ -326,7 +330,7 @@ export default function Workflows() {
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className='max-w-sm'
+            className='w-full sm:max-w-sm'
           />
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <DropdownMenu>
@@ -334,6 +338,7 @@ export default function Workflows() {
                 <Button
                   variant='destructiveOutline'
                   size='sm'
+                  className='w-full sm:w-auto'
                 >
                   {t('workflows.bulkActions')}
                   <ChevronDownIcon />
@@ -357,10 +362,14 @@ export default function Workflows() {
             </DropdownMenu>
           )}
         </div>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 w-full sm:w-auto'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='outline' size='sm' className='ml-auto'>
+              <Button
+                variant='outline'
+                size='sm'
+                className='flex-1 sm:flex-none'
+              >
                 {t('workflows.columns')} <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -387,7 +396,7 @@ export default function Workflows() {
           <Button
             variant='default'
             size='sm'
-            className='ml-auto'
+            className='flex-1 sm:flex-none'
             onClick={() => navigate('/workflows/create')}
           >
             {t('workflows.create')} <PlusIcon />

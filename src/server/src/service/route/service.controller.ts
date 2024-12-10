@@ -9,5 +9,9 @@ export class ServiceController {
   @Get()
   getAllServices(): Service[] {
     return this.serviceRegister.getAllServices();
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  async getAllServices(@Req() req) {
+    return this.serviceRegister.getAllServices(req.user.id);
   }
 }

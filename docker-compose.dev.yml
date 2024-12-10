@@ -35,6 +35,7 @@ services:
 #      bash -c "
 #      npm install &&
 #      npm run build &&
+#      npx cap sync &&
 #      cd android &&
 #      ./gradlew assembleDebug &&
 #      cd .. &&
@@ -61,6 +62,7 @@ services:
       dockerfile: DockerfileDev
     ports:
       - "8080:8080"
+      - "6379:6379"
     volumes:
       - ./src/server:/server
       - ./src/shared:/shared
@@ -76,6 +78,7 @@ volumes:
   db-data:
   mobile_service_node_modules:
   web_service_node_modules:
+  redis_data:
 
 networks:
   app_network:

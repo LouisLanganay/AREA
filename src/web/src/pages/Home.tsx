@@ -14,14 +14,22 @@ import { Link } from 'react-router-dom';
 import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import DotPattern from '@/components/ui/dot-pattern';
 import {
-  ArrowRightIcon,
-  DevicePhoneMobileIcon,
-  RocketLaunchIcon
+  RocketLaunchIcon,
+  MoonIcon,
+  SunIcon,
+  Bars3Icon,
+  ChevronDownIcon,
+  UserPlusIcon,
+  UserIcon
 } from '@heroicons/react/24/solid';
+import { useTheme } from '@/context/ThemeContext';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useState } from 'react';
 
 export default function Home() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { theme, setTheme } = useTheme();
 
   const team = [
     {
@@ -84,6 +92,174 @@ export default function Home() {
     }
   ]
 
+  const MobileNav = () => {
+    const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+
+    const toggleSubmenu = (menu: string) => {
+      setOpenSubmenu(openSubmenu === menu ? null : menu);
+    };
+
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Bars3Icon className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="p-2 pt-10 w-[300px] sm:w-[400px] overflow-y-auto">
+          <nav className="flex flex-col">
+            <div className="flex flex-col gap-4">
+              <div>
+                <Button
+                  variant="ghost"
+                  className="justify-between w-full"
+                  onClick={() => toggleSubmenu('features')}
+                >
+                  {t('home.navigation.features.title')}
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                    openSubmenu === 'features' ? 'rotate-180' : ''
+                  }`} />
+                </Button>
+                {openSubmenu === 'features' && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/docs')}
+                    >
+                      {t('home.navigation.features.intro')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/pricing')}
+                    >
+                      {t('home.navigation.features.pricing')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/integrations')}
+                    >
+                      {t('home.navigation.features.integrations')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <Button
+                  variant="ghost"
+                  className="justify-between w-full"
+                  onClick={() => toggleSubmenu('documentation')}
+                >
+                  {t('home.navigation.documentation.title')}
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                    openSubmenu === 'documentation' ? 'rotate-180' : ''
+                  }`} />
+                </Button>
+                {openSubmenu === 'documentation' && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/api-docs')}
+                    >
+                      {t('home.navigation.documentation.api')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/github')}
+                    >
+                      {t('home.navigation.documentation.source')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/mobile')}
+                    >
+                      {t('home.navigation.documentation.mobile')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <Button
+                  variant="ghost"
+                  className="justify-between w-full"
+                  onClick={() => toggleSubmenu('enterprise')}
+                >
+                  {t('home.navigation.enterprise.title')}
+                  <ChevronDownIcon className={`h-4 w-4 transition-transform ${
+                    openSubmenu === 'enterprise' ? 'rotate-180' : ''
+                  }`} />
+                </Button>
+                {openSubmenu === 'enterprise' && (
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/enterprise')}
+                    >
+                      {t('home.navigation.enterprise.solutions')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/case-studies')}
+                    >
+                      {t('home.navigation.enterprise.cases')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="justify-start truncate"
+                      onClick={() => navigate('/contact')}
+                    >
+                      {t('home.navigation.enterprise.contact')}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <hr className="my-4" />
+
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className="justify-start truncate"
+                onClick={() => navigate('/login')}
+              >
+                <UserIcon className="h-5 w-5" />
+                {t('home.auth.signin')}
+              </Button>
+              <Button
+                className="justify-start truncate"
+                onClick={() => navigate('/register')}
+              >
+                <UserPlusIcon className="h-5 w-5" />
+                {t('home.auth.register')}
+              </Button>
+              <Button
+                variant="ghost"
+                className="justify-start truncate"
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              >
+                {theme === 'light' ? (
+                  <><MoonIcon className="h-5 w-5" />{t('home.theme.dark')}</>
+                ) : (
+                  <><SunIcon className="h-5 w-5" />{t('home.theme.light')}</>
+                )}
+              </Button>
+            </div>
+          </nav>
+        </SheetContent>
+      </Sheet>
+    );
+  };
+
   return (
     <div className='min-h-screen bg-background'>
       <header className='border-b z-40'>
@@ -94,7 +270,7 @@ export default function Home() {
             </div>
           </div>
 
-          <NavigationMenu>
+          <NavigationMenu className="hidden md:block">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.features.title')}</NavigationMenuTrigger>
@@ -160,7 +336,18 @@ export default function Home() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <div className='flex-1 basis-0 flex items-center gap-4 justify-end'>
+          <div className='hidden md:flex flex-1 basis-0 items-center gap-4 justify-end'>
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            >
+              {theme === 'light' ? (
+                <MoonIcon className='h-5 w-5' />
+              ) : (
+                <SunIcon className='h-5 w-5' />
+              )}
+            </Button>
             <Button
               variant='outline'
               onClick={() => navigate('/login')}
@@ -173,37 +360,27 @@ export default function Home() {
               {t('home.auth.register')}
             </Button>
           </div>
+
+          <MobileNav />
         </div>
       </header>
 
       <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
-        <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50' />
-        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-10 sm:py-20 md:py-32 lg:py-40 relative'>
-          <div className='hidden sm:mb-8 sm:flex'>
-            <div
-              onClick={() => navigate('/client.apk')}
-              className='group cursor-pointer relative flex items-center gap-2 flex-row rounded-full px-2 py-1 text-sm/6 text-gray-600 ring-1 ring-for/10 hover:ring-for/20 bg-muted'
-            >
-              <div className='flex items-center gap-2 bg-primary/20 rounded-full p-1'>
-                <DevicePhoneMobileIcon className='w-4 h-4' />
-              </div>
-              {t('home.mobile.discover')}
-              <ArrowRightIcon className='w-4 h-4 group-hover:translate-x-0.5 transition-transform' />
-            </div>
-          </div>
+        <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50 dark:opacity-20' />
+        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative'>
           <div className=''>
             <div className='flex flex-col'>
-              <h1 className='text-balance text-5xl font-semibold tracking-tight text-for sm:text-7xl'>
+              <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
                 {t('home.title.automate')}
               </h1>
-              <h1 className='text-balance text-5xl font-semibold tracking-tight text-for sm:text-7xl'>
+              <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
                 {t('home.title.scale')}
               </h1>
-              <h1 className='text-balance text-5xl font-semibold tracking-tight text-for sm:text-7xl'>
+              <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
                 {t('home.title.iterate')}
               </h1>
             </div>
-            <p className='mt-8 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8 max-w-lg'>
+            <p className='mt-8 text-pretty text-lg font-medium text-muted-foreground sm:text-xl/8 max-w-lg'>
               {t('home.description')}
             </p>
           </div>
@@ -217,7 +394,7 @@ export default function Home() {
           </p>
           <div className='mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2'>
             <div className='relative lg:row-span-2'>
-              <div className='absolute inset-px rounded-lg bg-white lg:rounded-l-[2rem]'></div>
+              <div className='absolute inset-px rounded-lg bg-card border lg:rounded-l-[2rem]'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-l-[calc(2rem+1px)]'>
                 <div className='px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
@@ -233,10 +410,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className='pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-l-[2rem]'></div>
             </div>
             <div className='relative max-lg:row-start-1'>
-              <div className='absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem]'></div>
+              <div className='absolute inset-px rounded-lg bg-card max-lg:rounded-t-[2rem] border'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
@@ -250,10 +426,9 @@ export default function Home() {
                   <img className='w-full max-lg:max-w-xs' src='https://tailwindui.com/plus/img/component-images/bento-03-performance.png' alt=''/>
                 </div>
               </div>
-              <div className='pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]'></div>
             </div>
             <div className='relative max-lg:row-start-2'>
-              <div className='absolute inset-px rounded-lg bg-white'></div>
+              <div className='absolute inset-px rounded-lg bg-card border lg:rounded-tr-[2rem]'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
@@ -267,10 +442,9 @@ export default function Home() {
                   <img className='w-full max-lg:max-w-xs' src='https://tailwindui.com/plus/img/component-images/bento-03-performance.png' alt=''/>
                 </div>
               </div>
-              <div className='pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5'></div>
             </div>
             <div className='relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2 lg:col-span-2'>
-              <div className='absolute inset-px rounded-lg bg-white'></div>
+              <div className='absolute inset-px rounded-lg bg-card border lg:rounded-br-[2rem]'></div>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
@@ -284,14 +458,13 @@ export default function Home() {
                   <AnimatedBeamHome className='w-full' />
                 </div>
               </div>
-              <div className='pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5'></div>
             </div>
           </div>
         </section>
         <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='mx-auto grid gap-20 xl:grid-cols-3'>
             <div className='max-w-xl'>
-              <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>
+              <h2 className='text-pretty text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground sm:text-4xl'>
                 {t('home.team.title')}
               </h2>
               <p className='mt-6 text-lg/8 text-muted-foreground'>
@@ -305,7 +478,7 @@ export default function Home() {
                     <img className='size-16 rounded-full object-cover' src={person.image} alt={person.name} />
                     <div>
                       <h3 className='text-base/7 font-semibold tracking-tight text-foreground'>{person.name}</h3>
-                      <p className='text-sm/6 font-semibold text-indigo-600'>{person.role}</p>
+                      <p className='text-sm/6 font-semibold text-primary'>{person.role}</p>
                     </div>
                   </div>
                 </li>
@@ -317,7 +490,7 @@ export default function Home() {
         <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='flex flex-col sm:flex-row justify-between gap-4'>
             <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl max-w-md'>
-              <span className='text-muted-foreground'>{t('home.stack.title1')} </span>{t('home.stack.title2')}
+              <span className='bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground'>{t('home.stack.title1')} </span>{t('home.stack.title2')}
             </h2>
             <p className='text-lg sm:text-xl text-foreground font-medium max-w-md'>
               {t('home.stack.description')}
@@ -325,7 +498,7 @@ export default function Home() {
           </div>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-16'>
             {stack.map((item) => (
-              <div className='flex flex-row gap-4 border rounded-xl p-4 shadow-sm hover:scale-101 transition-transform duration-300'>
+              <div className='flex flex-row gap-4 border rounded-lg p-4 shadow-sm hover:scale-101 transition-transform duration-300'>
                 <div className='shrink-0 size-12 p-2 border rounded-lg flex items-center justify-center'>
                   <img src={item.icon} alt={item.title} className='w-full h-full object-contain' />
                 </div>
@@ -341,7 +514,9 @@ export default function Home() {
         <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='flex flex-col justify-center gap-4 items-center text-center'>
             <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-5xl max-w-xl'>
-              <span className='text-muted-foreground'>{t('home.cta.title1')} </span>{t('home.cta.title2')}
+              <span className='bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground'>
+                {t('home.cta.title1')}
+              </span> {' '}{t('home.cta.title2')}
             </h2>
             <p className='text-lg sm:text-xl text-foreground font-medium max-w-md'>
               {t('home.cta.description')}
