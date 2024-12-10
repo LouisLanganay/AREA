@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -6,13 +7,14 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { updateUserDto } from './dto/update-user.dto';
-import { find } from 'rxjs';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(user: CreateUserDto) {
+    if (await this.checkUserEmailExist(user.email))
+      throw new ConflictException({ err_code: 'EMAIL_ALREADY_USE' });
     return await this.prismaService.user.create({ data: user });
   }
 
