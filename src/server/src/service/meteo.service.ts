@@ -1,23 +1,39 @@
 import {Service, Event, FieldGroup} from '../../../shared/Workflow';
 import {MailerService} from "../mailer/mailer.service";
 
-export const EvenetSendMail: Event = {
+export const EventSendMail: Event = {
     type: "reaction",
-    id_node: "checkFreezingTemperature",
-    name: "Check Freezing Temperature",
-    description: "Check if the temperature is below 0°C using Open-Meteo",
-    serviceName: "test",
+    id_node: "sendEmail",
+    name: "send mail",
+    description: "send an email",
+    serviceName: "testService",
     fieldGroups: [
         {
-            id: "locationDetails",
-            name: "Location Details",
-            description: "Details of the location to check",
+            id: "email_info",
+            name: "Email Information",
+            description: "Details for sending the email",
             type: "group",
             fields: [
-                {id: "latitude", type: "number", required: true, description: "Latitude of the location"},
-                {id: "longitude", type: "number", required: true, description: "Longitude of the location"}
-            ]
-        }
+                {
+                    id: "recipient_emails",
+                    type: "string",
+                    required: true,
+                    description: "Comma-separated list of recipient emails",
+                },
+                {
+                    id: "email_subject",
+                    type: "string",
+                    required: true,
+                    description: "Subject of the email",
+                },
+                {
+                    id: "email_body",
+                    type: "string",
+                    required: true,
+                    description: "Body content of the email",
+                },
+            ],
+        },
     ],
     execute: (parameters: FieldGroup[]) => {
         const mailerService = new MailerService();
@@ -61,7 +77,7 @@ export const EventCheckFreezingTemperature: Event = {
     id_node: "checkFreezingTemperature",
     name: "Check Freezing Temperature",
     description: "Check if the temperature is below 0°C using Open-Meteo",
-    serviceName: "test",
+    serviceName: "testService",
     fieldGroups: [
         {
             id: "locationDetails",
@@ -97,7 +113,7 @@ export const EventCheckFreezingTemperature: Event = {
             const temperature = data?.current_weather?.temperature;
 
             console.log(`Temperature at location (${latitude}, ${longitude}): ${temperature}°C`);
-            return temperature < 0;
+            return temperature < 10;
         } catch (error) {
             console.error('Error fetching weather data:', error.message);
             throw error;

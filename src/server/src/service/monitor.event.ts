@@ -1,6 +1,7 @@
 import { Event, FieldGroup, Service } from '../../../shared/Workflow';
 import { defaultFieldGroup } from './register.service';
 import { PrismaService } from '../prisma/prisma.service';
+import {Field} from "../../../shared/Users";
 
 export class EventMonitor {
   private prisma: PrismaService;
@@ -22,6 +23,7 @@ export class EventMonitor {
     if (typeof event.execute === 'function') {
       const result = await event.check([params]);
 
+      // console.log(result);
       if (result) {
         await this.executeDependentNodes(
           event.id_node,
@@ -59,7 +61,15 @@ export class EventMonitor {
         continue;
       }
 
+      // console.log(service);
+      // console.log(node);
+      // console.log(node.id_node);
       const event = service.Event.find((e) => e.id_node === node.id_node);
+      if (!event) {
+        console.error(`Event not found for ${node.name}`);
+        continue;
+      }
+
       if (event) {
         let nodeFieldGroup: FieldGroup;
 
@@ -93,7 +103,46 @@ export class EventMonitor {
           nodeFieldGroup = defaultFieldGroup;
         }
 
-        event.execute([nodeFieldGroup]);
+        const workflowFields: Field[] = [
+          {
+            id: 'workflow_id',
+            type: 'string',
+            description: 'Workflow ID',
+            value: workflow.id,
+            required: true,
+          },
+          {
+            id: 'workflow_name',
+            type: 'string',
+            description: 'Workflow Name',
+            value: workflow.name || 'Unnamed Workflow',
+            required: true,
+          },
+          {
+            id: 'workflow_enabled',
+            type: 'boolean',
+            description: 'Is Workflow Enabled',
+            value: workflow.enabled,
+            required: true,
+          },
+          {
+            id: 'node_count',
+            type: 'number',
+            description: 'Number of Nodes in Workflow',
+            value: workflow.nodes.length,
+            required: true,
+          },
+        ];
+
+        const nodeFieldGroupWorkflow: FieldGroup = {
+          id: 'workflow_information',
+          name: 'Workflow Information',
+          description: 'Details about the current workflow',
+          type: 'workflow_info',
+          fields: workflowFields,
+        };
+
+        event.execute([nodeFieldGroup, nodeFieldGroupWorkflow]);
       }
     }
   }
