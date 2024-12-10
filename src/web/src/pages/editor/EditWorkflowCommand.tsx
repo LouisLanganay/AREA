@@ -1,3 +1,4 @@
+import { Service } from '../../../../shared/Workflow';
 import {
   Command,
   CommandDialog,
@@ -7,7 +8,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { Service } from '@/interfaces/Services';
 import { useTranslation } from 'react-i18next';
 
 interface EditWorkflowCommandProps {
@@ -33,7 +33,7 @@ export function EditWorkflowCommand({
           <CommandEmpty>{t('workflows.noServicesFound')}</CommandEmpty>
           {services.map((service: Service) => (
             <CommandGroup key={service.id} heading={service.name}>
-              {service.Event?.map((action) => (
+              {service.actions?.map((action) => (
                 <CommandItem
                   key={action.id}
                   onSelect={() => onSelectService(service, action)}

@@ -1,6 +1,7 @@
 import { getServices } from '@/api/Services';
 import { getWorkflow } from '@/api/Workflows';
 import { useToast } from '@/hooks/use-toast';
+import { WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
 import { edgeStyles, findNode, getLayoutedElements } from '@/utils/workflows';
 import {
   addEdge,
@@ -16,14 +17,12 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Node as AreaNode, FieldGroup, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
+import { Node as AreaNode, FieldGroup, Service, Workflow } from '../../../shared/Workflow';
 import AddNode from '../components/flow/AddNode';
 import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
-import { useAuth } from '@/auth/AuthContext';
-import { Service } from '@/interfaces/Services';
 
 const nodeTypes = {
   node: Node,
@@ -54,7 +53,6 @@ export default function EditWorkflow() {
   const { t } = useTranslation();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
-  const { token } = useAuth();
 
   const flattenNodesAndCreateEdges = (
     nodes: AreaNode[],
@@ -162,13 +160,12 @@ export default function EditWorkflow() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
       try {
-        const fetchedServices = await getServices(token);
+        const fetchedServices = await getServices();
         setServices(fetchedServices);
 
-        if (!id || !token) return;
-        const workflow = await getWorkflow(id, token);
+        if (!id) return;
+        const workflow = await getWorkflow(id);
         if (!workflow) {
           navigate('/workflows');
           return;

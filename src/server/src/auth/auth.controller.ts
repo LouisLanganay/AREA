@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -22,10 +21,12 @@ import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
+
   constructor(
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
   ) {}
+
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -158,9 +159,8 @@ export class AuthController {
     const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
     return res.redirect(frontendRedirectUrl);
   }
-
-  //retourne le dans le body le lien de redirection
   @Get('discord')
+  @UseGuards(AuthGuard('discord'))
   async discordAuth() {
     const redirectUrl = await this.discordService.getRedirectUrl();
     console.log('Redirecting to Discord OAuth:', redirectUrl);

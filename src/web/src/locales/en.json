@@ -81,12 +81,6 @@
       }
     },
     "appearance": {
-      "language": {
-        "fr": "French",
-        "en": "English",
-        "label": "Language",
-        "description": "Select the language for the application."
-      },
       "title": "Appearance",
       "description": "Customize the application's appearance.",
       "darkMode": {
@@ -102,13 +96,36 @@
         "xLarge": "Extra Large"
       }
     },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Manage how you receive notifications.",
+      "email": {
+        "label": "Email Notifications",
+        "description": "Receive notifications via email."
+      },
+      "push": {
+        "label": "Push Notifications",
+        "description": "Receive push notifications on your devices."
+      },
+      "frequency": {
+        "label": "Notification Frequency",
+        "placeholder": "Select frequency",
+        "options": {
+          "realtime": "Real-time",
+          "hourly": "Hourly Summary",
+          "daily": "Daily Summary",
+          "weekly": "Weekly Summary"
+        }
+      }
+    },
     "security": {
       "title": "Security Settings",
       "description": "Manage your account's security and access.",
       "password": {
-        "label": "Change Password",
-        "description": "Change your password to enhance your account's security.",
-        "change": "Change Password"
+        "change": "Change Password",
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm Password"
       },
       "twoFactor": {
         "label": "Two-Factor Authentication",
@@ -116,7 +133,10 @@
       },
       "delete": {
         "label": "Delete Account",
-        "description": "Permanently delete your account and remove your data from our servers."
+        "confirmation": {
+          "title": "Are you absolutely sure?",
+          "description": "This action cannot be undone. It will permanently delete your account and remove your data from our servers."
+        }
       }
     },
     "automation": {
@@ -222,9 +242,7 @@
     "passwordsDontMatch": "Passwords don't match"
   },
   "error": {
-    "USER_NOT_FOUND": "User not found",
-    "INTERNAL_SERVER_ERROR": "Internal server error",
-    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later."
+    "USER_NOT_FOUND": "User not found"
   },
   "common": {
     "loading": "Loading..."
@@ -241,10 +259,6 @@
     "checkEmailDescription": "If an account exists for this email, you will receive a password reset link shortly."
   },
   "home": {
-    "theme": {
-      "dark": "Switch to dark mode",
-      "light": "Switch to light mode"
-    },
     "navigation": {
       "features": {
         "title": "Features",

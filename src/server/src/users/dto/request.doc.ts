@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { getMe_response } from '../../../../shared/user/user_route';
 
-export class UserDetailSuccess {
+export class UserDetailSuccess implements getMe_response {
   @ApiProperty({
     description: 'Unique identifier of the user',
     example: '123e4567-e89b-12d3-a456-426614174000',
