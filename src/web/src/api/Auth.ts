@@ -15,6 +15,10 @@ export const register = async (
     email: request.email,
     password: request.password,
     username: request.username,
+  }, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
   });
 
   if (response.status !== 201) {
@@ -30,6 +34,10 @@ export const login = async (
   const response = await axios.post<any>(`${import.meta.env.VITE_API_URL}/auth/login`, {
     id: request.id,
     password: request.password,
+  }, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
   });
 
   if (response.status !== 200) {
@@ -44,6 +52,10 @@ export const forgotPassword = async (
 ): Promise<void> => {
   const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, {
     email: request.email
+  }, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
   });
 
   if (response.status !== 200) {
@@ -58,7 +70,8 @@ export const oauthCallback = async (callback_uri: string, token: string, userTok
     code: token
   }, {
     headers: {
-      Authorization: `Bearer ${userToken}`
+      Authorization: `Bearer ${userToken}`,
+      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -70,7 +83,11 @@ export const oauthCallback = async (callback_uri: string, token: string, userTok
 };
 
 export const resetPassword = async (request: resetRequest) => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, request);
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, request, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
 
   if (response.status !== 200) {
     throw new Error('Failed to reset password');

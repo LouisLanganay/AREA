@@ -319,12 +319,20 @@ export const getWorkflows = async (): Promise<Workflow[]> => {
 };
 
 export const updateWorkflow = async (id: string, data: Partial<Workflow>) => {
-  const response = await axios.patch<Workflow>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, data);
+  const response = await axios.patch<Workflow>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, data, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
   return response.data;
 };
 
 export const deleteWorkflow = async (id: string) => {
-  const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${id}`);
+  const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${id}`, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
   return response.data;
 };
 
@@ -332,7 +340,8 @@ export const getWorkflow = async (id: string, token: string): Promise<getWorkflo
   const response = await axios.get<getWorkflowResponse>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-    },
+      'ngrok-skip-browser-warning': 'true'
+    }
   });
 
   if (response.status !== 200) {

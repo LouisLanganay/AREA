@@ -1,20 +1,16 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.your.app',
-  appName: 'Your App',
+  appId: 'com.votreapp.id',
+  appName: 'Votre App',
   webDir: 'dist',
   server: {
-    androidScheme: 'https',
-    allowNavigation: [
-      'http://localhost:8080',
-      'accounts.google.com',
-      'discord.com'
-    ]
+    androidScheme: 'myapp'
   },
   plugins: {
-    Browser: {
-      presentationStyle: 'popover'
+    App: {
+      // Définir les URL schemes que votre app peut gérer
+      appUrlScheme: 'myapp'
     }
   }
 };

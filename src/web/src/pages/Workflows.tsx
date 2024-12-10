@@ -217,7 +217,7 @@ export default function Workflows() {
         return (
           <div className='flex flex-row flex-wrap gap-1'>
             {extractedServices.map((service: string) => {
-              const icon = services.find((s) => s.name === service)?.image;
+              const icon = Array.isArray(services) ? services.find((s) => s.name === service)?.image : null;
               if (!icon)
                 return (
                   <div key={service} className='flex flex-row items-center gap-2 border rounded-md p-1'>

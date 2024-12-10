@@ -5,7 +5,8 @@ import axios from "axios";
 export const getMe = async (token: string): Promise<getMeResponse> => {
   const response = await axios.get<getMeResponse>(`${import.meta.env.VITE_API_URL}/users/me`, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
+      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -19,7 +20,8 @@ export const getMe = async (token: string): Promise<getMeResponse> => {
 export const updateUser = async (token: string, user: User): Promise<void> => {
   const response = await axios.put(`${import.meta.env.VITE_API_URL}/users/update`, user, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
+      'ngrok-skip-browser-warning': 'true'
     }
   });
 
