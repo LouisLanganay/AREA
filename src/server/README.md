@@ -1,99 +1,134 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# **Backend README**
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## **Overview**
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The backend of this project provides an API for creating, managing, and executing workflows. It supports integration with multiple services like YouTube, Discord, and more. For developers building a custom frontend, the backend offers a **Swagger documentation** available at:
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```
+http://localhost:<PORT>/doc
 ```
 
-## Compile and run the project
+This Swagger UI allows you to explore all available endpoints and understand how to interact with the backend.
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## **Environment Variables**
 
-# production mode
-$ npm run start:prod
+Before running the backend, you need to configure the `.env` file located in the `src/server` directory. Below is a description of each variable in the provided `.env.example` file:
+
+### **Core Settings**
+
+- **`HOST`**: The hostname or IP address of the server.
+- **`PORT`**: The port on which the backend will run.
+- **`HTTP_V`**: The HTTP protocol version (`http` or `https`).
+- **`IP_REDIRECT`**: Full URL for redirection after authentication, combining `HTTP_V`, `HOST`, and `PORT`.
+- **`IP_FRONT`**: The URL of the frontend server.
+- **`IP_FRONT_REDIRECT`**: The full redirection URL for the frontend.
+
+### **Database Configuration**
+
+- **`DATABASE_URL`**: Connection string for the database. Replace placeholders with:
+    - `user`: Your database username.
+    - `password`: Your database password.
+    - `host`: The hostname of your database server.
+    - `port`: The database server's port.
+    - `db`: The name of the database.
+
+Example:
+```plaintext
+DATABASE_URL="mysql://admin:securepassword@localhost:3306/mydatabase"
 ```
 
-## Run tests
+### **Authentication & Security**
+
+- **`JWT_SECRET`**: Secret key used to sign JSON Web Tokens (JWT). Ensure this is a strong, unique key.
+
+### **Email Configuration**
+
+- **`GMAIL_PASS`**: Password for the Gmail account used to send emails.
+- **`GMAIL_USER`**: Gmail address used for sending emails.
+
+### **OAuth Settings**
+
+#### Google OAuth:
+- **`GOOGLE_CLIENT_ID`**: Client ID from your Google Developer Console.
+- **`GOOGLE_CLIENT_SECRET`**: Client secret from your Google Developer Console.
+
+#### Discord OAuth:
+- **`DISCORD_CLIENT_ID`**: Client ID from your Discord Developer Portal.
+- **`DISCORD_CLIENT_SECRET`**: Client secret from your Discord Developer Portal.
+
+---
+
+## **Running the Backend**
+
+### **1. Install Dependencies**
+
+First, install all required dependencies:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cd src/server
+npm install
 ```
 
-## Deployment
+### **2. Configure Environment**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Copy the `.env.example` file to `.env` and fill in the required values as described above:
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+cp .env.example .env
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### **3. Start the Backend**
 
-## Resources
+To start the backend, you can use Docker Compose or run it locally.
 
-Check out a few resources that may come in handy when working with NestJS:
+#### **Using Docker Compose**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **Development Mode**:
+  ```bash
+  docker-compose -f docker-compose.dev.yml up --build
+  ```
 
-## Support
+- **Production Mode**:
+  ```bash
+  docker-compose up --build
+  ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+#### **Running Locally**
 
-## Stay in touch
+If you prefer to run the backend locally:
+1. Ensure your database is running and accessible.
+2. Run the application:
+   ```bash
+   npm run start:dev
+   ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## **Accessing the API**
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Swagger Documentation**:
+    - Access the API documentation at: [http://localhost:{PORT}/doc](http://localhost:<PORT>/doc).
+
+- **Backend Endpoints**:
+    - Backend runs on: [http://localhost:{PORT}](http://localhost:<PORT>).
+
+---
+
+## **Troubleshooting**
+
+1. **Missing or Invalid Environment Variables**:
+    - Ensure all required variables are set in the `.env` file.
+    - Double-check sensitive information like database credentials and API secrets.
+
+2. **Database Connection Issues**:
+    - Verify the `DATABASE_URL` is correct and the database server is running.
+    - Test the connection with a database client.
+
+3. **Frontend Redirection Issues**:
+    - Ensure `IP_FRONT` and `IP_FRONT_REDIRECT` are correctly set in `.env`.
+
+---
+
+Feel free to reach out for additional support or further customization!
