@@ -79,7 +79,7 @@ export function UserInfo({
                   ) : (
                     <div className='flex items-center justify-center bg-sidebar-accent text-sidebar-accent-foreground size-8'>
                       <span className='text-xs'>
-                        {user?.username.slice(0, 2).toUpperCase()}
+                        {user?.username?.slice(0, 2).toUpperCase()}
                       </span>
                     </div>
                   )}
@@ -122,7 +122,7 @@ export function UserInfo({
                             className='h-full w-full object-cover'
                           />
                         ) : (
-                          <span>{account.user?.username.slice(0, 2).toUpperCase()}</span>
+                          <span>{account.user?.username?.slice(0, 2).toUpperCase()}</span>
                         )}
                       </div>
                       <span className="truncate">
@@ -168,7 +168,7 @@ export function UserInfo({
                                   className='h-full w-full object-cover'
                                 />
                               ) : (
-                                <span>{account.user?.username.slice(0, 2).toUpperCase()}</span>
+                                <span>{account.user?.username?.slice(0, 2).toUpperCase()}</span>
                               )}
                             </div>
                             {account.user?.displayName || account.user?.username}

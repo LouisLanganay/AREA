@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   Get,
   HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/creatWorkflowDto';
@@ -187,7 +188,7 @@ export class WorkflowController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Put(':id')
+  @Patch(':id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update an existing workflow' })
   @ApiParam({
@@ -255,12 +256,12 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async updateWorkflow(
-    @Param('id') id: string,
     @Body() data: updateWorkflowDto,
     @Req() req: any,
+    @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    return this.workflowService.updateWorkflow(data, userId);
+    return this.workflowService.updateWorkflow(data, userId, id);
   }
 
   @UseGuards(AuthGuard('jwt'))

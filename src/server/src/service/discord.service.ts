@@ -9,11 +9,12 @@ const configService = new ConfigService();
 const discordServiceMethodes = new DiscordService(prismaService, configService);
 
 export const EventgetMessageDiscord: Event = {
-    type: "Action",
-    id: "getMessageDiscord",
+    type: "action",
+    id_node: "getMessageDiscord",
     name: "Get Message",
     description: "Retrieve a message from a Discord channel",
-    parameters: [
+    serviceName: "discord",
+    fieldGroups: [
         {
             id: "channelDetails",
             name: "Channel Details",
@@ -40,11 +41,12 @@ export const EventgetMessageDiscord: Event = {
 }
 
 export const EventnotifyUserDiscord: Event = {
-    type: "Reaction",
-    id: "notifyUserDiscord",
+    type: "reaction",
+    id_node: "notifyUserDiscord",
     name: "Notify User",
     description: "Send a notification to a user",
-    parameters: [
+    serviceName: "discord",
+    fieldGroups: [
     {
         id: "userDetails",
         name: "User Details",
@@ -115,7 +117,7 @@ export const discordService: Service = {
     name: "Discord",
     description: "Messaging service for teams",
     loginRequired: true,
-    image: "https://discord.com/img/logo.png",
+    image: "https://www.svgrepo.com/show/353655/discord-icon.svg",
     Event: [],
     auth: {
         uri: "/auth/discord",

@@ -47,6 +47,7 @@ export class WorkflowService {
         nodes: {
           select: {
             id: true,
+            id_node: true,
             type: true,
             name: true,
             serviceName: true,
@@ -84,6 +85,7 @@ export class WorkflowService {
         nodes: {
           select: {
             id: true,
+            id_node: true,
             type: true,
             name: true,
             serviceName: true,
@@ -98,8 +100,11 @@ export class WorkflowService {
   }
 
   // Mettre à jour un workflow, avec validation de propriété
-  async updateWorkflow(data: updateWorkflowDto, userId: string) {
-    const workflowId = data.id;
+  async updateWorkflow(
+    data: updateWorkflowDto,
+    userId: string,
+    workflowId: string,
+  ) {
     const workflow = await this.prisma.workflow.findUnique({
       where: { id: workflowId },
     });
@@ -111,10 +116,16 @@ export class WorkflowService {
       throw new ForbiddenException({ err_code: 'WORKFLOW_INVALID_PERM' });
     }
 
-    return this.prisma.workflow.update({
-      where: { id: workflowId },
-      data: data.data,
-    });
+    data.updatedAt = new Date();
+    try {
+      return this.prisma.workflow.update({
+        where: { id: workflowId },
+        data: data,
+      });
+    } catch (e) {
+      console.error(e);
+      throw new ForbiddenException({ err_code: 'WORKFLOW_UPDATE_FAILED' });
+    }
   }
 
   // Supprimer un workflow, avec validation de propriété

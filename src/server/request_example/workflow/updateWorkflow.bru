@@ -4,21 +4,19 @@ meta {
   seq: 3
 }
 
-put {
-  url: http://localhost:8080/workflows
+patch {
+  url: http://localhost:8080/workflows/c39196a2-9e4b-46fa-87d5-29e7c9e8c067
   body: json
   auth: bearer
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImIyNWU2YzlhLTk2ZDEtNDE4MS1hYzJmLTc0MGJlNGVjNDZkOCIsImlhdCI6MTczMzA2NjYyMSwiZXhwIjoxNzMzMDcwMjIxfQ.Hf5TOg1uh59_NJlCd_0mZPSjxUA3Ast-6St7Qa3fScU
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWMwODZlLTQ5NDItNDE0Yi05YWFkLWY4NDRhZTI1YjdkMSIsImlhdCI6MTczMzg1ODY1OSwiZXhwIjoxNzMzODYyMjU5fQ.tkuP3AbXQnCzL3Z7ZlcxwMty-BaEqTnwrj2gmTW6r24
 }
 
 body:json {
   {
-    "id": "e2d0c6fa-743f-4a70-95a0-c64189b46baf",
-    "data": {
-      "name": "YouTube to Emaill"
-    }
+      "enabled": false,
+    "name": "okok"
   }
 }
