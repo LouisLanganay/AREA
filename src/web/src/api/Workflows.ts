@@ -6,6 +6,7 @@ export const getWorkflows = async (token: string): Promise<Workflow[]> => {
   const response = await axios.get<Workflow[]>(`${import.meta.env.VITE_API_URL}/workflows`, {
     headers: {
       Authorization: `Bearer ${token}`,
+      'ngrok-skip-browser-warning': 'true'
     },
   });
   return response.data;
@@ -56,6 +57,7 @@ export const createWorkflow = async (data: createWorkflowRequest, token: string)
     {
       headers: {
         Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true'
       },
     }
   );
