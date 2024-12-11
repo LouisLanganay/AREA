@@ -32,6 +32,7 @@ export class UsersService {
         displayName: Data.displayName,
         avatarUrl: Data.avatarUrl,
         provider: Data.provider,
+        lastConnection: new Date(),
       },
     });
   }

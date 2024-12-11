@@ -16,7 +16,7 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Event, FieldGroup, nodeHeight, nodeWidth, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
+import { Event, FieldGroup, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
 import AddNode from '../components/flow/AddNode';
 import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
