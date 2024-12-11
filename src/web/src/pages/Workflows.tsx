@@ -40,7 +40,7 @@ import { useTranslation } from 'react-i18next';
 import { getServices } from '@/api/Services';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Event, Node, Workflow } from '@/interfaces/Workflows';
+import { Event, Workflow } from '@/interfaces/Workflows';
 import { Service } from '@/interfaces/Services';
 import { useAuth } from '@/auth/AuthContext';
 import {
@@ -105,13 +105,14 @@ export default function Workflows() {
   };
 
   const handleEnable = async (id: string, value: boolean) => {
+    if (!token) return;
     setWorkflows((prevWorkflows) =>
       prevWorkflows.map((workflow) =>
         workflow.id === id ? { ...workflow, enabled: value } : workflow
       )
     );
     try {
-      const updatedWorkflow = await updateWorkflow(id, { enabled: value });
+      const updatedWorkflow = await updateWorkflow(id, { enabled: value }, token);
       setWorkflows((prevWorkflows) =>
         prevWorkflows.map((workflow) =>
           workflow.id === id ? updatedWorkflow : workflow
@@ -148,6 +149,7 @@ export default function Workflows() {
   };
 
   const handleBulkEnable = async (value: boolean) => {
+    if (!token) return;
     const selectedWorkflows = table.getFilteredSelectedRowModel().rows.map(row => row.original);
 
     setWorkflows((prevWorkflows) =>
@@ -160,7 +162,7 @@ export default function Workflows() {
 
     try {
       await Promise.all(
-        selectedWorkflows.map(workflow => updateWorkflow(workflow.id, { enabled: value }))
+        selectedWorkflows.map(workflow => updateWorkflow(workflow.id, { enabled: value }, token))
       );
     } catch (error) {
       console.error('Failed to update workflows', error);
@@ -195,12 +197,10 @@ export default function Workflows() {
     }
   };
 
-  function extractServices(nodes: Node[], services: string[] = []) {
+  function extractServices(nodes: Event[], services: string[] = []) {
     for (const node of nodes) {
-      if (node.service)
-        services.push(node.service.name);
-      if (node.nodes && node.nodes.length > 0)
-        extractServices(node.nodes, services);
+      if (node.serviceName)
+        services.push(node.serviceName);
     }
     return services;
   }
@@ -213,7 +213,7 @@ export default function Workflows() {
         name: newWorkflowName || t('workflows.newWorkflow'),
         description: newWorkflowDescription,
         enabled: true,
-        nodes: []
+        nodes: [selectedTrigger]
       }, token);
 
       setWorkflows((prev) => [...prev, newWorkflow]);
@@ -285,11 +285,11 @@ export default function Workflows() {
         return (
           <div className='flex flex-row flex-wrap gap-1'>
             {extractedServices.map((service: string) => {
-              const icon = Array.isArray(services) ? services.find((s) => s.name === service)?.image : null;
+              const icon = Array.isArray(services) ? services.find((s) => s.id === service)?.image : null;
               if (!icon)
                 return (
                   <div key={service} className='flex flex-row items-center gap-2 border rounded-md p-1'>
-                    <span>{service}</span>
+                    <span>{services.find((s) => s.id === service)?.name}</span>
                   </div>
                 );
               return (
@@ -298,11 +298,11 @@ export default function Workflows() {
                     <TooltipTrigger asChild>
                       <div key={service} className='cursor-pointer border rounded-md p-1'>
                         <img src={icon} alt={service} className='size-5 aspect-square object-contain' />
-                        <span className='sr-only'>{service}</span>
+                        <span className='sr-only'>{services.find((s) => s.id === service)?.name}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent className='bg-background text-foreground border shadow-md'>
-                      <p>{service}</p>
+                      <p>{services.find((s) => s.id === service)?.name}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -598,12 +598,12 @@ export default function Workflows() {
                 {services.map((service: Service) =>
                   <div key={service.id} className='w-full overflow-hidden gap-1 flex flex-col p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground'>
                     <span>{service.name}</span>
-                    {service.Event?.filter((action: Event) => action.type === 'Action')?.map((action: Event) => (
+                    {service.Event?.filter((action: Event) => action.type === 'action')?.map((action: Event) => (
                       <div
-                        key={action.id}
+                        key={action.id_node}
                         className={clsx(
                           'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-                          selectedTrigger?.id === action.id && 'border-green-500'
+                          selectedTrigger?.id_node === action.id_node && 'border-green-500'
                         )}
                         onClick={() => handleSelectTrigger(action)}
                       >

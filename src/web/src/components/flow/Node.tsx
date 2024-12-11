@@ -22,6 +22,8 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
     }
   };
 
+  console.info('data', data);
+
   return (
     <div className='flex flex-col'>
       {data.isTrigger && (
@@ -43,8 +45,14 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
           <div className='flex items-center gap-2 h-fit justify-between'>
             <div className='flex items-center gap-2'>
               <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
-                {data.service && (
+                {data.service?.image ? (
                   <img src={data.service.image} alt={data.service.name} className='size-4 object-contain' />
+                ) : (
+                  <div className='size-4 bg-muted rounded-md flex items-center justify-center'>
+                    <p className='text-xs text-muted-foreground'>
+                      {data.service?.name.charAt(0).toUpperCase()}
+                    </p>
+                  </div>
                 )}
               </div>
               <div className='font-medium text-sm text-foreground'>

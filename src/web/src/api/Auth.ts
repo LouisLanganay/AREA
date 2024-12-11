@@ -96,3 +96,34 @@ export const resetPassword = async (request: resetRequest) => {
   return response.data;
 };
 
+export const googleOAuth = async (code: string): Promise<loginResponse> => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/google`, {
+    code: code
+  }, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+
+  if (response.status !== 200) {
+    throw new Error('Failed to authenticate with Google');
+  }
+
+  return response.data;
+};
+
+export const discordOAuth = async (code: string): Promise<loginResponse> => {
+  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/discord`, {
+    code: code
+  }, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+
+  if (response.status !== 200) {
+    throw new Error('Failed to authenticate with Discord');
+  }
+
+  return response.data;
+};

@@ -97,6 +97,10 @@ export default function Services() {
     handleOAuthCallback();
   }, [token, services]);
 
+  function handleCreateWorkflow() {
+    navigate(`/workflows/`);
+  }
+
   return (
     <>
       <div className='mb-8'>
@@ -119,11 +123,17 @@ export default function Services() {
           >
             <CardContent className='p-6'>
               <div className='flex items-center gap-4 mb-4'>
-                <img
-                  src={service.image}
-                  alt={service.name}
-                  className='w-12 h-12 rounded-lg aspect-square object-cover'
-                />
+                {service.image ? (
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className='size-12 rounded-lg aspect-square object-cover'
+                  />
+                ) : (
+                  <div className='size-12 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                    <p className='text-muted-foreground'>{service.name.charAt(0)}</p>
+                  </div>
+                )}
                 <div>
                   <h2 className='text-lg font-semibold'>{service.name}</h2>
                   <p className='text-sm text-muted-foreground'>
@@ -131,11 +141,13 @@ export default function Services() {
                   </p>
                 </div>
               </div>
-              {service.enabled ? (
+              {service.enabled || !service.auth ? (
                 <Button
                   variant='secondary'
                   className='w-full'
                   disabled={authInProgress()}
+                  size='sm'
+                  onClick={() => handleCreateWorkflow()}
                 >
                   Create a workflow
                 </Button>
@@ -144,14 +156,15 @@ export default function Services() {
                   variant='default'
                   className='w-full'
                   onClick={() => handleOAuth(service)}
-                  disabled={!service.auth || authInProgress()}
+                  disabled={authInProgress()}
+                  size='sm'
                 >
+                  Connect App
                   {authInProgress(service.id) ? (
                     <Loader2 className='w-4 h-4 animate-spin' />
                   ) : (
                     <PlusIcon className='w-4 h-4' />
                   )}
-                  Connect
                 </Button>
               )}
             </CardContent>

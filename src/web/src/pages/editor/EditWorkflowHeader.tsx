@@ -48,7 +48,6 @@ export function WorkflowHeader({
 
   const hasChanges = !isEqual(workflow, updatedWorkflow);
   const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
-
   const copyWorkflowUrl = () => {
     const url = `${window.location.origin}/workflows/${workflow?.id}`;
     navigator.clipboard.writeText(url);
@@ -81,14 +80,14 @@ export function WorkflowHeader({
   };
 
   const handleEnable = async (value: boolean) => {
-    if (!workflow) return;
+    if (!workflow || !token) return;
     setIsLoading(true);
     setWorkflow(prevWorkflow => ({
       ...prevWorkflow!,
       enabled: value
     }));
     try {
-      const updatedWorkflow = await updateWorkflow(workflow.id, { enabled: value });
+      const updatedWorkflow = await updateWorkflow(workflow.id, { enabled: value }, token);
       setWorkflow(updatedWorkflow);
       toast({
         title: t('workflows.updateSuccessTitle'),
@@ -111,7 +110,7 @@ export function WorkflowHeader({
   };
 
   const handleSave = async () => {
-    if (!updatedWorkflow) return;
+    if (!updatedWorkflow || !token) return;
     if (!isValid) {
       toast({
         title: t('workflows.validationErrorTitle'),
@@ -123,7 +122,7 @@ export function WorkflowHeader({
 
     setIsLoading(true);
     try {
-      await updateWorkflow(updatedWorkflow.id, updatedWorkflow);
+      await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
       setWorkflow(updatedWorkflow);
       toast({
         title: t('workflows.updateSuccessTitle'),

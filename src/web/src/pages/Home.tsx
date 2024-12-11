@@ -25,6 +25,7 @@ import {
 import { useTheme } from '@/context/ThemeContext';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
+import LinkitLogoFull from '../assets/linkitLogoFull';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -264,10 +265,10 @@ export default function Home() {
     <div className='min-h-screen bg-background'>
       <header className='border-b z-40'>
         <div className='container flex h-16 items-center justify-between px-4 max-w-7xl mx-auto'>
-          <div className='flex-1 basis-0 flex items-center'>
-            <div className='h-8 w-8 rounded bg-primary/20'>
-              <Link to='/'>LinkIt</Link>
-            </div>
+          <div className='flex-1 basis-0 items-center w-24 h-full justify-start flex'>
+            <Link to='/' className='h-full flex items-center'>
+              <LinkitLogoFull className='w-24 h-fit object-contain fill-primary' />
+            </Link>
           </div>
 
           <NavigationMenu className="hidden md:block">
