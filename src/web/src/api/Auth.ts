@@ -104,11 +104,9 @@ export const googleOAuth = async (code: string): Promise<loginResponse> => {
       'ngrok-skip-browser-warning': 'true'
     }
   });
-
-  if (response.status !== 200) {
+  if (response.status !== 200 && response.status !== 201) {
     throw new Error('Failed to authenticate with Google');
   }
-
   return response.data;
 };
 
