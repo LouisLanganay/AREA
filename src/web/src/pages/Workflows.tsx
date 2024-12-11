@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -31,8 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { deleteWorkflow, getWorkflows, updateWorkflow } from '@/api/Workflows';
-import { Node, Service, Workflow } from '../../../shared/Workflow';
+import { deleteWorkflow, getWorkflows, updateWorkflow, createWorkflow } from '@/api/Workflows';
 import { useNavigate } from 'react-router-dom';
 import { ArrowsUpDownIcon, CheckIcon, ChevronDownIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -42,6 +40,21 @@ import { useTranslation } from 'react-i18next';
 import { getServices } from '@/api/Services';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Event, Node, Workflow } from '@/interfaces/Workflows';
+import { Service } from '@/interfaces/Services';
+import { useAuth } from '@/auth/AuthContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import clsx from 'clsx';
+import { ArrowRightCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -52,11 +65,19 @@ export default function Workflows() {
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { token } = useAuth();
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newWorkflowName, setNewWorkflowName] = useState("");
+  const [newWorkflowDescription, setNewWorkflowDescription] = useState("");
+  const [step, setStep] = useState(0);
+  const [selectedTrigger, setSelectedTrigger] = useState<Event | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchWorkflows = async () => {
+      if (!token) return;
       try {
-        const data = await getWorkflows();
+        const data = await getWorkflows(token);
         setWorkflows(data);
       } catch (error) {
         console.error('Failed to fetch workflows', error);
@@ -64,8 +85,10 @@ export default function Workflows() {
     };
 
     const fetchServices = async () => {
+      if (!token) return;
       try {
-        const data = await getServices();
+        const data = await getServices(token);
+        console.log(data);
         setServices(data);
       } catch (error) {
         console.error('Failed to fetch services', error);
@@ -75,6 +98,11 @@ export default function Workflows() {
     fetchWorkflows();
     fetchServices();
   }, []);
+
+  const handleSelectTrigger = (action: Event) => {
+    console.log("selected trigger", action);
+    setSelectedTrigger(action);
+  };
 
   const handleEnable = async (id: string, value: boolean) => {
     setWorkflows((prevWorkflows) =>
@@ -100,12 +128,18 @@ export default function Workflows() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!token) return;
     const workflowToDelete = workflows.find((workflow) => workflow.id === id);
     setWorkflows((prevWorkflows) =>
       prevWorkflows.filter((workflow) => workflow.id !== id)
     );
     try {
-      await deleteWorkflow(id);
+      await deleteWorkflow(id, token);
+      toast({
+        title: t('workflows.deleteSuccess'),
+        description: t('workflows.deleteSuccessDescription'),
+        variant: 'success',
+      });
     } catch (error) {
       console.error('Failed to delete workflow', error);
       if (workflowToDelete)
@@ -141,14 +175,20 @@ export default function Workflows() {
   };
 
   const handleBulkDelete = async () => {
+    if (!token) return;
     const selectedWorkflows = table.getFilteredSelectedRowModel().rows.map(row => row.original);
     setWorkflows((prevWorkflows) =>
       prevWorkflows.filter(workflow => !selectedWorkflows.some(selected => selected.id === workflow.id))
     );
     try {
       await Promise.all(
-        selectedWorkflows.map(workflow => deleteWorkflow(workflow.id))
+        selectedWorkflows.map(workflow => deleteWorkflow(workflow.id, token))
       );
+      toast({
+        title: t('workflows.bulkDeleteSuccess'),
+        description: t('workflows.bulkDeleteSuccessDescription', { count: selectedWorkflows.length }),
+        variant: 'success',
+      });
     } catch (error) {
       console.error('Failed to delete workflows', error);
       setWorkflows((prevWorkflows) => [...prevWorkflows, ...selectedWorkflows]);
@@ -164,6 +204,37 @@ export default function Workflows() {
     }
     return services;
   }
+
+  const handleCreate = async () => {
+    if (!token || !selectedTrigger) return;
+
+    try {
+      const newWorkflow = await createWorkflow({
+        name: newWorkflowName || t('workflows.newWorkflow'),
+        description: newWorkflowDescription,
+        enabled: true,
+        nodes: []
+      }, token);
+
+      setWorkflows((prev) => [...prev, newWorkflow]);
+      setIsCreateDialogOpen(false);
+      setNewWorkflowName("");
+      setNewWorkflowDescription("");
+      toast({
+        title: t('workflows.createSuccess'),
+        description: t('workflows.createSuccessDescription'),
+        variant: 'success',
+      });
+      navigate(`/workflows/${newWorkflow.id}`);
+    } catch (error) {
+      console.error('Failed to create workflow', error);
+      toast({
+        title: t('workflows.createError'),
+        description: t('workflows.createErrorDescription'),
+        variant: 'destructive',
+      });
+    }
+  };
 
   const columns: ColumnDef<Workflow>[] = [
     {
@@ -214,7 +285,7 @@ export default function Workflows() {
         return (
           <div className='flex flex-row flex-wrap gap-1'>
             {extractedServices.map((service: string) => {
-              const icon = services.find((s) => s.name === service)?.image;
+              const icon = Array.isArray(services) ? services.find((s) => s.name === service)?.image : null;
               if (!icon)
                 return (
                   <div key={service} className='flex flex-row items-center gap-2 border rounded-md p-1'>
@@ -281,7 +352,7 @@ export default function Workflows() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
               <DropdownMenuLabel>{t('workflows.actions')}</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigate(`/workflows/edit/${workflow.id}`)}>
+              <DropdownMenuItem onClick={() => navigate(`/workflows/${workflow.id}`)}>
                 <PencilSquareIcon className='w-4 h-4' />
                 {t('workflows.edit')}
               </DropdownMenuItem>
@@ -318,8 +389,8 @@ export default function Workflows() {
 
   return (
     <div className='w-full'>
-      <div className='flex items-center py-4'>
-        <div className='flex items-center gap-2 flex-1'>
+      <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4'>
+        <div className='flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:flex-1'>
           <Input
             placeholder={t('workflows.filterByName')}
             variantSize='sm'
@@ -327,14 +398,15 @@ export default function Workflows() {
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className='max-w-sm'
+            className='w-full sm:max-w-sm'
           />
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  variant='outlinedestructive'
+                  variant='destructiveOutline'
                   size='sm'
+                  className='w-full sm:w-auto'
                 >
                   {t('workflows.bulkActions')}
                   <ChevronDownIcon />
@@ -358,10 +430,14 @@ export default function Workflows() {
             </DropdownMenu>
           )}
         </div>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 w-full sm:w-auto'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant='outline' size='sm' className='ml-auto'>
+              <Button
+                variant='outline'
+                size='sm'
+                className='flex-1 sm:flex-none'
+              >
                 {t('workflows.columns')} <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -388,8 +464,13 @@ export default function Workflows() {
           <Button
             variant='default'
             size='sm'
-            className='ml-auto'
-            onClick={() => navigate('/workflows/create')}
+            className='flex-1 sm:flex-none'
+            onClick={() => {
+              setIsCreateDialogOpen(true);
+              setStep(0);
+              setNewWorkflowName("");
+              setNewWorkflowDescription("");
+            }}
           >
             {t('workflows.create')} <PlusIcon />
           </Button>
@@ -453,6 +534,119 @@ export default function Workflows() {
           })}
         </div>
       </div>
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent>
+          {step === 0 && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{t('workflows.creation.info.title')}</DialogTitle>
+                <DialogDescription>
+                  {t('workflows.creation.info.subtitle')}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-2 items-start">
+                <Label htmlFor="name" className="text-right">
+                  {t('workflows.creation.info.name')}
+                </Label>
+                <Input
+                  id="name"
+                  value={newWorkflowName}
+                  onChange={(e) => setNewWorkflowName(e.target.value)}
+                  className="col-span-3"
+                  placeholder={t('workflows.creation.info.namePlaceholder')}
+                />
+              </div>
+              <div className="flex flex-col gap-2 items-start">
+                <Label htmlFor="description" className="text-right">
+                  {t('workflows.creation.info.description')}
+                </Label>
+                <Input
+                  id="description"
+                  value={newWorkflowDescription}
+                  onChange={(e) => setNewWorkflowDescription(e.target.value)}
+                  className="col-span-3"
+                  placeholder={t('workflows.creation.info.descriptionPlaceholder')}
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                  size='sm'
+                >
+                  {t('workflows.creation.cancel')}
+                </Button>
+                <Button
+                  onClick={() => setStep(1)}
+                  disabled={!newWorkflowName.trim()}
+                  size='sm'
+                  variant='default'
+                >
+                  {t('workflows.creation.nextStep')}
+                  <ArrowRightCircleIcon className='size-4' />
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+          {step === 1 && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{t('workflows.creation.trigger.title')}</DialogTitle>
+                <DialogDescription>{t('workflows.creation.trigger.description')}</DialogDescription>
+              </DialogHeader>
+              <div className='flex flex-col gap-2 items-start w-full'>
+                {services.map((service: Service) =>
+                  <div key={service.id} className='w-full overflow-hidden gap-1 flex flex-col p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground'>
+                    <span>{service.name}</span>
+                    {service.Event?.filter((action: Event) => action.type === 'Action')?.map((action: Event) => (
+                      <div
+                        key={action.id}
+                        className={clsx(
+                          'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+                          selectedTrigger?.id === action.id && 'border-green-500'
+                        )}
+                        onClick={() => handleSelectTrigger(action)}
+                      >
+                        <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
+                          {service.image ? (
+                            <img src={'https://www.svgrepo.com/show/353655/discord-icon.svg'} alt={service.name} className='size-4 object-contain' />
+                          ) : (
+                            <div className='flex items-center justify-center size-4'>
+                              <span>{service.name.charAt(0)}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className='flex flex-col min-w-0'>
+                          <span className='truncate'>{action.name}</span>
+                          <span className='text-muted-foreground text-xs truncate'>{action.description}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setStep(0)}
+                  size='sm'
+                >
+                  {t('workflows.creation.trigger.back')}
+                </Button>
+                <Button
+                  onClick={() => handleCreate()}
+                  disabled={!selectedTrigger}
+                  size='sm'
+                  variant='default'
+                >
+                  {t('workflows.creation.trigger.create')}
+                  <PlusCircleIcon className='size-4' />
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

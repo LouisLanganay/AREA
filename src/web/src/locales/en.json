@@ -42,7 +42,9 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
-      "logout": "Logout"
+      "logout": "Logout",
+      "addAccount": "Add Account",
+      "currentAccount": "Current"
     }
   },
   "settings": {
@@ -61,7 +63,10 @@
       "description": "Manage your account details and preferences.",
       "avatar": {
         "change": "Change Avatar",
-        "alt": "Profile Picture"
+        "alt": "Profile Picture",
+        "upload": "Avatar",
+        "description": "Upload a new profile picture.",
+        "save": "Save"
       },
       "fields": {
         "name": "Name",
@@ -76,6 +81,12 @@
       }
     },
     "appearance": {
+      "language": {
+        "fr": "French",
+        "en": "English",
+        "label": "Language",
+        "description": "Select the language for the application."
+      },
       "title": "Appearance",
       "description": "Customize the application's appearance.",
       "darkMode": {
@@ -84,39 +95,20 @@
       },
       "fontSize": {
         "label": "Font Size",
-        "description": "Adjust the font size for better readability."
-      }
-    },
-    "notifications": {
-      "title": "Notification Preferences",
-      "description": "Manage how you receive notifications.",
-      "email": {
-        "label": "Email Notifications",
-        "description": "Receive notifications via email."
-      },
-      "push": {
-        "label": "Push Notifications",
-        "description": "Receive push notifications on your devices."
-      },
-      "frequency": {
-        "label": "Notification Frequency",
-        "placeholder": "Select frequency",
-        "options": {
-          "realtime": "Real-time",
-          "hourly": "Hourly Summary",
-          "daily": "Daily Summary",
-          "weekly": "Weekly Summary"
-        }
+        "description": "Adjust the font size for better readability.",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "xLarge": "Extra Large"
       }
     },
     "security": {
       "title": "Security Settings",
       "description": "Manage your account's security and access.",
       "password": {
-        "change": "Change Password",
-        "current": "Current Password",
-        "new": "New Password",
-        "confirm": "Confirm Password"
+        "label": "Change Password",
+        "description": "Change your password to enhance your account's security.",
+        "change": "Change Password"
       },
       "twoFactor": {
         "label": "Two-Factor Authentication",
@@ -124,10 +116,7 @@
       },
       "delete": {
         "label": "Delete Account",
-        "confirmation": {
-          "title": "Are you absolutely sure?",
-          "description": "This action cannot be undone. It will permanently delete your account and remove your data from our servers."
-        }
+        "description": "Permanently delete your account and remove your data from our servers."
       }
     },
     "automation": {
@@ -159,17 +148,239 @@
     "openMenu": "Open Menu",
     "actions": "Actions",
     "edit": "Edit",
-    "delete": "Delete",
     "filterByName": "Filter by name...",
     "bulkActions": "Bulk Actions",
     "enableAll": "Enable All",
     "disableAll": "Disable All",
     "columns": "Columns",
-    "create": "Create Workflow",
+    "create": "Create new workflow",
+    "creation": {
+      "info": {
+        "title": "Create New Workflow",
+        "subtitle": "Enter basic information about your workflow",
+        "name": "Name",
+        "description": "Description",
+        "namePlaceholder": "Enter workflow name",
+        "descriptionPlaceholder": "Enter workflow description"
+      },
+      "cancel": "Cancel",
+      "nextStep": "Next Step",
+      "trigger": {
+        "title": "Select Trigger",
+        "description": "Choose an event that will trigger your workflow",
+        "back": "Back",
+        "create": "Create Workflow"
+      }
+    },
     "noResults": "No results found",
     "selectedRows": "{{selected}} of {{total}} rows selected",
     "previous": "Previous",
     "next": "Next",
-    "apps": "Apps"
+    "apps": "Apps",
+    "runNow": "Run Now",
+    "disabled": "Disabled",
+    "delete": "Delete",
+    "confirmDeleteTitle": "Confirm deletion",
+    "confirmDelete": "Are you sure you want to delete the workflow '{{workflowName}}'?",
+    "linkCopied": "Link copied to clipboard",
+    "linkCopiedDescription": "You can now share the link to your workflow with others",
+    "updateErrorTitle": "Error updating workflow",
+    "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
+    "deleteErrorTitle": "Error deleting workflow",
+    "deleteErrorDescription": "An error occurred while deleting the workflow. Please try again.",
+    "typeNameToConfirm": "Type '{{workflowName}}' to confirm.",
+    "trigger": "Trigger",
+    "remove": "Remove Node",
+    "confirmRemove": "Confirm Remove ?",
+    "cancel": "Cancel",
+    "validationErrorTitle": "Validation Error",
+    "validationErrorDescription": "Please fill in all required fields.",
+    "invalidFields": "Error",
+    "resetNode": "Cancel Changes",
+    "searchServices": "Search Services...",
+    "nodeResetTitle": "Node Reset",
+    "nodeResetDescription": "Are you sure you want to reset the node?",
+    "nodeAddedTitle": "Node Added",
+    "nodeAddedDescription": "The node has been added to the workflow.",
+    "save": "Save changes",
+    "back": "Back",
+    "deleteSuccess": "Workflow deleted successfully",
+    "deleteSuccessDescription": "The workflow has been deleted.",
+    "createSuccess": "Workflow created successfully",
+    "createSuccessDescription": "The workflow has been created.",
+    "createError": "Error creating workflow",
+    "createErrorDescription": "An error occurred while creating the workflow. Please try again."
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "description": "Enter your credentials below to login",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "email": "Email address",
+    "password": "Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "or": "OR",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "forgotPassword": "Forgot password?"
+  },
+  "register": {
+    "createAccount": "Create an account",
+    "fillInDetails": "Fill in your details to create a new account",
+    "username": "Username",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "usernamePlaceholder": "Enter your username",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "or": "OR",
+    "usernameRequired": "Username is required",
+    "emailInvalid": "Invalid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "passwordsDontMatch": "Passwords don't match"
+  },
+  "error": {
+    "USER_NOT_FOUND": "User not found",
+    "INTERNAL_SERVER_ERROR": "Internal server error",
+    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later."
+  },
+  "common": {
+    "loading": "Loading..."
+  },
+  "forgotPassword": {
+    "title": "Reset your password",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "email": "Email address",
+    "emailPlaceholder": "Enter your email",
+    "emailInvalid": "Invalid email address",
+    "resetPassword": "Reset password",
+    "backToLogin": "Back to login",
+    "checkEmail": "Check your email",
+    "checkEmailDescription": "If an account exists for this email, you will receive a password reset link shortly."
+  },
+  "home": {
+    "theme": {
+      "dark": "Switch to dark mode",
+      "light": "Switch to light mode"
+    },
+    "navigation": {
+      "features": {
+        "title": "Features",
+        "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
+        "intro": "Create automated workflows between your favorite applications.",
+        "pricing": "Plans adapted to your needs, from free to enterprise.",
+        "integrations": "More than 100 compatible services for your automations."
+      },
+      "documentation": {
+        "title": "Documentation",
+        "api": "Complete documentation of our public API.",
+        "source": "Access our source code on GitHub.",
+        "mobile": "Download our mobile application."
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "solutions": "Advanced features for large organizations.",
+        "cases": "Discover how our clients use LinkIt.",
+        "contact": "Let's talk about your specific needs."
+      }
+    },
+    "auth": {
+      "signin": "Sign in",
+      "register": "Register"
+    },
+    "mobile": {
+      "discover": "Discover our mobile app.",
+      "getStarted": "Get started"
+    },
+    "title": {
+      "automate": "Automate.",
+      "iterate": "Iterate.",
+      "scale": "Scale."
+    },
+    "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
+    "team": {
+      "title": "Meet our team",
+      "description": "We're a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.",
+      "roles": {
+        "frontend": "Frontend Developer",
+        "backend": "Backend Developer",
+        "backendAndDevOps": "Backend Developer and DevOps"
+      }
+    },
+    "features": {
+      "title": "Automate your workflows",
+      "subtitle": "Everything you need to automate your workflows",
+      "mobile": {
+        "title": "Mobile friendly",
+        "description": "Our mobile app is designed to be user-friendly and easy to use, with a focus on simplicity and efficiency."
+      },
+      "performance": {
+        "title": "Performance",
+        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays."
+      },
+      "scalability": {
+        "title": "Scalability",
+        "description": "Create unlimited workflows and automate as many tasks as you need. Our platform grows with your automation needs."
+      },
+      "connect": {
+        "title": "Connect Your Apps",
+        "description": "Seamlessly integrate your favorite apps like Discord, YouTube, and Google services. Create powerful automated workflows that work together."
+      }
+    },
+    "stack": {
+      "title1": "Integrate",
+      "title2": "automations with multiple services.",
+      "description": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations.",
+      "services": {
+        "discord": {
+          "title": "Discord",
+          "description": "Connect your Discord account to automate your workflows and stay connected with your community effortlessly."
+        },
+        "apple": {
+          "title": "Apple",
+          "description": "Connect your Apple account to automate your workflows and seamlessly integrate with your Apple ecosystem."
+        },
+        "google": {
+          "title": "Google",
+          "description": "Connect your Google account to automate your workflows and enhance productivity with Google services."
+        },
+        "github": {
+          "title": "Github",
+          "description": "Connect your Github account to automate your workflows and streamline your development process."
+        },
+        "youtube": {
+          "title": "Youtube",
+          "description": "Connect your Youtube account to automate your workflows and manage your video content more efficiently."
+        },
+        "twitch": {
+          "title": "Twitch",
+          "description": "Connect your Twitch account to automate your workflows and engage with your audience in real-time."
+        }
+      }
+    },
+    "cta": {
+      "title1": "Start automating",
+      "title2": "your workflows today.",
+      "description": "Create your first workflow in minutes with our easy workflow builder.",
+      "button": "Open Builder"
+    }
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "description": "Enter your new password below to reset your password.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPasswordPlaceholder": "Confirm your new password",
+    "resetPassword": "Reset password",
+    "backToLogin": "Back to login",
+    "success": "Password reset successful",
+    "successDescription": "Your password has been reset successfully. You can now login with your new password."
   }
 }

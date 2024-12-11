@@ -1,0 +1,96 @@
+meta {
+  name: createWorkflow
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/workflows
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlMjg5YjFlLWRlZDQtNDM3OC05YWYyLTk5MmQyNzI2MTk3NCIsImlhdCI6MTczMzg2MTMzNCwiZXhwIjoxNzMzODY0OTM0fQ.zcCMOVs9ZdOrR_KCqqBkdIJqbnB5-RlKNQsTLEvbUAQ
+}
+
+body:json {
+  {
+    "name": "Meteo to Mail",
+    "description": "Notify by email when temp is lower than 10°C at Rennes",
+    "image": "https://example.com/workflow.png",
+    "enabled": true,
+    "nodes": [
+      {
+        "id_node": "checkFreezingTemperature",
+        "type": "action",
+        "name": "Check temp",
+        "serviceName": "testService",
+        "fieldGroups": [
+          {
+            "id": "locationDetails",
+            "name": "GPS Position",
+            "description": "GPS position with latitude dans longitude",
+            "type": "position",
+            "fields": [
+              {
+                "id": "latitude",
+                "type": "number",
+                "required": true,
+                "description": "The latitude format : xx.xxx",
+                "value": 48.12
+              },
+              {
+                "id": "longitude",
+                "type": "number",
+                "required": true,
+                "description": "The longitude format : xx.xxx",
+                "value": -1.7025
+              }
+            ]
+          }
+        ],
+        "dependsOn": null
+      },
+      {
+        "id_node": "sendEmail",
+        "type": "reaction",
+        "name": "Send Email",
+        "serviceName": "testService",
+        "fieldGroups": [
+          {
+            "id": "email_info",
+            "name": "Email Information",
+            "description": "Details for sending the email",
+            "type": "group",
+            "fields": [
+              {
+                "id": "recipient_emails",
+                "type": "string",
+                "required": true,
+                "description": "Comma-separated list of recipient emails",
+                "value": "sebastien.bertilsouchet@protonmail.com"
+              },
+              {
+                "id": "email_subject",
+                "type": "string",
+                "required": true,
+                "description": "Subject of the email",
+                "value": "Temperature Alert"
+              },
+              {
+                "id": "email_body",
+                "type": "string",
+                "required": true,
+                "description": "Body content of the email",
+                "value": "The temperature at Rennes is below 10°C."
+              }
+            ]
+          }
+        ],
+        "dependsOn": "checkFreezingTemperature"
+      }
+    ]
+  }
+  
+}

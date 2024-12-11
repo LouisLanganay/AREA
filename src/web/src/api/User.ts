@@ -1,9 +1,33 @@
-import axios from 'axios';
-import { User } from '../../../shared/Users';
+import { getMeResponse } from "@/interfaces/api/User";
+import { User } from "@/interfaces/User";
+import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8080/api";
+export const getMe = async (token: string): Promise<getMeResponse> => {
+  const response = await axios.get<getMeResponse>(`${import.meta.env.VITE_API_URL}/users/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
 
-export const getUser = async (userId: string): Promise<User> => {
-  const response = await axios.get<User>(`${API_BASE_URL}/users/${userId}`);
+  if (response.status !== 200) {
+    throw new Error('Failed to get me');
+  }
+
+  return response.data;
+};
+
+export const updateUser = async (token: string, user: User): Promise<void> => {
+  const response = await axios.put(`${import.meta.env.VITE_API_URL}/users/update`, user, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
+
+  if (response.status !== 200) {
+    throw new Error('Failed to update user');
+  }
+
   return response.data;
 };

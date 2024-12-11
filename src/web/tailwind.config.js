@@ -1,9 +1,12 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+import tailwindcssAnimate from 'tailwindcss-animate';
+
+const config = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+	darkMode: 'selector',
   theme: {
   	extend: {
   		fontFamily: {
@@ -14,9 +17,13 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+  		scale: {
+  			'101': '1.01',
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+				transparent: '#00000000',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -68,6 +75,7 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
-  darkMode: ['class', "class"],
+  plugins: [tailwindcssAnimate],
 };
+
+export default config;

@@ -1,16 +1,19 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Layout from "./components/Layout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { AuthProvider, useAuth } from "@/auth/AuthContext";
-import { FontScaleProvider } from "@/context/FontScaleContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-import Home from "./pages/Home";
-import AdminPanel from "./pages/AdminPanel";
-import Settings from "./pages/Settings";
-import Services from "./pages/Services";
-import Workflows from "./pages/Workflows";
+import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import Layout from './components/Layout';
+import { FontScaleProvider } from './context/FontScaleContext';
+import { ThemeProvider } from './context/ThemeContext';
+import AdminPanel from './pages/AdminPanel';
+import EditWorkflow from './pages/EditWorkflow';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Services from './pages/Services';
+import Settings from './pages/Settings';
+import Workflows from './pages/Workflows';
+import ResetPassword from './pages/ResetPassword';
+import ForgotPassword from './pages/ForgotPassword';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -19,13 +22,39 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? children : <Navigate to="/" replace />;
+  return !isAuthenticated ? children : <Navigate to="/workflows" replace />;
 }
 
 function Logout() {
   const { logout } = useAuth();
   logout();
   return <Navigate to="/login" replace />;
+}
+
+function LoginSuccess() {
+  const { login } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+
+    if (token) {
+      const handleLogin = async () => {
+        try {
+          await login(token);
+          navigate('/workflows');
+        } catch (error) {
+          console.error('Login failed:', error);
+          navigate('/login');
+        }
+      };
+      handleLogin();
+    }
+  }, [location]);
+
+  return <div>Loading...</div>;
 }
 
 function App() {
@@ -47,9 +76,7 @@ function App() {
               <Route
                 path="/register"
                 element={
-                  <PublicRoute>
-                    <Register />
-                  </PublicRoute>
+                  <Register />
                 }
               />
 
@@ -65,11 +92,7 @@ function App() {
               <Route
                 path="/"
                 element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Home />
-                    </Layout>
-                  </ProtectedRoute>
+                  <Home />
                 }
               ></Route>
 
@@ -125,6 +148,38 @@ function App() {
                       <Workflows />
                     </Layout>
                   </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/workflows/:id'
+                element={
+                  <ProtectedRoute>
+                    <Layout header={false} padding={false}>
+                      <EditWorkflow />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/login-success'
+                element={
+                  <LoginSuccess />
+                }
+              />
+
+              <Route
+                path='/forgot-password'
+                element={
+                  <ForgotPassword />
+                }
+              />
+
+              <Route
+                path='/reset-password'
+                element={
+                  <ResetPassword />
                 }
               />
             </Routes>

@@ -1,10 +1,18 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.example.app',
-  appName: 'area',
+  appId: 'com.votreapp.id',
+  appName: 'Votre App',
   webDir: 'dist',
-  bundledWebRuntime: false
+  server: {
+    androidScheme: 'myapp'
+  },
+  plugins: {
+    App: {
+      // Définir les URL schemes que votre app peut gérer
+      appUrlScheme: 'myapp'
+    }
+  }
 };
 
 export default config;

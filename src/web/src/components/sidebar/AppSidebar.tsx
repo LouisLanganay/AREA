@@ -15,7 +15,8 @@ import {
   CursorArrowRaysIcon,
   HomeIcon,
   Squares2X2Icon,
-  UsersIcon
+  UsersIcon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 
@@ -50,6 +51,16 @@ const getGroups = (t: (key: string) => string) => [
       }
     ],
     isAdmin: true
+  },
+  {
+    title: t('sidebar.items.settings'),
+    items: [
+      {
+        title: t('sidebar.items.settings'),
+        icon: Cog6ToothIcon,
+        url: '/settings'
+      }
+    ]
   }
 ];
 
