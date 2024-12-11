@@ -99,7 +99,13 @@ export class WorkflowService {
     });
   }
 
-  private async updateNodes(workflowId: string, nodes: any) {
+  private async updateNodes(workflowId: string, nodes: [any]) {
+    if (nodes.length <= 0) {
+      return this.prisma.workflow.findUnique({
+        where: { id: workflowId },
+        include: { nodes: true },
+      });
+    }
     await this.prisma.node.deleteMany({ where: { workflowId } });
     await this.prisma.node.createMany({
       data: nodes.map((node) => ({
@@ -137,7 +143,7 @@ export class WorkflowService {
     }
 
     data.updatedAt = new Date();
-    const node = data.nodes;
+    const node = data.nodes || [];
     delete data.nodes;
 
     try {
