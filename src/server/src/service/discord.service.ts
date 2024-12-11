@@ -73,11 +73,12 @@ export const EventnotifyUserDiscord: Event = {
 }
 
 export const EventsendMessageDiscord: Event = {
-    type: "Reaction",
-    id: "sendMessageDiscord",
+    type: "reaction",
+    id_node: "sendMessageDiscord",
     name: "Send Message",
     description: "Send a message to a Discord channel",
-    parameters: [
+    serviceName: "discord",
+    fieldGroups: [
         {
             id: "channelDetails",
             name: "Channel Details",
@@ -103,7 +104,7 @@ export const EventsendMessageDiscord: Event = {
         const message = parameters.find(param => param.id === "messageDetails")?.fields.find(field => field.id === "message")?.value;
 
         if (channelId && message) {
-            discordServiceMethodes.sendMessageToChannel(channelId, message, "userId");
+            discordServiceMethodes.sendMessageToChannel(channelId, message, "userId").then(r => console.log(r));
             return true;
         } else {
             console.error("Missing required parameters: channelId or message");

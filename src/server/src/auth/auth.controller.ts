@@ -160,7 +160,7 @@ export class AuthController {
   }
 
   //retourne le dans le body le lien de redirection
-  @Get('discord')
+  //@Get('discord')
   async discordAuth() {
     const redirectUrl = await this.discordService.getRedirectUrl();
     console.log('Redirecting to Discord OAuth:', redirectUrl);
@@ -169,6 +169,43 @@ export class AuthController {
 
   @Post('discord/callback')
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: 'Discord OAuth callback' })
+    @ApiResponse({
+        status: 200,
+        description: 'Tokens stored in the database',
+        schema: {
+        example: {
+            message: 'Tokens stored in the database',
+        },
+        },
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'Bad Request',
+        schema: {
+        example: {
+            err_code: 'INVALID_TOKEN',
+        },
+        },
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized',
+        schema: {
+        example: {
+            err_code: 'UNAUTHORIZED',
+        },
+        },
+    })
+    @ApiResponse({
+        status: 500,
+        description: 'Internal server error',
+        schema: {
+        example: {
+            err_code: 'INTERNAL_SERVER_ERROR',
+        },
+        },
+    })
   async getDiscordCallback(
     // code dans le body
     @Body('code') code: string,
