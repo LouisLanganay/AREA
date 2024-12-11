@@ -47,6 +47,7 @@ export class WorkflowService {
         nodes: {
           select: {
             id: true,
+            id_node: true,
             type: true,
             name: true,
             serviceName: true,
@@ -84,6 +85,7 @@ export class WorkflowService {
         nodes: {
           select: {
             id: true,
+            id_node: true,
             type: true,
             name: true,
             serviceName: true,
