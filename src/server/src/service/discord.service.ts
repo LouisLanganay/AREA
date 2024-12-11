@@ -1,4 +1,12 @@
 import { Service, Event } from '../../../shared/Workflow';
+import { DiscordService } from '../app-discord/discord-app.service';
+import {FieldGroup} from "../../../shared/Users";
+import { PrismaService } from '../prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
+
+const prismaService = new PrismaService();
+const configService = new ConfigService();
+const discordServiceMethodes = new DiscordService(prismaService, configService);
 
 export const EventgetMessageDiscord: Event = {
     type: "Action",
@@ -59,6 +67,46 @@ export const EventnotifyUserDiscord: Event = {
     execute: () => {
         console.log("Executing 'Notify User' reaction for Discord");
         return false;
+    }
+}
+
+export const EventsendMessageDiscord: Event = {
+    type: "Reaction",
+    id: "sendMessageDiscord",
+    name: "Send Message",
+    description: "Send a message to a Discord channel",
+    parameters: [
+        {
+            id: "channelDetails",
+            name: "Channel Details",
+            description: "Information about the Discord channel",
+            type: "group",
+            fields: [
+                { id: "channelId", type: "string", required: true, description: "The channel ID" }
+            ]
+        },
+        {
+            id: "messageDetails",
+            name: "Message Details",
+            description: "Details of the message to send",
+            type: "group",
+            fields: [
+                { id: "message", type: "string", required: true, description: "The message content" }
+            ]
+        }
+    ],
+    execute: (parameters: FieldGroup[]) => {
+        console.log("Executing 'Send Message' reaction for Discord");
+        const channelId = parameters.find(param => param.id === "channelDetails")?.fields.find(field => field.id === "channelId")?.value;
+        const message = parameters.find(param => param.id === "messageDetails")?.fields.find(field => field.id === "message")?.value;
+
+        if (channelId && message) {
+            discordServiceMethodes.sendMessageToChannel(channelId, message, "userId");
+            return true;
+        } else {
+            console.error("Missing required parameters: channelId or message");
+            return false;
+        }
     }
 }
 
