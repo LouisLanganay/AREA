@@ -12,11 +12,11 @@ import { UsersService } from '../users/users.service';
 import { LoginUserDto } from '../users/dto/login-user.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { MailerService } from '../mailer/mailer.service';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { GoogleAuthService } from './external-services/google.auth.service';
+import { DiscordAuthService } from './external-services/discord.auth.service';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +25,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
     private readonly googleAuthService: GoogleAuthService,
+    private readonly discordService: DiscordAuthService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -241,13 +242,47 @@ export class AuthService {
       access_token: this.jwtService.sign({ id: userData.id }),
     };
   }
+
+  async discordOauth(code: string) {
+    const userExtData = await this.discordService.loginDiscord(code);
+
+    if (!userExtData) return;
+    const userExist = await this.usersService.checkUserEmailExist(
+      userExtData.email,
+      'discord',
+    );
+    if (!userExist) {
+      let avatar = null;
+      if (userExtData.avatar)
+        avatar =
+          'https://cdn.discordapp.com/avatars/' +
+          userExtData.id +
+          '/' +
+          userExtData.avatar +
+          '.png';
+      const createUserDto = {
+        email: userExtData.email,
+        username: await this.usersService.getUnusedUsername(
+          userExtData.username,
+        ),
+        displayName: userExtData.username,
+        avatarUrl: avatar,
+        provider: 'discord',
+      };
+      await this.usersService.registerExternal(createUserDto);
+      await this.sendRegisterEmail(createUserDto, 'discord');
+    }
+    const userData = await this.usersService.findByEmail(
+      userExtData.email,
+      'discord',
+    );
+    if (!userData) {
+      throw new InternalServerErrorException({
+        err_code: 'USER_CREATION_FAIL_DC',
+      });
+    }
+    return {
+      access_token: this.jwtService.sign({ id: userData.id }),
+    };
+  }
 }
-// linkit_server       | test: {
-//   linkit_server       |   id: '105132920273153006087',
-//   linkit_server       |   email: 'tom.lfx28@gmail.com',
-//   linkit_server       |   verified_email: true,
-//   linkit_server       |   name: 'Tlmx 25',
-//   linkit_server       |   given_name: 'Tlmx',
-//   linkit_server       |   family_name: '25',
-//   linkit_server       |   picture: 'https://lh3.googleusercontent.com/a/ACg8ocKwUxhBy2a1jb-qnVQsiRtJKVi1HVAtJK9wS_4mz2kHudVuN_2w=s96-c'
-//   linkit_server       | }

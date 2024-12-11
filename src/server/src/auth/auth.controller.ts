@@ -277,6 +277,6 @@ export class AuthController {
     if (!code) {
       throw new BadRequestException('Code is missing');
     }
-    // return await this.authService.discordOAuth(code);
+    return await this.authService.discordOauth(code);
   }
 }

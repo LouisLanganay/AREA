@@ -63,7 +63,6 @@ export class GoogleAuthService {
     if (!tokens) {
       return null;
     }
-    const userInfo = await this.getUserInfoGoogle(tokens.access_token);
-    return userInfo;
+    return await this.getUserInfoGoogle(tokens.access_token);
   }
 }

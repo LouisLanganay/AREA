@@ -13,6 +13,7 @@ import { DiscordService } from '../app-discord/discord-app.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
 import { GoogleAuthService } from './external-services/google.auth.service';
+import { DiscordAuthService } from './external-services/discord.auth.service';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { GoogleAuthService } from './external-services/google.auth.service';
     DiscordStrategy,
     DiscordService,
     GoogleAuthService,
+    DiscordAuthService,
   ],
   exports: [AuthService],
 })
