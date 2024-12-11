@@ -39,8 +39,8 @@ export default function Login() {
         id: data.email,
         password: data.password,
       });
-      login(response.access_token);
-      navigate('/');
+      await login(response.access_token);
+      navigate('/workflows');
     } catch(error: any) {
       const data = error.response.data as apiError;
       setError(t('error.' + data.err_code));

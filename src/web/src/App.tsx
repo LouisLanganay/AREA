@@ -47,10 +47,7 @@ function LoginSuccess() {
     const handleGoogle = async () => {
       try {
         const response = await googleOAuth(code);
-        if (response.access_token) {
-          login(response.access_token);
-          navigate('/workflows');
-        }
+        await processLogin(response.access_token);
       } catch (error) {
         console.error("Error authenticating with Google", error);
         navigate('/login');
@@ -60,17 +57,21 @@ function LoginSuccess() {
     const handleDiscord = async () => {
       try {
         const response = await discordOAuth(code);
-        if (response.access_token) {
-          login(response.access_token);
-          navigate('/workflows');
-        }
+        await processLogin(response.access_token);
       } catch (error) {
         console.error("Error authenticating with Discord", error);
         navigate('/login');
       }
     };
 
-    Cookies.remove('oauth_provider');
+    const processLogin = async (token: string) => {
+      Cookies.remove('oauth_provider');
+      if (token) {
+        await login(token);
+        navigate('/workflows');
+      }
+    };
+
     switch (provider) {
       case 'Google':
         handleGoogle();

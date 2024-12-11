@@ -14,6 +14,7 @@ import { apiError } from '@/interfaces/api/Errors';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { checkIfUsernameIsAvailable } from '@/api/User';
 import { Loader2 } from 'lucide-react';
+import { useOAuth } from '@/hooks/useOAuth';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -29,6 +30,7 @@ export default function Register() {
 
   type RegisterSchema = z.infer<typeof registerSchema>;
   const { login } = useAuth();
+  const { openOAuthUrl } = useOAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
@@ -112,14 +114,16 @@ export default function Register() {
           {providers.map(provider => (
             <Button
               variant='outline'
-              size='icon'
-              onClick={() => window.location.href = provider.redirect || ''}
+              size='sm'
+              key={provider.name}
+              onClick={() => openOAuthUrl(provider.redirect, provider.name)}
             >
               <img
                 src={provider.icon}
                 alt={provider.name}
                 className='h-full max-h-4'
               />
+              <span>{provider.name}</span>
             </Button>
           ))}
         </div>
