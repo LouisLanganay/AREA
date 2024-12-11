@@ -10,6 +10,9 @@ import { Loader2 } from 'lucide-react';
 import { oauthCallback } from '@/api/Auth';
 import { Service } from '@/interfaces/Services';
 import { toast } from '@/hooks/use-toast';
+import { getServiceProvider } from '@/utils/servicesProviders';
+import { useOAuth } from '@/hooks/useOAuth';
+import Cookies from 'js-cookie';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -18,10 +21,11 @@ export default function Services() {
   const token = searchParams.get('code');
   const { token: userToken } = useAuth();
   const navigate = useNavigate();
+  const { openServiceOAuthUrl } = useOAuth();
 
   useEffect(() => {
-    if (!token && localStorage.getItem('oauth_service_id'))
-      localStorage.removeItem('oauth_service_id');
+    if (!token && Cookies.get('service_oauth_provider'))
+      Cookies.remove('service_oauth_provider');
   }, [token]);
 
   useEffect(() => {
@@ -37,30 +41,18 @@ export default function Services() {
     fetchServices();
   }, []);
 
-  async function handleOAuth(service: Service) {
-    if (!service.auth || !userToken)
-      return;
-    try {
-      const auth = await getServiceAuth(service.auth.uri, userToken);
-      localStorage.setItem('oauth_service_id', service.id);
-      window.location.href = auth.redirectUrl;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   function authInProgress(serviceId?: string) {
     if (serviceId) {
-      if (localStorage.getItem('oauth_service_id') === serviceId)
+      if (Cookies.get('service_oauth_provider') === serviceId)
         return true;
-    } else if (localStorage.getItem('oauth_service_id'))
+    } else if (Cookies.get('service_oauth_provider'))
       return true;
     return false;
   }
 
   useEffect(() => {
     const handleOAuthCallback = async () => {
-      const serviceId = localStorage.getItem('oauth_service_id');
+      const serviceId = Cookies.get('service_oauth_provider');
 
       console.log("handleOAuthCallback", token, serviceId);
 
@@ -75,11 +67,11 @@ export default function Services() {
       try {
         await oauthCallback(service.auth.callback_uri, token, userToken);
         // TODO: Handle response
-        localStorage.removeItem('oauth_service_id');
+        Cookies.remove('service_oauth_provider');
         const updatedServices = await getServices(userToken);
         setServices(updatedServices);
       } catch (error: any) {
-        localStorage.removeItem('oauth_service_id');
+        Cookies.remove('service_oauth_provider');
         console.error('OAuth callback error:', error);
         if (error?.response?.status === 500) {
           toast({
@@ -141,7 +133,7 @@ export default function Services() {
                   </p>
                 </div>
               </div>
-              {service.enabled || !service.auth ? (
+              {service.enabled || !getServiceProvider(service.id) ? (
                 <Button
                   variant='secondary'
                   className='w-full'
@@ -155,7 +147,10 @@ export default function Services() {
                 <Button
                   variant='default'
                   className='w-full'
-                  onClick={() => handleOAuth(service)}
+                  onClick={() => openServiceOAuthUrl(
+                    getServiceProvider(service.id)?.redirect || '',
+                    service.id
+                  )}
                   disabled={authInProgress()}
                   size='sm'
                 >
