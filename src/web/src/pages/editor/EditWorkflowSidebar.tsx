@@ -7,11 +7,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Service } from '@/interfaces/Services';
-import { Field, FieldGroup } from '@/interfaces/Workflows';
-import { Node as AreaNode } from '@/interfaces/Workflows';
+import { Field, FieldGroup, Event } from '@/interfaces/Workflows';
 
 interface EditWorkflowSidebarProps {
-  selectedNode: AreaNode | null;
+  selectedNode: Event | null;
   services: Service[];
   onClose: () => void;
   onFieldChange: (fieldId: string, value: any) => void;
@@ -128,16 +127,22 @@ export function EditWorkflowSidebar({
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
             <div className='p-1 rounded-md bg-muted border overflow-hidden'>
-              {services.find(s => s.id === selectedNode.service.id)?.image && (
+              {services.find(s => s.id === selectedNode.serviceName)?.image ? (
                 <img
-                  src={services.find(s => s.id === selectedNode.service.id)?.image}
-                  alt={selectedNode.service.name}
+                  src={services.find(s => s.id === selectedNode.serviceName)?.image}
+                  alt={selectedNode.serviceName}
                   className='size-5 object-contain'
                 />
+              ) : (
+                <div className='size-5 bg-muted rounded-md flex items-center justify-center'>
+                  <p className='text-xs text-muted-foreground'>
+                    {selectedNode.serviceName.charAt(0).toUpperCase()}
+                  </p>
+                </div>
               )}
             </div>
             <div className='font-medium text-sm text-gray-900'>
-              {selectedNode.service.description}
+              {selectedNode.description}
             </div>
           </div>
           <Button
@@ -179,19 +184,21 @@ export function EditWorkflowSidebar({
         </div>
 
         <div className='flex items-center gap-2'>
-          <Button
-            variant='destructiveOutline'
-            size='sm'
-            onClick={() => onRemoveNode(selectedNode.id)}
-          >
-            <ArchiveBoxArrowDownIcon className='w-4 h-4' />
-            {t('workflows.remove')}
-          </Button>
+          {selectedNode.type === 'reaction' && (
+            <Button
+              variant='destructiveOutline'
+              size='sm'
+              onClick={() => onRemoveNode(selectedNode.id_node)}
+            >
+              <ArchiveBoxArrowDownIcon className='w-4 h-4' />
+              {t('workflows.remove')}
+            </Button>
+          )}
           <Button
             variant='ghost'
             size='sm'
-            onClick={() => onResetNode(selectedNode.id)}
-            disabled={!hasChangesOnNode(selectedNode.id)}
+            onClick={() => onResetNode(selectedNode.id_node)}
+            disabled={!hasChangesOnNode(selectedNode.id_node)}
           >
             <ArrowUturnLeftIcon className='w-4 h-4' />
             {t('workflows.resetNode')}

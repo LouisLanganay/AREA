@@ -11,9 +11,11 @@ export const getWorkflows = async (token: string): Promise<Workflow[]> => {
   return response.data;
 };
 
-export const updateWorkflow = async (id: string, data: Partial<Workflow>) => {
-  const response = await axios.patch<Workflow>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, data, {
+export const updateWorkflow = async (id: string, data: Partial<Workflow>, token: string) => {
+  const response = await axios.patch<Workflow>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, data,
+  {
     headers: {
+      Authorization: `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
     }
   });

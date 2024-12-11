@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Workflow } from '@/interfaces/Workflows';
+import { useAuth } from '@/auth/AuthContext';
 
 export function WorkflowHeader({
   workflow,
@@ -43,10 +44,10 @@ export function WorkflowHeader({
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmWorkflowName, setConfirmWorkflowName] = useState('');
+  const { token } = useAuth();
 
   const hasChanges = !isEqual(workflow, updatedWorkflow);
   const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
-
   const copyWorkflowUrl = () => {
     const url = `${window.location.origin}/workflows/${workflow?.id}`;
     navigator.clipboard.writeText(url);
@@ -58,9 +59,9 @@ export function WorkflowHeader({
 
   const handleDelete = async () => {
     try {
-      if (!workflow) return;
+      if (!workflow || !token) return;
       setIsLoading(true);
-      await deleteWorkflow(workflow.id);
+      await deleteWorkflow(workflow.id, token);
       toast({
         title: t('workflows.deleteSuccessTitle'),
         description: t('workflows.deleteSuccessDescription'),
@@ -79,14 +80,14 @@ export function WorkflowHeader({
   };
 
   const handleEnable = async (value: boolean) => {
-    if (!workflow) return;
+    if (!workflow || !token) return;
     setIsLoading(true);
     setWorkflow(prevWorkflow => ({
       ...prevWorkflow!,
       enabled: value
     }));
     try {
-      const updatedWorkflow = await updateWorkflow(workflow.id, { enabled: value });
+      const updatedWorkflow = await updateWorkflow(workflow.id, { enabled: value }, token);
       setWorkflow(updatedWorkflow);
       toast({
         title: t('workflows.updateSuccessTitle'),
@@ -109,7 +110,7 @@ export function WorkflowHeader({
   };
 
   const handleSave = async () => {
-    if (!updatedWorkflow) return;
+    if (!updatedWorkflow || !token) return;
     if (!isValid) {
       toast({
         title: t('workflows.validationErrorTitle'),
@@ -121,7 +122,7 @@ export function WorkflowHeader({
 
     setIsLoading(true);
     try {
-      await updateWorkflow(updatedWorkflow.id, updatedWorkflow);
+      await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
       setWorkflow(updatedWorkflow);
       toast({
         title: t('workflows.updateSuccessTitle'),

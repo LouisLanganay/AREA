@@ -7,11 +7,13 @@ import { register as registerApi } from '@/api/Auth';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { providers } from '@/utils/authProviders';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { registerResponse } from '@/interfaces/api/Auth';
 import { apiError } from '@/interfaces/api/Errors';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { checkIfUsernameIsAvailable } from '@/api/User';
+import { Loader2 } from 'lucide-react';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -29,11 +31,42 @@ export default function Register() {
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
 
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchema>({
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema)
   });
+
+  const handleUsernameChange = async (username: string) => {
+    if (!username) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
+    try {
+      const available = await checkIfUsernameIsAvailable(username);
+      setIsUsernameAvailable(!available.used);
+    } catch(error) {
+      setIsUsernameAvailable(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'username') {
+        setIsLoading(true);
+        if (value.username) {
+          handleUsernameChange(value.username);
+        } else {
+          setIsUsernameAvailable(null);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const onSubmit = async (data: RegisterSchema) => {
     setIsLoading(true);
@@ -113,6 +146,9 @@ export default function Register() {
               {errors.username && (
                 <p className='text-sm text-red-500 mt-1'>{errors.username.message}</p>
               )}
+              {isUsernameAvailable === false && (
+                <p className='text-sm text-red-500 mt-1'>{t('register.usernameUnavailable')}</p>
+              )}
             </div>
 
             <div>
@@ -167,8 +203,13 @@ export default function Register() {
             </p>
           )}
 
-          <Button type='submit' className='w-full' disabled={isLoading}>
-            {isLoading ? t('common.loading') : t('register.createAccount')}
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={isLoading || isUsernameAvailable === false}
+          >
+            {t('register.createAccount')}
+            {isLoading && <Loader2 className='size-4 animate-spin' />}
           </Button>
         </form>
         <p className='text-sm text-muted-foreground'>

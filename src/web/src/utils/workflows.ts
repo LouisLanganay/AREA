@@ -1,25 +1,18 @@
-import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Node } from '@/interfaces/Workflows';
+import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Event } from '@/interfaces/Workflows';
 import dagre from '@dagrejs/dagre';
 import { ConnectionLineType } from '@xyflow/react';
 
-export function findNode(nodes: Node[] | undefined, nodeId: string): Node | undefined {
+export function findNode(nodes: Event[] | undefined, nodeId: string): Event | undefined {
   if (!nodes || nodes.length === 0) return undefined;
 
-  const directMatch = nodes.find(node => node.id === nodeId);
-  if (directMatch) return directMatch;
-
-  for (const node of nodes) {
-    if (node?.nodes) {
-      const found = findNode(node.nodes, nodeId);
-      if (found) return found;
-    }
-  }
-
+  const directMatch = nodes.find((node) => node.id_node === nodeId);
+  if (directMatch)
+    return directMatch;
   return undefined;
 }
 
 export const validateWorkflow = (workflow: Workflow): boolean => {
-  const validateFields = (nodes: Node[]): boolean => {
+  const validateFields = (nodes: Event[]): boolean => {
     for (const node of nodes) {
       for (const group of node.fieldGroups) {
         for (const field of group.fields) {
@@ -27,9 +20,6 @@ export const validateWorkflow = (workflow: Workflow): boolean => {
             return false;
           }
         }
-      }
-      if (node.nodes && !validateFields(node.nodes)) {
-        return false;
       }
     }
     return true;

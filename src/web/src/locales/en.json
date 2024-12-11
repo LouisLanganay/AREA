@@ -227,6 +227,7 @@
     "forgotPassword": "Forgot password?"
   },
   "register": {
+    "usernameUnavailable": "Username is already used",
     "createAccount": "Create an account",
     "fillInDetails": "Fill in your details to create a new account",
     "username": "Username",
@@ -248,7 +249,22 @@
   "error": {
     "USER_NOT_FOUND": "User not found",
     "INTERNAL_SERVER_ERROR": "Internal server error",
-    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later."
+    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later.",
+    "USERNAME_ALREADY_USE": "The username is already taken.",
+    "EMAIL_ALREADY_USE": "The email is already in use.",
+    "FIELD_ALREADY_USE": "This field value is already in use.",
+    "DB_UNAVAILABLE": "Database unavailable. Internal error occurred.",
+    "USER_NOT_LOCAL_REG": "User not found.",
+    "INVALID_CREDENTIAL": "Incorrect password.",
+    "HACH_FAIL": "Internal error occurred while creating the password.",
+    "INTERNAL_FRONT_URL": "Internal server error.",
+    "FAIL_SEND_MAIL": "Internal error occurred while sending the email.",
+    "USER_NOT_FOUND_RESET": "Invalid token. User does not exist.",
+    "INVALID_TOKEN": "The reset token is invalid.",
+    "TOKEN_EXPIRED": "The reset token has expired.",
+    "WORKFLOW_INVALID_PERM": "Insufficient permissions to delete or update the workflow.",
+    "WORKFLOW_UNKNOWN": "The workflow does not exist.",
+    "USER_FORBIDDEN_EDIT": "You do not have permission to edit this user."
   },
   "common": {
     "loading": "Loading..."

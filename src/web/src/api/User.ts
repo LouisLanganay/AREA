@@ -1,4 +1,4 @@
-import { getMeResponse } from "@/interfaces/api/User";
+import { checkIfUsernameIsAvailableResponse, getMeResponse } from "@/interfaces/api/User";
 import { User } from "@/interfaces/User";
 import axios from "axios";
 
@@ -29,5 +29,10 @@ export const updateUser = async (token: string, user: User): Promise<void> => {
     throw new Error('Failed to update user');
   }
 
+  return response.data;
+};
+
+export const checkIfUsernameIsAvailable = async (username: string): Promise<checkIfUsernameIsAvailableResponse> => {
+  const response = await axios.get<checkIfUsernameIsAvailableResponse>(`${import.meta.env.VITE_API_URL}/users/use/${username}`);
   return response.data;
 };
