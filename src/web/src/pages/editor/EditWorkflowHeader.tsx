@@ -61,6 +61,7 @@ export function WorkflowHeader({
 
   const handleDelete = async () => {
     try {
+      if (!token) return;
       if (!workflow) return;
       setIsLoading(true);
       await deleteWorkflow(workflow.id, token);
