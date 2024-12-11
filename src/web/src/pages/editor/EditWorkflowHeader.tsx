@@ -27,9 +27,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Workflow } from '@/interfaces/Workflows';
-import {useAuth} from "@/auth/AuthContext.tsx";
-const { token } = useAuth();
-
+import { useAuth } from '@/auth/AuthContext';
 
 export function WorkflowHeader({
   workflow,
@@ -46,6 +44,7 @@ export function WorkflowHeader({
   const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmWorkflowName, setConfirmWorkflowName] = useState('');
+  const { token } = useAuth();
 
   const hasChanges = !isEqual(workflow, updatedWorkflow);
   const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
@@ -61,8 +60,7 @@ export function WorkflowHeader({
 
   const handleDelete = async () => {
     try {
-      if (!token) return;
-      if (!workflow) return;
+      if (!workflow || !token) return;
       setIsLoading(true);
       await deleteWorkflow(workflow.id, token);
       toast({
