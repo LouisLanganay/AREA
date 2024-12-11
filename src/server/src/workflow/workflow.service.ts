@@ -84,7 +84,6 @@ export class WorkflowService {
         updatedAt: true,
         nodes: {
           select: {
-            id: true,
             id_node: true,
             type: true,
             name: true,
