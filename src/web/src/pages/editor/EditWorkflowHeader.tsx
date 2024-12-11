@@ -60,7 +60,7 @@ export function WorkflowHeader({
     try {
       if (!workflow) return;
       setIsLoading(true);
-      await deleteWorkflow(workflow.id);
+      await deleteWorkflow(workflow.id, workflow.name);
       toast({
         title: t('workflows.deleteSuccessTitle'),
         description: t('workflows.deleteSuccessDescription'),
