@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,7 +16,7 @@ import { AuthGuard } from '@nestjs/passport';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { DiscordService } from '../app-discord/discord-app.service';
-import { ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -170,42 +169,42 @@ export class AuthController {
   @Post('discord/callback')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Discord OAuth callback' })
-    @ApiResponse({
-        status: 200,
-        description: 'Tokens stored in the database',
-        schema: {
-        example: {
-            message: 'Tokens stored in the database',
-        },
-        },
-    })
-    @ApiResponse({
-        status: 400,
-        description: 'Bad Request',
-        schema: {
-        example: {
-            err_code: 'INVALID_TOKEN',
-        },
-        },
-    })
-    @ApiResponse({
-        status: 401,
-        description: 'Unauthorized',
-        schema: {
-        example: {
-            err_code: 'UNAUTHORIZED',
-        },
-        },
-    })
-    @ApiResponse({
-        status: 500,
-        description: 'Internal server error',
-        schema: {
-        example: {
-            err_code: 'INTERNAL_SERVER_ERROR',
-        },
-        },
-    })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens stored in the database',
+    schema: {
+      example: {
+        message: 'Tokens stored in the database',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+    schema: {
+      example: {
+        err_code: 'INVALID_TOKEN',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    schema: {
+      example: {
+        err_code: 'UNAUTHORIZED',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+    schema: {
+      example: {
+        err_code: 'INTERNAL_SERVER_ERROR',
+      },
+    },
+  })
   async getDiscordCallback(
     // code dans le body
     @Body('code') code: string,
@@ -263,5 +262,21 @@ export class AuthController {
   })
   async resetPassword(@Body() body: ResetPasswordDto) {
     return this.authService.resetPassword(body);
+  }
+
+  @Post('google')
+  async googleOAuth(@Body('code') code: string) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    return await this.authService.googleOAuth(code);
+  }
+
+  @Post('discord')
+  async discordOAuth(@Body('code') code: string) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    // return await this.authService.discordOAuth(code);
   }
 }

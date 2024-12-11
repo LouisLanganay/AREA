@@ -16,6 +16,7 @@ import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { MailerService } from '../mailer/mailer.service';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
+import { GoogleAuthService } from './external-services/google.auth.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailerService: MailerService,
+    private readonly googleAuthService: GoogleAuthService,
   ) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -210,4 +212,42 @@ export class AuthService {
       message: 'Password reset',
     };
   }
+
+  async googleOAuth(code: string) {
+    const test = await this.googleAuthService.loginGoogle(code);
+    if (!test) return;
+    const userExist = await this.usersService.checkUserEmailExist(
+      test.email,
+      'google',
+    );
+    if (!userExist) {
+      const createUserDto = {
+        email: test.email,
+        username: await this.usersService.getUnusedUsername(test.given_name),
+        displayName: test.given_name,
+        provider: 'google',
+        avatarUrl: test.picture,
+      };
+      await this.usersService.registerExternal(createUserDto);
+      await this.sendRegisterEmail(createUserDto, 'google');
+    }
+    const userData = await this.usersService.findByEmail(test.email, 'google');
+    if (!userData) {
+      throw new InternalServerErrorException({
+        err_code: 'USER_CREATION_FAIL_GG',
+      });
+    }
+    return {
+      access_token: this.jwtService.sign({ id: userData.id }),
+    };
+  }
 }
+// linkit_server       | test: {
+//   linkit_server       |   id: '105132920273153006087',
+//   linkit_server       |   email: 'tom.lfx28@gmail.com',
+//   linkit_server       |   verified_email: true,
+//   linkit_server       |   name: 'Tlmx 25',
+//   linkit_server       |   given_name: 'Tlmx',
+//   linkit_server       |   family_name: '25',
+//   linkit_server       |   picture: 'https://lh3.googleusercontent.com/a/ACg8ocKwUxhBy2a1jb-qnVQsiRtJKVi1HVAtJK9wS_4mz2kHudVuN_2w=s96-c'
+//   linkit_server       | }
