@@ -27,6 +27,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Workflow } from '@/interfaces/Workflows';
+import {useAuth} from "@/auth/AuthContext.tsx";
+const { token } = useAuth();
+
 
 export function WorkflowHeader({
   workflow,
@@ -60,7 +63,7 @@ export function WorkflowHeader({
     try {
       if (!workflow) return;
       setIsLoading(true);
-      await deleteWorkflow(workflow.id);
+      await deleteWorkflow(workflow.id, token);
       toast({
         title: t('workflows.deleteSuccessTitle'),
         description: t('workflows.deleteSuccessDescription'),
