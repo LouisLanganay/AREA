@@ -22,8 +22,6 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
     }
   };
 
-  console.info('data', data);
-
   return (
     <div className='flex flex-col'>
       {data.isTrigger && (

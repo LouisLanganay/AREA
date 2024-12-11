@@ -14,11 +14,14 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { validateWorkflow } from '@/utils/workflows';
-import { ArrowLeftIcon, PlayCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
 import {
   ArrowDownTrayIcon,
+  EllipsisHorizontalIcon,
   LinkIcon,
-  TrashIcon
+  PlayCircleIcon,
+  TrashIcon,
+  XMarkIcon
 } from '@heroicons/react/24/solid';
 import '@xyflow/react/dist/style.css';
 import { isEqual } from 'lodash';
@@ -28,6 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Workflow } from '@/interfaces/Workflows';
 import { useAuth } from '@/auth/AuthContext';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 
 export function WorkflowHeader({
   workflow,
@@ -147,66 +151,116 @@ export function WorkflowHeader({
   if (!workflow) return null;
 
   return (
-    <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
+    <header className='flex h-16 items-center gap-1 lg:gap-2 border-b px-4'>
       <SidebarTrigger className='-ml-1' />
-      <Separator orientation='vertical' className='mr-2 h-4' />
-      <Button variant='ghost' size='sm' onClick={() => navigate('/workflows')}>
+      <Separator orientation='vertical' className='h-4' />
+      <Button
+        variant='ghost'
+        size='sm'
+        onClick={() => navigate('/workflows')}
+      >
         <ArrowLeftIcon className='w-4 h-4' />
-        {t('workflows.back')}
+        <span className='hidden lg:block'>{t('workflows.back')}</span>
       </Button>
-      <h3 className='text-base font-semibold'>{workflow.name}</h3>
-      <div className='flex items-center gap-2 ml-auto'>
+      <div className='flex-1 flex items-center overflow-hidden'>
+        <span className='text-base font-bold md:font-semibold text-nowrap hidden lg:block'>
+          {workflow.name}
+        </span>
+        <span className='text-sm font-bold md:font-semibold text-nowrap block lg:hidden'>
+          {workflow.name.length > 10 ? workflow.name.slice(0, 5) + '..' : workflow.name}
+        </span>
+      </div>
+      <div className='flex shrink-0 items-center gap-1 lg:gap-2 ml-auto'>
         <Button
           variant='default'
           size='sm'
           disabled={!hasChanges || isLoading || !isValid}
           onClick={handleSave}
         >
-          <ArrowDownTrayIcon className='w-4 h-4' />
+          <ArrowDownTrayIcon className='w-4 h-4 hidden lg:block' />
           {t('workflows.save')}
         </Button>
-        <Separator orientation='vertical' className='mx-2 h-4' />
-        <Button
-          variant='outline'
-          size='sm'
-          disabled={isLoading}
-        >
-          <PlayCircleIcon className='w-4 h-4' />
-          {t('workflows.runNow')}
-        </Button>
-        <Button
-          variant='outline'
-          size='sm'
-          onClick={() => handleEnable(!workflow.enabled)}
-          disabled={isLoading}
-        >
-          <div className='flex items-center gap-2 w-[85px]'>
-            <Switch
-              checked={workflow.enabled}
-              size='sm'
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='outline' size='iconSm' className='flex lg:hidden'>
+              <EllipsisHorizontalIcon className='size-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className='w-56 block lg:hidden mr-2'>
+            <DropdownMenuLabel>{t('workflows.quickActions')}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
               disabled={isLoading}
-            />
-            {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
-          </div>
-        </Button>
-        <Button
-          variant='outline'
-          size='sm'
-          className='p-2'
-          onClick={copyWorkflowUrl}
-        >
-          <LinkIcon className='w-4 h-4' />
-        </Button>
-        <Separator orientation='vertical' className='h-4' />
-        <Button
-          variant='destructiveOutline'
-          size='sm'
-          className='p-2'
-          onClick={() => setIsDeleteDialogOpen(true)}
-          disabled={isLoading}
-        >
-          <TrashIcon className='w-4 h-4' />
-        </Button>
+            >
+              <PlayCircleIcon className='w-4 h-4' />
+              {t('workflows.runNow')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => handleEnable(!workflow.enabled)}
+              disabled={isLoading}
+            >
+              {workflow.enabled ? <CheckIcon className='size-4' /> : <XMarkIcon className='size-4' />}
+              {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={copyWorkflowUrl}
+            >
+              <LinkIcon className='size-4' />
+              {t('workflows.copyLink')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => setIsDeleteDialogOpen(true)}
+              disabled={isLoading}
+            >
+              <TrashIcon className='size-4' />
+              {t('workflows.delete')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <div className='hidden lg:flex items-center gap-2'>
+          <Separator orientation='vertical' className='mx-2 h-4' />
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={isLoading}
+          >
+            <PlayCircleIcon className='w-4 h-4' />
+            {t('workflows.runNow')}
+          </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => handleEnable(!workflow.enabled)}
+            disabled={isLoading}
+          >
+            <div className='flex items-center gap-2 w-[85px]'>
+              <Switch
+                checked={workflow.enabled}
+                size='sm'
+                disabled={isLoading}
+              />
+              {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
+            </div>
+          </Button>
+          <Button
+            variant='outline'
+            size='sm'
+            className='p-2'
+            onClick={copyWorkflowUrl}
+          >
+            <LinkIcon className='w-4 h-4' />
+          </Button>
+          <Separator orientation='vertical' className='h-4' />
+          <Button
+            variant='destructiveOutline'
+            size='sm'
+            className='p-2'
+            onClick={() => setIsDeleteDialogOpen(true)}
+            disabled={isLoading}
+          >
+            <TrashIcon className='w-4 h-4' />
+          </Button>
+        </div>
       </div>
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>

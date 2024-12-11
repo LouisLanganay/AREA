@@ -30,6 +30,7 @@ export function EditWorkflowSidebar({
 }: EditWorkflowSidebarProps) {
   const { t } = useTranslation();
 
+  console.log("selectedNode", selectedNode);
   if (!selectedNode) return null;
 
   const getGroupIcon = (type: string) => {

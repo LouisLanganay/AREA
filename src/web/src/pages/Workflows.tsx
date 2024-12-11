@@ -271,7 +271,10 @@ export default function Workflows() {
           <ArrowsUpDownIcon />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => {
+        const name = row.getValue('name') as string;
+        return <div>{name.length > 20 ? name.slice(0, 20) + '..' : name}</div>;
+      },
     },
     {
       accessorKey: 'apps',
