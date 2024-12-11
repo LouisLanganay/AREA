@@ -74,15 +74,16 @@ export default function Login() {
           {providers.map(provider => (
             <Button
               variant='outline'
-              size='icon'
+              size='sm'
               key={provider.name}
-              onClick={() => openOAuthUrl(provider.redirect || '')}
+              onClick={() => openOAuthUrl(provider.redirect, provider.name)}
             >
               <img
                 src={provider.icon}
                 alt={provider.name}
                 className='h-full max-h-4'
               />
+              <span>{provider.name}</span>
             </Button>
           ))}
         </div>

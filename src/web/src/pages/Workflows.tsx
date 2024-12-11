@@ -40,7 +40,7 @@ import { useTranslation } from 'react-i18next';
 import { getServices } from '@/api/Services';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Event, Node, Workflow } from '@/interfaces/Workflows';
+import { Event, Workflow } from '@/interfaces/Workflows';
 import { Service } from '@/interfaces/Services';
 import { useAuth } from '@/auth/AuthContext';
 import {

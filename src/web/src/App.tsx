@@ -7,13 +7,15 @@ import { ThemeProvider } from './context/ThemeContext';
 import AdminPanel from './pages/AdminPanel';
 import EditWorkflow from './pages/EditWorkflow';
 import Home from './pages/Home';
-import Login from './pages/Login';
 import Register from './pages/Register';
 import Services from './pages/Services';
 import Settings from './pages/Settings';
 import Workflows from './pages/Workflows';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
+import Cookies from 'js-cookie';
+import { discordOAuth, googleOAuth } from './api/Auth';
+import Login from './pages/Login';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -32,25 +34,52 @@ function Logout() {
 }
 
 function LoginSuccess() {
-  const { login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const provider = Cookies.get('oauth_provider');
+  const code = params.get('code');
+  const { login } = useAuth();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
+    if (!code) return;
 
-    if (token) {
-      const handleLogin = async () => {
-        try {
-          await login(token);
+    const handleGoogle = async () => {
+      try {
+        const response = await googleOAuth(code);
+        if (response.access_token) {
+          login(response.access_token);
           navigate('/workflows');
-        } catch (error) {
-          console.error('Login failed:', error);
-          navigate('/login');
         }
-      };
-      handleLogin();
+      } catch (error) {
+        console.error("Error authenticating with Google", error);
+        navigate('/login');
+      }
+    };
+
+    const handleDiscord = async () => {
+      try {
+        const response = await discordOAuth(code);
+        if (response.access_token) {
+          login(response.access_token);
+          navigate('/workflows');
+        }
+      } catch (error) {
+        console.error("Error authenticating with Discord", error);
+        navigate('/login');
+      }
+    };
+
+    Cookies.remove('oauth_provider');
+    switch (provider) {
+      case 'Google':
+        handleGoogle();
+        break;
+      case 'Discord':
+        handleDiscord();
+        break;
+      default:
+        break;
     }
   }, [location]);
 
