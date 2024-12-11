@@ -35,14 +35,21 @@ export const edgeStyles = {
   animation: 'flowAnimation 1s linear infinite',
 };
 
-export const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[], direction = 'TB') => {
+export const getLayoutedElements = (
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[],
+  direction = 'TB',
+  ranksep = 100,
+  nodesep = 100,
+  edgesep = 50
+) => {
   const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({
     rankdir: direction,
-    nodesep: 100,
-    ranksep: 100,
-    edgesep: 50,
+    nodesep: nodesep,
+    ranksep: ranksep,
+    edgesep: edgesep,
   });
 
   const normalNodes = nodes.filter(node => node.type === 'node');

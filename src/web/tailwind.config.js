@@ -36,6 +36,11 @@ const config = {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
+				second: {
+					DEFAULT: 'hsl(var(--second))',
+					foreground: 'hsl(var(--second-foreground))',
+					bis: 'hsl(var(--second-bis))',
+				},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
@@ -72,7 +77,11 @@ const config = {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			}
-  		}
+  		},
+  		backgroundImage: {
+  			'border-gradient-ai': 'linear-gradient(90deg, rgba(56,189,248,0) 0%, hsl(var(--primary)) 32.29%, hsl(var(--second)) 67.19%, rgba(236,72,153,0) 100%)',
+				'text-gradient-ai': 'linear-gradient(90deg, hsl(var(--second)) 10%, hsl(var(--second-bis)) 30%, hsl(var(--primary)) 50%, hsl(var(--second)) 100%)',
+  		},
   	}
   },
   plugins: [tailwindcssAnimate],

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { getServiceAuth, getServices } from '@/api/Services';
+import { getServices } from '@/api/Services';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PlusIcon } from '@heroicons/react/24/solid';

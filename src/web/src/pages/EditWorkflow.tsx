@@ -14,7 +14,7 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Event, FieldGroup, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
+import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
 import AddNode from '../components/flow/AddNode';
 import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
@@ -29,13 +29,6 @@ const nodeTypes = {
   node: Node,
   custom2: AddNode,
 };
-
-const flowStyles = `
-  @keyframes flowAnimation {
-    from { stroke-dashoffset: 24; }
-    to { stroke-dashoffset: 0; }
-  }
-`;
 
 export default function EditWorkflow() {
   const { id } = useParams();

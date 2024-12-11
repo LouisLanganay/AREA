@@ -16,6 +16,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Cookies from 'js-cookie';
 import { discordOAuth, googleOAuth } from './api/Auth';
 import Login from './pages/Login';
+import ClientAPK from './pages/ClientAPK';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -210,6 +211,13 @@ function App() {
                 path='/reset-password'
                 element={
                   <ResetPassword />
+                }
+              />
+
+              <Route
+                path='/client.apk'
+                element={
+                  <ClientAPK />
                 }
               />
             </Routes>

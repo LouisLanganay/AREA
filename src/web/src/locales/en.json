@@ -341,7 +341,11 @@
       },
       "performance": {
         "title": "Performance",
-        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays."
+        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays.",
+        "ai": {
+          "title": "AI workflow generation",
+          "description": "Generate your workflows with our AI workflow builder. No need to code, just describe your workflow and let the AI do the rest."
+        }
       },
       "scalability": {
         "title": "Scalability",
@@ -401,5 +405,13 @@
     "backToLogin": "Back to login",
     "success": "Password reset successful",
     "successDescription": "Your password has been reset successfully. You can now login with your new password."
+  },
+  "client": {
+    "apk": {
+      "startIn": "Download start in {{seconds}} seconds",
+      "title": "Downloading the LinkIt client...",
+      "description": "If the download doesn't start automatically, ",
+      "download": "click here"
+    }
   }
 }

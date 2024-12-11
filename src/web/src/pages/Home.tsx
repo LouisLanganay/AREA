@@ -20,12 +20,22 @@ import {
   Bars3Icon,
   ChevronDownIcon,
   UserPlusIcon,
-  UserIcon
+  UserIcon,
+  SparklesIcon
 } from '@heroicons/react/24/solid';
 import { useTheme } from '@/context/ThemeContext';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 import LinkitLogoFull from '../assets/linkitLogoFull';
+import {
+  Background,
+  ConnectionLineType,
+  ReactFlow,
+} from '@xyflow/react';
+import Node from '../components/flow/Node';
+import { edgeStyles, getLayoutedElements } from '@/utils/workflows';
+import clsx from 'clsx';
+import { flowStyles, WorkflowNode } from '@/interfaces/Workflows';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -92,6 +102,71 @@ export default function Home() {
       icon: '/assets/stack/twitch-icon.svg'
     }
   ]
+
+  const exampleNodes: WorkflowNode[] = [
+    {
+      id: '1',
+      type: 'node',
+      position: { x: 0, y: 0 },
+      data: {
+        label: 'Twitch Trigger',
+        isTrigger: true,
+        isValid: true,
+        selected: false,
+        description: 'Trigger when Squeezie goes live on Twitch.',
+        service: {
+          id: '1',
+          name: 'Twitch',
+          image: '/assets/stack/twitch-icon.svg',
+          description: 'Twitch is a live streaming platform',
+          loginRequired: true
+        }
+      },
+    },
+    {
+      id: '2',
+      type: 'node',
+      position: { x: 100, y: 0 },
+      data: {
+        label: 'Send Discord Message',
+        isTrigger: false,
+        isValid: true,
+        selected: false,
+        description: 'Send a message to a Discord server on a specific channel.',
+        service: {
+          id: '2',
+          name: 'Discord',
+          image: '/assets/stack/discord-icon.svg',
+          description: 'Discord is a social media platform',
+          loginRequired: true
+        }
+      },
+    },
+    {
+      id: '3',
+      type: 'node',
+      position: { x: 200, y: 0 },
+      data: {
+        label: 'Send Email',
+        isTrigger: false,
+        isValid: true,
+        selected: false,
+        description: 'Send an email notification to the Squeezie team.',
+        service: {
+          id: '3',
+          name: 'Gmail',
+          image: '/assets/stack/gmail-icon.svg',
+          description: 'Email service for notifications',
+          loginRequired: true
+        }
+      },
+    },
+  ];
+
+  const exampleEdges = [
+    { id: 'e1-2', source: '1', target: '2', type: 'smoothstep' },
+    { id: 'e2-3', source: '2', target: '3', type: 'smoothstep' },
+  ];
 
   const MobileNav = () => {
     const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
@@ -171,14 +246,14 @@ export default function Home() {
                     <Button
                       variant="ghost"
                       className="justify-start truncate"
-                      onClick={() => navigate('/github')}
+                      onClick={() => navigate('https://github.com/LouisLanganay/AREA')}
                     >
                       {t('home.navigation.documentation.source')}
                     </Button>
                     <Button
                       variant="ghost"
                       className="justify-start truncate"
-                      onClick={() => navigate('/mobile')}
+                      onClick={() => navigate('/client.apk')}
                     >
                       {t('home.navigation.documentation.mobile')}
                     </Button>
@@ -276,10 +351,10 @@ export default function Home() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.features.title')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
+                  <ul className='grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                     <li className='row-span-3'>
                       <NavigationMenuLink asChild>
-                        <a className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md' href='/'>
+                        <a className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md' href='/'>
                           <div className='h-8 w-8 rounded bg-primary/20'></div>
                           <div className='mb-2 mt-4 text-lg font-medium'>LinkIt</div>
                           <p className='text-sm leading-tight text-muted-foreground'>
@@ -304,14 +379,14 @@ export default function Home() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.documentation.title')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className='grid gap-3 p-6 w-[400px]'>
+                  <ul className='grid gap-3 p-4 w-[400px]'>
                     <ListItem href='/api-docs' title='API Reference'>
                       {t('home.navigation.documentation.api')}
                     </ListItem>
-                    <ListItem href='/github' title='Source Code'>
+                    <ListItem href='https://github.com/LouisLanganay/AREA' title='Source Code'>
                       {t('home.navigation.documentation.source')}
                     </ListItem>
-                    <ListItem href='/mobile' title='Mobile App'>
+                    <ListItem href='/client.apk' title='Mobile App'>
                       {t('home.navigation.documentation.mobile')}
                     </ListItem>
                   </ul>
@@ -321,7 +396,7 @@ export default function Home() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.enterprise.title')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className='grid gap-3 p-6 w-[400px]'>
+                  <ul className='grid gap-3 p-4 w-[400px]'>
                     <ListItem href='/enterprise' title='Enterprise Solutions'>
                       {t('home.navigation.enterprise.solutions')}
                     </ListItem>
@@ -368,7 +443,7 @@ export default function Home() {
 
       <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
         <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50 dark:opacity-20' />
-        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative'>
+        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative flex flex-row justify-between'>
           <div className=''>
             <div className='flex flex-col'>
               <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
@@ -384,6 +459,27 @@ export default function Home() {
             <p className='mt-8 text-pretty text-lg font-medium text-muted-foreground sm:text-xl/8 max-w-lg'>
               {t('home.description')}
             </p>
+          </div>
+          <div className='w-[363px] flex h-[calc(100vh-300px)]'>
+            <style>{flowStyles}</style>
+            <div className='w-[363px] h-full'>
+              <ReactFlow
+                nodes={getLayoutedElements(exampleNodes, exampleEdges, 'TB', 80, 100, 50).nodes}
+                edges={getLayoutedElements(exampleNodes, exampleEdges, 'TB', 80, 100, 50).edges}
+                nodeTypes={{node: Node}}
+                nodesConnectable={false}
+                nodesDraggable={false}
+                panOnDrag={false}
+                viewport={{ x: 0, y: 0, zoom: 1.1 }}
+                connectionLineType={ConnectionLineType.SmoothStep}
+                defaultEdgeOptions={{ type: 'step', style: edgeStyles }}
+                fitView
+                zoomOnPinch={false}
+                zoomOnDoubleClick={false}
+              >
+                <Background />
+              </ReactFlow>
+            </div>
           </div>
         </section>
         <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
@@ -412,8 +508,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className='relative max-lg:row-start-1'>
-              <div className='absolute inset-px rounded-lg bg-card max-lg:rounded-t-[2rem] border'></div>
+            <div className='relative max-lg:row-start-1 inset-px rounded-lg bg-card max-lg:rounded-t-[2rem] border'>
               <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
@@ -423,8 +518,26 @@ export default function Home() {
                     {t('home.features.performance.description')}
                   </p>
                 </div>
-                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2'>
-                  <img className='w-full max-lg:max-w-xs' src='https://tailwindui.com/plus/img/component-images/bento-03-performance.png' alt=''/>
+                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2 overflow-hidden'>
+                  <div className='border border-primary/20 bg-primary/10 rounded-lg absolute -bottom-1 -right-7 max-w-[350px]'>
+                    <div className='relative h-full w-full'>
+                      <div className="absolute bottom-full left-16 -mb-px flex h-8 items-end overflow-hidden">
+                        <div className="flex -mb-px h-[2px] w-56">
+                          <div className="w-full flex-none bg-border-gradient-ai blur-xs"></div>
+                          <div className="-ml-[100%] w-full flex-none bg-border-gradient-ai blur-[10px] h-[20px]"></div>
+                        </div>
+                      </div>
+                      <h3 className='font-medium text-sm flex flex-row gap-2 items-center pt-4 px-4'>
+                        <SparklesIcon className='size-4 text-primary' />
+                        <span className='bg-clip-text text-transparent bg-text-gradient-ai'>
+                          {t('home.features.performance.ai.title')}
+                        </span>
+                      </h3>
+                      <p className='text-sm text-muted-foreground mt-2 pb-4 px-4'>
+                        {t('home.features.performance.ai.description')}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
