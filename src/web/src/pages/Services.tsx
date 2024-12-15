@@ -6,13 +6,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import { useAuth } from '@/auth/AuthContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { ArrowRightIcon, Loader2 } from 'lucide-react';
 import { oauthCallback } from '@/api/Auth';
 import { Service } from '@/interfaces/Services';
 import { toast } from '@/hooks/use-toast';
 import { getServiceProvider } from '@/utils/servicesProviders';
 import { useOAuth } from '@/hooks/useOAuth';
 import Cookies from 'js-cookie';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -102,70 +103,84 @@ export default function Services() {
         </p>
       </div>
 
-      {services.length === 0 && (
-        <p className='text-muted-foreground'>
-          No services found. Contact support to add services.
-        </p>
-      )}
+      <Tabs defaultValue="enabled">
+        <TabsList className='mb-4'>
+          <TabsTrigger value="disabled">Not connected</TabsTrigger>
+          <TabsTrigger value="enabled">Actives</TabsTrigger>
+        </TabsList>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {services.map((service) => (
-          <Card
-            key={service.id}
-          >
-            <CardContent className='p-6'>
-              <div className='flex items-center gap-4 mb-4'>
-                {service.image ? (
-                  <img
-                    src={service.image}
-                    alt={service.name}
-                    className='size-12 rounded-lg aspect-square object-cover'
-                  />
-                ) : (
-                  <div className='size-12 rounded-lg aspect-square bg-muted flex items-center justify-center'>
-                    <p className='text-muted-foreground'>{service.name.charAt(0)}</p>
+        <TabsContent value="enabled" className='flex flex-col gap-2 mt-0'>
+          {services.filter(service => service.enabled || !service.auth?.callback_uri).length === 0 ? (
+            <p className='text-muted-foreground'>
+              No enabled services found.
+            </p>
+          ) : (
+            services.filter(service => service.enabled || !service.auth?.callback_uri).map((service) => (
+              <div className='bg-card p-3 rounded-lg border border-border flex flex-col md:flex-row justify-between md:items-center gap-2'>
+                <div className='flex flex-row items-center gap-2'>
+                  <div className='flex bg-muted p-1 rounded-lg border'>
+                    {service.image ? (
+                      <img src={service.image} alt={service.name} className='size-6 rounded-lg aspect-square object-cover' />
+                    ) : (
+                    <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                      <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
+                    </div>
+                    )}
                   </div>
-                )}
-                <div>
-                  <h2 className='text-lg font-semibold'>{service.name}</h2>
-                  <p className='text-sm text-muted-foreground'>
-                    {service.description}
-                  </p>
+                  <div className='flex flex-col'>
+                    <h2 className='text-md font-semibold'>{service.name}</h2>
+                    <p className='text-sm text-muted-foreground'>{service.description}</p>
+                  </div>
                 </div>
-              </div>
-              {service.enabled || !getServiceProvider(service.id) ? (
                 <Button
-                  variant='secondary'
-                  className='w-full'
-                  disabled={authInProgress()}
+                  variant='outline'
                   size='sm'
                   onClick={() => handleCreateWorkflow()}
                 >
-                  Create a workflow
+                  Use it now <ArrowRightIcon className='size-4' />
                 </Button>
-              ) : (
+              </div>
+            ))
+          )}
+        </TabsContent>
+
+        <TabsContent value="disabled" className='flex flex-col gap-2 mt-0'>
+          {services.filter(service => !service.enabled && service.auth?.callback_uri).length === 0 ? (
+            <p className='text-muted-foreground'>
+              No disabled services found.
+            </p>
+          ) : (
+            services.filter(service => !service.enabled && service.auth?.callback_uri).map((service) => (
+              <div className='bg-card p-3 rounded-lg border border-border flex flex-col md:flex-row justify-between md:items-center gap-2'>
+                <div className='flex flex-row items-center gap-2'>
+                  <div className='flex bg-muted p-1 rounded-lg border'>
+                    {service.image ? (
+                      <img src={service.image} alt={service.name} className='size-6 rounded-lg aspect-square object-cover' />
+                    ) : (
+                    <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                      <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
+                    </div>
+                    )}
+                  </div>
+                  <div className='flex flex-col'>
+                    <h2 className='text-md font-semibold'>{service.name}</h2>
+                    <p className='text-sm text-muted-foreground'>{service.description}</p>
+                  </div>
+                </div>
                 <Button
-                  variant='default'
-                  className='w-full'
-                  onClick={() => openServiceOAuthUrl(
-                    getServiceProvider(service.id)?.redirect || '',
-                    service.id
-                  )}
-                  disabled={authInProgress()}
                   size='sm'
+                  onClick={() => {
+                    if (service.auth)
+                      openServiceOAuthUrl(service.auth.callback_uri, service.id);
+                  }}
                 >
-                  Connect App
-                  {authInProgress(service.id) ? (
-                    <Loader2 className='w-4 h-4 animate-spin' />
-                  ) : (
-                    <PlusIcon className='w-4 h-4' />
-                  )}
+                  Connect {service.name} <PlusIcon className='size-4' />
                 </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </div>
+            ))
+          )}
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

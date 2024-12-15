@@ -44,7 +44,8 @@
       "switchAccount": "Switch Account",
       "logout": "Logout",
       "addAccount": "Add Account",
-      "currentAccount": "Current"
+      "currentAccount": "Current",
+      "switchTheme": "Switch Theme"
     }
   },
   "settings": {
@@ -157,6 +158,8 @@
     "disableAll": "Disable All",
     "columns": "Columns",
     "create": "Create new workflow",
+    "enableSuccess": "Workflow updated",
+    "enableSuccessDescription": "The workflow has been updated.",
     "creation": {
       "info": {
         "title": "Create New Workflow",
@@ -311,7 +314,8 @@
     },
     "auth": {
       "signin": "Sign in",
-      "register": "Register"
+      "register": "Register",
+      "dashboard": "Open Dashboard"
     },
     "mobile": {
       "discover": "Discover our mobile app.",
@@ -340,16 +344,21 @@
         "description": "Our mobile app is designed to be user-friendly and easy to use, with a focus on simplicity and efficiency."
       },
       "performance": {
-        "title": "Performance",
-        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays.",
+        "title": "AI Capabilities",
+        "description": "Leverage our AI-driven tools to automate workflows effortlessly. Experience intelligent automation tailored to your needs.",
         "ai": {
-          "title": "AI workflow generation",
+          "title": "AI Workflow Generation",
           "description": "Generate your workflows with our AI workflow builder. No need to code, just describe your workflow and let the AI do the rest."
         }
       },
       "scalability": {
         "title": "Scalability",
-        "description": "Create unlimited workflows and automate as many tasks as you need. Our platform grows with your automation needs."
+        "description": "All actions and reactions in our app are highly customizable, allowing you to tailor workflows to your specific needs.",
+        "sidebar": {
+          "titleGroup": "Server Options",
+          "label": "Server ID",
+          "title": "Send a message on a channel"
+        }
       },
       "connect": {
         "title": "Connect Your Apps",

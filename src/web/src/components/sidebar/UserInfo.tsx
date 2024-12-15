@@ -19,7 +19,9 @@ import {
   ArrowLeftStartOnRectangleIcon,
   ArrowsRightLeftIcon,
   ChevronUpDownIcon,
+  MoonIcon,
   PlusIcon,
+  SunIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +36,7 @@ import { useState } from 'react';
 import { LoginForm } from '../auth/LoginForm';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/interfaces/User';
+import { useTheme } from '@/context/ThemeContext';
 
 export function UserInfo({
   user,
@@ -44,6 +47,7 @@ export function UserInfo({
   const { t } = useTranslation();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const addAccount = () => {
     setShowLoginDialog(true);
@@ -53,6 +57,10 @@ export function UserInfo({
     const success = await logout();
     if (!success)
       navigate('/login');
+  };
+
+  const handleThemeSwitch = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -192,6 +200,15 @@ export function UserInfo({
                 </DropdownMenuSub>
               </div>
 
+              <DropdownMenuItem onClick={() => handleThemeSwitch()}>
+                {theme === 'light' ? (
+                  <MoonIcon className='size-4' />
+                ) : (
+                  <SunIcon className='size-4' />
+                )}
+                <span>{t('sidebar.items.switchTheme')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleLogout()}>
                 <ArrowLeftStartOnRectangleIcon className='size-4' />
                 <span>{t('sidebar.items.logout')}</span>

@@ -21,7 +21,9 @@ import {
   ChevronDownIcon,
   UserPlusIcon,
   UserIcon,
-  SparklesIcon
+  SparklesIcon,
+  XMarkIcon,
+  ServerStackIcon
 } from '@heroicons/react/24/solid';
 import { useTheme } from '@/context/ThemeContext';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -34,13 +36,17 @@ import {
 } from '@xyflow/react';
 import Node from '../components/flow/Node';
 import { edgeStyles, getLayoutedElements } from '@/utils/workflows';
-import clsx from 'clsx';
 import { flowStyles, WorkflowNode } from '@/interfaces/Workflows';
+import DiscordIcon from '@/assets/discord-icon.svg';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/auth/AuthContext';
 
 export default function Home() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   const team = [
     {
@@ -303,21 +309,32 @@ export default function Home() {
             <hr className="my-4" />
 
             <div className="flex flex-col gap-2">
-              <Button
-                variant="outline"
-                className="justify-start truncate"
-                onClick={() => navigate('/login')}
-              >
-                <UserIcon className="h-5 w-5" />
-                {t('home.auth.signin')}
-              </Button>
-              <Button
-                className="justify-start truncate"
-                onClick={() => navigate('/register')}
-              >
-                <UserPlusIcon className="h-5 w-5" />
-                {t('home.auth.register')}
-              </Button>
+              {!isAuthenticated ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="justify-start truncate"
+                    onClick={() => navigate('/login')}
+                  >
+                    <UserIcon className="h-5 w-5" />
+                    {t('home.auth.signin')}
+                  </Button>
+                  <Button
+                    className="justify-start truncate"
+                    onClick={() => navigate('/register')}
+                  >
+                    <UserPlusIcon className="h-5 w-5" />
+                    {t('home.auth.register')}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  className="justify-start truncate"
+                  onClick={() => navigate('/workflows')}
+                >
+                  {t('home.auth.dashboard')}
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 className="justify-start truncate"
@@ -424,17 +441,27 @@ export default function Home() {
                 <SunIcon className='h-5 w-5' />
               )}
             </Button>
-            <Button
-              variant='outline'
-              onClick={() => navigate('/login')}
-            >
-              {t('home.auth.signin')}
-            </Button>
-            <Button
-              onClick={() => navigate('/register')}
-            >
-              {t('home.auth.register')}
-            </Button>
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  variant='outline'
+                  onClick={() => navigate('/login')}
+                >
+                  {t('home.auth.signin')}
+                </Button>
+                <Button
+                  onClick={() => navigate('/register')}
+                >
+                  {t('home.auth.register')}
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => navigate('/workflows')}
+              >
+                {t('home.auth.dashboard')}
+              </Button>
+            )}
           </div>
 
           <MobileNav />
@@ -477,7 +504,6 @@ export default function Home() {
                 zoomOnPinch={false}
                 zoomOnDoubleClick={false}
               >
-                <Background />
               </ReactFlow>
             </div>
           </div>
@@ -509,7 +535,7 @@ export default function Home() {
               </div>
             </div>
             <div className='relative max-lg:row-start-1 inset-px rounded-lg bg-card max-lg:rounded-t-[2rem] border'>
-              <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
+              <div className='relative flex min-h-72 h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
                     {t('home.features.performance.title')}
@@ -552,8 +578,54 @@ export default function Home() {
                     {t('home.features.scalability.description')}
                   </p>
                 </div>
-                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2'>
-                  <img className='w-full max-lg:max-w-xs' src='https://tailwindui.com/plus/img/component-images/bento-03-performance.png' alt=''/>
+                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2 overflow-hidden'>
+                  <div className='w-[400px] bg-muted/50 p-4 border-l border-t rounded-lg absolute -bottom-7 -right-8 max-w-[350px]'>
+                    <div className='space-y-4'>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center gap-2'>
+                          <div className='p-1 rounded-md bg-muted border overflow-hidden shrink-0'>
+                            <img
+                              src={DiscordIcon}
+                              alt=''
+                              className='size-5 object-contain'
+                            />
+                          </div>
+                          <div className='font-medium text-sm text-foreground'>
+                            {t('home.features.scalability.sidebar.title')}
+                          </div>
+                        </div>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          className='p-1 h-auto'
+                        >
+                          <XMarkIcon className='w-4 h-4' />
+                        </Button>
+                      </div>
+                      <div className='space-y-2'>
+                        <div className='space-y-4'>
+                          <div className='space-y-4 bg-card border rounded-lg p-4 shadow-sm'>
+                            <div className='flex items-center gap-2'>
+                              <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
+                                <ServerStackIcon className='size-5 object-contain' />
+                              </div>
+                              <p className='text-sm font-semibold'>{t('home.features.scalability.sidebar.titleGroup')}</p>
+                            </div>
+                            <div className='space-y-1'>
+                              <Label className='flex items-center gap-1'>
+                                {t('home.features.scalability.sidebar.label')} <span className='text-sm text-destructive'>*</span>
+                              </Label>
+                              <Input
+                                variantSize='sm'
+                                type='text'
+                                required={true}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

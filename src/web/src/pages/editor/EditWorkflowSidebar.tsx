@@ -160,7 +160,7 @@ export function EditWorkflowSidebar({
           {selectedNode.fieldGroups && (
             <div className='space-y-4'>
               {selectedNode.fieldGroups.map((group: FieldGroup) => (
-                <div key={group.id} className='space-y-4 bg-white border rounded-lg p-4 shadow-sm'>
+                <div key={group.id} className='space-y-4 bg-card border rounded-lg p-4 shadow-sm'>
                   <div className='flex items-center gap-2'>
                     <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
                       {getGroupIcon(group.type)}

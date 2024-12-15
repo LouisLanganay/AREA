@@ -13,6 +13,7 @@ import { loginResponse } from '@/interfaces/api/Auth';
 import { apiError } from '@/interfaces/api/Errors';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useOAuth } from '@/hooks/useOAuth';
+import { Input } from '@/components/ui/input';
 
 
 export default function Login() {
@@ -102,10 +103,9 @@ export default function Login() {
               <label htmlFor='email' className='block text-sm font-medium'>
                 {t('login.email')}
               </label>
-              <input
+              <Input
                 {...register('email')}
                 type='email'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('login.emailPlaceholder')}
               />
               {errors.email && (
@@ -125,10 +125,9 @@ export default function Login() {
                   {t('login.forgotPassword')}
                 </Link>
               </div>
-              <input
+              <Input
                 {...register('password')}
                 type='password'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('login.passwordPlaceholder')}
               />
               {errors.password && (

@@ -12,7 +12,7 @@ export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
     <div
       className={`
         rounded-md
-        bg-white
+        bg-card
         border
         shadow-sm
         text-sm

@@ -18,7 +18,7 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
     case 'pending':
       return 'bg-yellow-100 border-yellow-200';
     default:
-      return 'bg-white';
+      return 'bg-card';
     }
   };
 

@@ -58,6 +58,7 @@ export function WorkflowHeader({
     toast({
       title: t('workflows.linkCopied'),
       description: t('workflows.linkCopiedDescription'),
+      variant: 'success',
     });
   };
 
@@ -69,6 +70,7 @@ export function WorkflowHeader({
       toast({
         title: t('workflows.deleteSuccessTitle'),
         description: t('workflows.deleteSuccessDescription'),
+        variant: 'success',
       });
       navigate('/workflows');
     } catch (error) {
@@ -94,8 +96,9 @@ export function WorkflowHeader({
       const updatedWorkflow = await updateWorkflow(workflow.id, { enabled: value }, token);
       setWorkflow(updatedWorkflow);
       toast({
-        title: t('workflows.updateSuccessTitle'),
-        description: t('workflows.updateSuccessDescription'),
+        title: t('workflows.enableSuccess'),
+        description: t('workflows.enableSuccessDescription'),
+        variant: 'success',
       });
     } catch (error) {
       console.error('Failed to update workflow', error);
@@ -129,8 +132,9 @@ export function WorkflowHeader({
       await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
       setWorkflow(updatedWorkflow);
       toast({
-        title: t('workflows.updateSuccessTitle'),
-        description: t('workflows.updateSuccessDescription'),
+        title: t('workflows.enableSuccess'),
+        description: t('workflows.enableSuccessDescription'),
+        variant: 'success',
       });
     } catch (error) {
       console.error('Failed to update workflow', error);
@@ -163,10 +167,10 @@ export function WorkflowHeader({
         <span className='hidden lg:block'>{t('workflows.back')}</span>
       </Button>
       <div className='flex-1 flex items-center overflow-hidden'>
-        <span className='text-base font-bold md:font-semibold text-nowrap hidden lg:block'>
+        <span className='text-sm font-bold md:font-semibold text-nowrap hidden lg:block'>
           {workflow.name}
         </span>
-        <span className='text-sm font-bold md:font-semibold text-nowrap block lg:hidden'>
+        <span className='text-xs font-bold md:font-semibold text-nowrap block lg:hidden'>
           {workflow.name.length > 10 ? workflow.name.slice(0, 5) + '..' : workflow.name}
         </span>
       </div>

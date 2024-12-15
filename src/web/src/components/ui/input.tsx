@@ -1,9 +1,12 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
+import { EyeDropperIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> & { variantSize?: 'sm' | 'md' | 'lg' }>(
+const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'> & { variantSize?: 'sm' | 'md' | 'lg' }>(
   ({ className, type, variantSize = 'md', ...props }, ref) => {
+    const [showPassword, setShowPassword] = React.useState(false);
+
     const getSizeClass = (size: string) => {
       switch (size) {
       case 'sm':
@@ -15,20 +18,41 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input"> &
       }
     };
 
+    const togglePasswordVisibility = () => {
+      setShowPassword(prev => !prev);
+    };
+
     return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-          className,
-          getSizeClass(variantSize)
+      <div className='relative'>
+        <input
+          type={type === 'password' && !showPassword ? 'password' : 'text'}
+          className={cn(
+            'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+            className,
+            getSizeClass(variantSize)
+          )}
+          ref={ref}
+          {...props}
+        />
+        {type === 'password' && (
+          <button
+            type='button'
+            onMouseDown={() => setShowPassword(true)}
+            onMouseUp={() => setShowPassword(false)}
+            onMouseLeave={() => setShowPassword(false)}
+            className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all duration-300'
+          >
+            {showPassword ?
+              <EyeSlashIcon className='size-4' />
+            :
+              <EyeIcon className='size-4' />
+            }
+          </button>
         )}
-        ref={ref}
-        {...props}
-      />
+      </div>
     );
   }
 );
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 export { Input };

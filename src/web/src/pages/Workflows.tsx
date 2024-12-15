@@ -113,6 +113,11 @@ export default function Workflows() {
     );
     try {
       const updatedWorkflow = await updateWorkflow(id, { enabled: value }, token);
+      toast({
+        title: t('workflows.enableSuccess'),
+        description: t('workflows.enableSuccessDescription'),
+        variant: 'success',
+      });
       setWorkflows((prevWorkflows) =>
         prevWorkflows.map((workflow) =>
           workflow.id === id ? updatedWorkflow : workflow
