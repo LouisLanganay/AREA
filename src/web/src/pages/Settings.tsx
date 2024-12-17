@@ -87,6 +87,7 @@ export default function Settings() {
         description: t("settings.account.saveSuccessDescription"),
       });
     } catch (error) {
+      console.error("Failed to update user", error);
       toast({
         title: t("settings.account.saveError"),
         description: t("settings.account.saveErrorDescription"),

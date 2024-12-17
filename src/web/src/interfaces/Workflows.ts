@@ -1,4 +1,3 @@
-import AddNode from "@/components/flow/AddNode";
 import { Service } from "./Services";
 
 interface WorkflowNodeData {

@@ -1,19 +1,17 @@
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
-import { getServices } from '@/api/Services';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PlusIcon } from '@heroicons/react/24/solid';
-import { useAuth } from '@/auth/AuthContext';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowRightIcon, Loader2 } from 'lucide-react';
 import { oauthCallback } from '@/api/Auth';
-import { Service } from '@/interfaces/Services';
+import { getServices } from '@/api/Services';
+import { useAuth } from '@/auth/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { getServiceProvider } from '@/utils/servicesProviders';
 import { useOAuth } from '@/hooks/useOAuth';
+import { Service } from '@/interfaces/Services';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import Cookies from 'js-cookie';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ArrowRightIcon, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -55,8 +53,6 @@ export default function Services() {
     const handleOAuthCallback = async () => {
       const serviceId = Cookies.get('service_oauth_provider');
 
-      console.log("handleOAuthCallback", token, serviceId);
-
       if (!token || !serviceId)
         return;
 
@@ -84,8 +80,6 @@ export default function Services() {
         navigate('/services');
       }
     };
-
-    console.log("handleOAuthCallback");
 
     handleOAuthCallback();
   }, [token, services]);
@@ -122,9 +116,9 @@ export default function Services() {
                     {service.image ? (
                       <img src={service.image} alt={service.name} className='size-6 rounded-lg aspect-square object-cover' />
                     ) : (
-                    <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
-                      <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
-                    </div>
+                      <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                        <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
+                      </div>
                     )}
                   </div>
                   <div className='flex flex-col'>
@@ -157,9 +151,9 @@ export default function Services() {
                     {service.image ? (
                       <img src={service.image} alt={service.name} className='size-6 rounded-lg aspect-square object-cover' />
                     ) : (
-                    <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
-                      <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
-                    </div>
+                      <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                        <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
+                      </div>
                     )}
                   </div>
                   <div className='flex flex-col'>
@@ -173,8 +167,13 @@ export default function Services() {
                     if (service.auth)
                       openServiceOAuthUrl(service.auth.callback_uri, service.id);
                   }}
+                  disabled={authInProgress(service.id)}
                 >
-                  Connect {service.name} <PlusIcon className='size-4' />
+                  Connect {service.name} {
+                    authInProgress(service.id) ?
+                      <Loader2 className='size-4 animate-spin' /> :
+                      <PlusIcon className='size-4' />
+                  }
                 </Button>
               </div>
             ))

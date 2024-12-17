@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
-import { EyeDropperIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'> & { variantSize?: 'sm' | 'md' | 'lg' }>(
   ({ className, type, variantSize = 'md', ...props }, ref) => {
@@ -16,10 +16,6 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'> &
       default:
         return 'h-9 text-base';
       }
-    };
-
-    const togglePasswordVisibility = () => {
-      setShowPassword(prev => !prev);
     };
 
     return (
@@ -44,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'> &
           >
             {showPassword ?
               <EyeSlashIcon className='size-4' />
-            :
+              :
               <EyeIcon className='size-4' />
             }
           </button>

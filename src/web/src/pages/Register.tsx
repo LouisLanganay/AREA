@@ -51,6 +51,7 @@ export default function Register() {
       const available = await checkIfUsernameIsAvailable(username);
       setIsUsernameAvailable(!available.used);
     } catch(error) {
+      console.error("Failed to check if username is available", error);
       setIsUsernameAvailable(null);
     } finally {
       setIsLoading(false);

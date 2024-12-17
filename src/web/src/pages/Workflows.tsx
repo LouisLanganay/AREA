@@ -88,7 +88,6 @@ export default function Workflows() {
       if (!token) return;
       try {
         const data = await getServices(token);
-        console.log(data);
         setServices(data);
       } catch (error) {
         console.error('Failed to fetch services', error);
@@ -100,7 +99,6 @@ export default function Workflows() {
   }, []);
 
   const handleSelectTrigger = (action: Event) => {
-    console.log("selected trigger", action);
     setSelectedTrigger(action);
   };
 
@@ -114,7 +112,6 @@ export default function Workflows() {
     try {
       const updatedWorkflow = await updateWorkflow(id, { enabled: value }, token);
       toast({
-        title: t('workflows.enableSuccess'),
         description: t('workflows.enableSuccessDescription'),
         variant: 'success',
       });

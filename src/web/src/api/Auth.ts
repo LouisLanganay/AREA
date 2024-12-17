@@ -7,11 +7,12 @@ import {
   forgotRequest,
   resetRequest,
 } from '../interfaces/api/Auth';
+import axiosInstance from './axiosInstance';
 
 export const register = async (
   request: registerRequest
 ): Promise<registerResponse> => {
-  const response = await axios.post<any>(`${import.meta.env.VITE_API_URL}/auth/register`, {
+  const response = await axiosInstance.post<any>(`/auth/register`, {
     email: request.email,
     password: request.password,
     username: request.username,
@@ -31,7 +32,7 @@ export const register = async (
 export const login = async (
   request: loginRequest
 ): Promise<loginResponse> => {
-  const response = await axios.post<any>(`${import.meta.env.VITE_API_URL}/auth/login`, {
+  const response = await axiosInstance.post<any>(`/auth/login`, {
     id: request.id,
     password: request.password,
   }, {
@@ -50,7 +51,7 @@ export const login = async (
 export const forgotPassword = async (
   request: forgotRequest
 ): Promise<void> => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, {
+  const response = await axiosInstance.post(`/auth/forgot-password`, {
     email: request.email
   }, {
     headers: {
@@ -66,7 +67,7 @@ export const forgotPassword = async (
 };
 
 export const oauthCallback = async (callback_uri: string, token: string, userToken: string) => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}${callback_uri}`, {
+  const response = await axiosInstance.post(`${callback_uri}`, {
     code: token
   }, {
     headers: {
@@ -83,7 +84,7 @@ export const oauthCallback = async (callback_uri: string, token: string, userTok
 };
 
 export const resetPassword = async (request: resetRequest) => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, request, {
+  const response = await axiosInstance.post(`/auth/reset-password`, request, {
     headers: {
       'ngrok-skip-browser-warning': 'true'
     }
@@ -97,7 +98,7 @@ export const resetPassword = async (request: resetRequest) => {
 };
 
 export const googleOAuth = async (code: string): Promise<loginResponse> => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/google`, {
+  const response = await axiosInstance.post(`/auth/google`, {
     code: code
   }, {
     headers: {
@@ -111,7 +112,7 @@ export const googleOAuth = async (code: string): Promise<loginResponse> => {
 };
 
 export const discordOAuth = async (code: string): Promise<loginResponse> => {
-  const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/discord`, {
+  const response = await axiosInstance.post(`/auth/discord`, {
     code: code
   }, {
     headers: {

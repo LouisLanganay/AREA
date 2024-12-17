@@ -74,14 +74,14 @@ function LoginSuccess() {
     };
 
     switch (provider) {
-      case 'Google':
-        handleGoogle();
-        break;
-      case 'Discord':
-        handleDiscord();
-        break;
-      default:
-        break;
+    case 'Google':
+      handleGoogle();
+      break;
+    case 'Discord':
+      handleDiscord();
+      break;
+    default:
+      break;
     }
   }, [location]);
 

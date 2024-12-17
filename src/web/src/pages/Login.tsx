@@ -15,7 +15,6 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useOAuth } from '@/hooks/useOAuth';
 import { Input } from '@/components/ui/input';
 
-
 export default function Login() {
   const { t } = useTranslation();
   type LoginSchema = z.infer<typeof loginSchema>;
@@ -31,7 +30,6 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { openOAuthUrl } = useOAuth();
-
 
   const onSubmit = async (data: LoginSchema) => {
     setIsLoading(true);

@@ -1,9 +1,9 @@
 import { checkIfUsernameIsAvailableResponse, getMeResponse } from "@/interfaces/api/User";
 import { User } from "@/interfaces/User";
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export const getMe = async (token: string): Promise<getMeResponse> => {
-  const response = await axios.get<getMeResponse>(`${import.meta.env.VITE_API_URL}/users/me`, {
+  const response = await axiosInstance.get<getMeResponse>(`/users/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
@@ -18,7 +18,7 @@ export const getMe = async (token: string): Promise<getMeResponse> => {
 };
 
 export const updateUser = async (token: string, user: User): Promise<void> => {
-  const response = await axios.put(`${import.meta.env.VITE_API_URL}/users/update`, user, {
+  const response = await axiosInstance.put(`/users/update`, user, {
     headers: {
       Authorization: `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
@@ -33,6 +33,6 @@ export const updateUser = async (token: string, user: User): Promise<void> => {
 };
 
 export const checkIfUsernameIsAvailable = async (username: string): Promise<checkIfUsernameIsAvailableResponse> => {
-  const response = await axios.get<checkIfUsernameIsAvailableResponse>(`${import.meta.env.VITE_API_URL}/users/use/${username}`);
+  const response = await axiosInstance.get<checkIfUsernameIsAvailableResponse>(`/users/use/${username}`);
   return response.data;
 };

@@ -30,7 +30,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
 import LinkitLogoFull from '../assets/linkitLogoFull';
 import {
-  Background,
   ConnectionLineType,
   ReactFlow,
 } from '@xyflow/react';
@@ -74,7 +73,7 @@ export default function Home() {
       role: t('home.team.roles.backend'),
       image: '/assets/team/tom.lefoix@epitech.eu.jpg'
     }
-  ]
+  ];
 
   const stack = [
     {
@@ -107,7 +106,7 @@ export default function Home() {
       description: t('home.stack.services.twitch.description'),
       icon: '/assets/stack/twitch-icon.svg'
     }
-  ]
+  ];
 
   const exampleNodes: WorkflowNode[] = [
     {
