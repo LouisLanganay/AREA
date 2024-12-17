@@ -14,6 +14,7 @@ import {
     EventgetMessageDiscord,
     EventnotifyUserDiscord,
 } from './service/discord.service';
+import { TimerService } from './service/timer.service';
 import {FieldGroup} from '../../shared/Workflow';
 import {updateUserDto} from './users/dto/update-user.dto';
 
@@ -22,6 +23,7 @@ async function defineAllService(app: any) {
 
     allService.addService(discordService);
     allService.addService(TestService);
+    allService.addService(TimerService);
 
     allService.addEventToService('discord', EventnotifyUserDiscord);
     allService.addEventToService('discord', EventgetMessageDiscord);
