@@ -1,6 +1,10 @@
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import DiscordIcon from '@/assets/discord-icon.svg';
+import { useAuth } from '@/auth/AuthContext';
+import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import { Button } from '@/components/ui/button';
+import DotPattern from '@/components/ui/dot-pattern';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   ListItem,
   NavigationMenu,
@@ -10,36 +14,31 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { Link } from 'react-router-dom';
-import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
-import DotPattern from '@/components/ui/dot-pattern';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useTheme } from '@/context/ThemeContext';
+import { WorkflowNode } from '@/interfaces/Workflows';
+import { getLayoutedElements } from '@/utils/workflows';
 import {
-  RocketLaunchIcon,
-  MoonIcon,
-  SunIcon,
   Bars3Icon,
   ChevronDownIcon,
-  UserPlusIcon,
-  UserIcon,
+  MoonIcon,
+  RocketLaunchIcon,
+  ServerStackIcon,
   SparklesIcon,
-  XMarkIcon,
-  ServerStackIcon
+  SunIcon,
+  UserIcon,
+  UserPlusIcon,
+  XMarkIcon
 } from '@heroicons/react/24/solid';
-import { useTheme } from '@/context/ThemeContext';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
-import LinkitLogoFull from '../assets/linkitLogoFull';
 import {
   ConnectionLineType,
   ReactFlow,
 } from '@xyflow/react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
+import LinkitLogoFull from '../assets/linkitLogoFull';
 import Node from '../components/flow/Node';
-import { edgeStyles, getLayoutedElements } from '@/utils/workflows';
-import { flowStyles, WorkflowNode } from '@/interfaces/Workflows';
-import DiscordIcon from '@/assets/discord-icon.svg';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { useAuth } from '@/auth/AuthContext';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -125,7 +124,8 @@ export default function Home() {
           image: '/assets/stack/twitch-icon.svg',
           description: 'Twitch is a live streaming platform',
           loginRequired: true
-        }
+        },
+        status: 'success'
       },
     },
     {
@@ -144,7 +144,8 @@ export default function Home() {
           image: '/assets/stack/discord-icon.svg',
           description: 'Discord is a social media platform',
           loginRequired: true
-        }
+        },
+        status: 'pending'
       },
     },
     {
@@ -486,9 +487,8 @@ export default function Home() {
               {t('home.description')}
             </p>
           </div>
-          <div className='w-[363px] flex h-[calc(100vh-300px)]'>
-            <style>{flowStyles}</style>
-            <div className='w-[363px] h-full'>
+          <div className='w-[385px] flex h-[calc(100vh-300px)]'>
+            <div className='w-[385px] h-full'>
               <ReactFlow
                 nodes={getLayoutedElements(exampleNodes, exampleEdges, 'TB', 80, 100, 50).nodes}
                 edges={getLayoutedElements(exampleNodes, exampleEdges, 'TB', 80, 100, 50).edges}
@@ -496,9 +496,8 @@ export default function Home() {
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag={false}
-                viewport={{ x: 0, y: 0, zoom: 1.1 }}
+                viewport={{ x: 10, y: 0, zoom: 1.1 }}
                 connectionLineType={ConnectionLineType.SmoothStep}
-                defaultEdgeOptions={{ type: 'step', style: edgeStyles }}
                 fitView
                 zoomOnPinch={false}
                 zoomOnDoubleClick={false}

@@ -42,10 +42,12 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
+      "switchAccountSuccess": "Account switched successfully",
       "logout": "Logout",
       "addAccount": "Add Account",
       "currentAccount": "Current",
-      "switchTheme": "Switch Theme"
+      "switchTheme": "Switch Theme",
+      "documentation": "Documentation"
     }
   },
   "settings": {
@@ -92,7 +94,8 @@
       "description": "Customize the application's appearance.",
       "darkMode": {
         "label": "Dark Mode",
-        "description": "Enable dark mode for a comfortable visual experience in low light."
+        "description": "Enable dark mode for a comfortable visual experience in low light.",
+        "switch": "Switch mode"
       },
       "fontSize": {
         "label": "Font Size",
@@ -150,12 +153,21 @@
     "enabled": "Enabled",
     "openMenu": "Open Menu",
     "actions": "Actions",
+    "changesToSave": "This workflow has changes to save",
+    "discardChanges": "Discard changes",
+    "success": "Completed",
     "save2": "Save",
+    "saving": "Workflow is being saved...",
     "edit": "Edit in Builder",
     "filterByName": "Filter by name...",
+    "deletingWorkflow": "Deleting workflow...",
+    "deleteCancelledDescription": "Deletion cancelled.",
+    "noDescription": "No description",
     "bulkActions": "Bulk Actions",
     "enableAll": "Enable All",
     "disableAll": "Disable All",
+    "runWorkflowDescription": "Running workflow...",
+    "runWorkflowDescriptionSuccess": "Workflow run successfully !",
     "columns": "Columns",
     "create": "Create new workflow",
     "enableSuccess": "Workflow updated",
@@ -189,7 +201,7 @@
     "confirmDeleteTitle": "Confirm deletion",
     "confirmDelete": "Are you sure you want to delete the workflow '{{workflowName}}'?",
     "linkCopied": "Link copied to clipboard",
-    "linkCopiedDescription": "You can now share the link to your workflow with others",
+    "linkCopiedDescription": "Link copied to clipboard.",
     "updateErrorTitle": "Error updating workflow",
     "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
     "deleteErrorTitle": "Error deleting workflow",
@@ -422,5 +434,10 @@
       "description": "If the download doesn't start automatically, ",
       "download": "click here"
     }
+  },
+  "loading": {
+    "error": "Authentication is taking more than 10 seconds. Please try again.",
+    "authenticating": "Authenticating...",
+    "pleaseWait": "Please wait while we verify your information."
   }
 }

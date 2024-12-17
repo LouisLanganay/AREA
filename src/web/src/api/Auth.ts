@@ -1,10 +1,9 @@
-import axios from 'axios';
 import {
+  forgotRequest,
   loginRequest,
   loginResponse,
   registerRequest,
   registerResponse,
-  forgotRequest,
   resetRequest,
 } from '../interfaces/api/Auth';
 import axiosInstance from './axiosInstance';

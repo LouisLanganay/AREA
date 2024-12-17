@@ -76,7 +76,10 @@ const config = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+  			ringWidth: {
+  				'1.5': '1.5px',
+  			},
   		},
   		backgroundImage: {
   			'border-gradient-ai': 'linear-gradient(90deg, rgba(56,189,248,0) 0%, hsl(var(--primary)) 32.29%, hsl(var(--second)) 67.19%, rgba(236,72,153,0) 100%)',

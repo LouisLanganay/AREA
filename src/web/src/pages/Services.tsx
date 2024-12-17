@@ -72,7 +72,6 @@ export default function Services() {
         console.error('OAuth callback error:', error);
         if (error?.response?.status === 500) {
           toast({
-            title: t('error.INTERNAL_SERVER_ERROR'),
             description: t('error.INTERNAL_SERVER_ERROR_DESCRIPTION'),
             variant: 'destructive',
           });

@@ -1,29 +1,32 @@
+import { getServices } from '@/api/Services';
+import { getWorkflow, updateWorkflow } from '@/api/Workflows';
+import { useAuth } from '@/auth/AuthContext';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { edgeStyles, findNode, getLayoutedElements } from '@/utils/workflows';
+import { Service } from '@/interfaces/Services';
+import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
+import { findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
-  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
   ConnectionLineType,
   Controls,
-  ReactFlow,
+  ReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { isEqual } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
 import AddNode from '../components/flow/AddNode';
 import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
-import { useAuth } from '@/auth/AuthContext';
-import { Service } from '@/interfaces/Services';
-import { getServices } from '@/api/Services';
-import { getWorkflow } from '@/api/Workflows';
 
 const nodeTypes = {
   node: Node,
@@ -44,6 +47,8 @@ export default function EditWorkflow() {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
   const { token } = useAuth();
+  const hasChanges = !isEqual(workflow, updatedWorkflow);
+  const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
 
   const flattenNodesAndCreateEdges = useCallback((nodes: Event[], services: Service[]) => {
     let allEdges: WorkflowEdge[] = [];
@@ -128,6 +133,10 @@ export default function EditWorkflow() {
         setEdges(layoutedEdges);
       } catch (error) {
         console.error('Failed to fetch data', error);
+        toast({
+          description: t('workflows.fetchErrorDescription'),
+          variant: 'destructive',
+        });
         navigate('/workflows');
       }
     };
@@ -178,6 +187,38 @@ export default function EditWorkflow() {
     setIsCommandOpen(true);
   }, []);
 
+  const handleSave = async () => {
+    if (!updatedWorkflow || !token) return;
+    if (!isValid) {
+      toast({
+        description: t('workflows.validationErrorDescription'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    const myToast = toast({
+      description: t('workflows.saving'),
+      variant: 'loading',
+    });
+
+    try {
+      await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
+      setWorkflow(updatedWorkflow);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.enableSuccessDescription'),
+        variant: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to update workflow', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
+    }
+  };
+
   const handleSelectService = useCallback((service: Service, action: Event) => {
     if (!updatedWorkflow) return;
     const parentNode = nodes.find(n => n.id === selectedParentId);
@@ -188,6 +229,10 @@ export default function EditWorkflow() {
     }
 
     action.dependsOn = parentNode.id;
+
+    const hasInvalidFields = action.fieldGroups.some(group =>
+      group.fields.some(field => field.required && !field.value)
+    );
 
     const newNode: WorkflowNode = {
       id: action.id_node,
@@ -200,7 +245,7 @@ export default function EditWorkflow() {
         description: action.description,
         isTrigger: false,
         selected: false,
-        isValid: true,
+        isValid: !hasInvalidFields,
       },
     };
 
@@ -218,8 +263,14 @@ export default function EditWorkflow() {
     const updatedNodes = nodes.filter(n => n.id !== `${parentNode.id}-add`);
     const updatedEdges = edges.filter(e => e.target !== `${parentNode.id}-add`);
 
-    setNodes([...updatedNodes, newNode, addNode]);
-    setEdges([...updatedEdges, newEdge, addEdge]);
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      [...updatedNodes, newNode, addNode],
+      [...updatedEdges, newEdge, addEdge],
+      'TB', 80, 100, 50
+    );
+
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
 
     updatedWorkflow.nodes = [...updatedWorkflow.nodes, action];
     setIsCommandOpen(false);
@@ -227,6 +278,7 @@ export default function EditWorkflow() {
 
   const handleResetNode = useCallback((nodeId: string) => {
     if (!workflow || !updatedWorkflow) return;
+
     const defaultNode = findNode(workflow.nodes, nodeId);
     if (!defaultNode) return;
 
@@ -245,7 +297,6 @@ export default function EditWorkflow() {
       return node;
     }));
 
-    toast({ title: t('workflows.nodeResetTitle'), description: t('workflows.nodeResetDescription') });
   }, [workflow, updatedWorkflow, toast, t]);
 
   const hasChangesOnNode = useCallback((nodeId: string): boolean => {
@@ -308,6 +359,7 @@ export default function EditWorkflow() {
         workflow={workflow}
         updatedWorkflow={updatedWorkflow}
         setWorkflow={setWorkflow}
+        setUpdatedWorkflow={setUpdatedWorkflow}
       />
       <div className='w-full flex h-[calc(100vh-64px)]'>
         <div className={clsx(
@@ -316,36 +368,64 @@ export default function EditWorkflow() {
         )}>
           <style>{flowStyles}</style>
           <div className='bg-muted/50 h-full flex items-center justify-center w-full'>
-            <div className='w-full h-full'>
+            <div className='w-full h-full relative'>
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
                 onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
                 onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
-                onConnect={(params) => setEdges((eds) => addEdge({
-                  ...params,
-                  type: ConnectionLineType.SmoothStep,
-                  animated: true,
-                  style: edgeStyles,
-                }, eds))}
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag
                 connectionLineType={ConnectionLineType.SmoothStep}
-                defaultEdgeOptions={{ type: 'step', style: edgeStyles }}
                 fitView
                 zoomOnPinch={false}
                 zoomOnDoubleClick={false}
                 onNodeClick={onNodeClick}
               >
+                <div className='w-full h-fit top-0 left-0 z-10 absolute'>
+                  {hasChanges && (
+                    <motion.div
+                      className={clsx(
+                        'justify-between items-center rounded-lg bg-background py-1 md:py-2 px-2 m-2 border   border-border gap-2',
+                        selectedNode ? 'hidden md:flex' : 'flex'
+                      )}
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    >
+                      <div className='flex items-center justify-center text-sm font-regular'>
+                        <InformationCircleIcon className='size-5 mr-2 shrink-0' />
+                        <span>{t('workflows.changesToSave')}</span>
+                      </div>
+                      <div className='flex items-center justify-center gap-2 flex-col md:flex-row'>
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          className='hidden md:flex'
+                          onClick={() => setUpdatedWorkflow(workflow)}
+                        >
+                          {t('workflows.discardChanges')}
+                        </Button>
+                        <Button
+                          variant='default'
+                          size='sm'
+                          disabled={!hasChanges || !isValid}
+                          onClick={handleSave}
+                        >
+                          {t('workflows.save')}
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
                 <Background />
                 <Controls showInteractive={false} className='Controls' showZoom={false} />
               </ReactFlow>
             </div>
           </div>
         </div>
-
         {selectedNode && (
           <EditWorkflowSidebar
             selectedNode={selectedNode}

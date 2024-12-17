@@ -17,6 +17,7 @@ import Cookies from 'js-cookie';
 import { discordOAuth, googleOAuth } from './api/Auth';
 import Login from './pages/Login';
 import ClientAPK from './pages/ClientAPK';
+import Loading from './pages/Loading';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -85,7 +86,7 @@ function LoginSuccess() {
     }
   }, [location]);
 
-  return <div>Loading...</div>;
+  return <Loading />;
 }
 
 function App() {

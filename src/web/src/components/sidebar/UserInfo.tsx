@@ -19,6 +19,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
   ArrowsRightLeftIcon,
   ChevronUpDownIcon,
+  Cog6ToothIcon,
   MoonIcon,
   PlusIcon,
   SunIcon,
@@ -37,6 +38,7 @@ import { LoginForm } from '../auth/LoginForm';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/interfaces/User';
 import { useTheme } from '@/context/ThemeContext';
+import { toast } from '@/hooks/use-toast';
 
 export function UserInfo({
   user,
@@ -163,7 +165,13 @@ export function UserInfo({
                       {accounts.map((account) => (
                         <DropdownMenuItem
                           key={account.token}
-                          onClick={() => switchAccount(account.token)}
+                          onClick={() => {
+                            switchAccount(account.token);
+                            toast({
+                              description: t('sidebar.items.switchAccountSuccess'),
+                              variant: 'success',
+                            });
+                          }}
                           className='justify-between min-w-[--radix-dropdown-menu-trigger-width]'
                           disabled={isCurrentAccount(account.token)}
                         >
@@ -207,6 +215,10 @@ export function UserInfo({
                   <SunIcon className='size-4' />
                 )}
                 <span>{t('sidebar.items.switchTheme')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <Cog6ToothIcon className='size-4' />
+                <span>{t('sidebar.items.settings')}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleLogout()}>

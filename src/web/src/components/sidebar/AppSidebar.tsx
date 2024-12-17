@@ -2,6 +2,7 @@ import { useAuth } from '@/auth/AuthContext';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -10,15 +11,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { UserInfo } from './UserInfo';
 import {
   CursorArrowRaysIcon,
   HomeIcon,
+  LifebuoyIcon,
   Squares2X2Icon,
-  UsersIcon,
-  Cog6ToothIcon
+  UsersIcon
 } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
+import LinkitLogoFull from '../../assets/linkitLogoFull';
+import { UserInfo } from './UserInfo';
 
 const getGroups = (t: (key: string) => string) => [
   {
@@ -51,16 +53,6 @@ const getGroups = (t: (key: string) => string) => [
       }
     ],
     isAdmin: true
-  },
-  {
-    title: t('sidebar.items.settings'),
-    items: [
-      {
-        title: t('sidebar.items.settings'),
-        icon: Cog6ToothIcon,
-        url: '/settings'
-      }
-    ]
   }
 ];
 
@@ -72,9 +64,9 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <UserInfo
-          user={user}
-        />
+        <div className='flex items-center px-2 pt-2'>
+          <LinkitLogoFull className='w-24 h-fit object-contain fill-foreground' />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {groups.map((group) => (
@@ -97,6 +89,19 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenuItem className='list-none'>
+          <SidebarMenuButton asChild>
+            <a href='https://github.com/LouisLanganay/AREA'>
+              <LifebuoyIcon className='w-5 h-5' />
+              <span>{t('sidebar.items.documentation')}</span>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <UserInfo
+          user={user}
+        />
+      </SidebarFooter>
     </Sidebar>
   );
 }
