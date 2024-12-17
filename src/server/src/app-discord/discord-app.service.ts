@@ -3,6 +3,8 @@ import fetch from 'node-fetch'; // Importation de node-fetch
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { Client, GatewayIntentBits } from 'discord.js';
+
 
 @Injectable()
 export class DiscordService {
@@ -25,9 +27,8 @@ export class DiscordService {
       client_id: clientId,
       client_secret: clientSecret,
       grant_type: 'authorization_code',
-      code,
+      code: code,
       redirect_uri: redirectUri,
-      scope: 'identify email',
     });
 
     const response = await fetch(tokenUrl, {
@@ -94,10 +95,11 @@ export class DiscordService {
   async sendMessageToChannel(
     channelId: string,
     message: string,
-    userBddId: string,
+    req: any,
   ): Promise<void> {
     const sendMessageUrl = `https://discord.com/api/v10/channels/${channelId}/messages`;
 
+    const userBddId = req.user.id;
     const accessToken = await this.prisma.token.findUnique({
       where: { userId_provider: { userId: userBddId, provider: 'discord' } },
       select: { accessToken: true },
@@ -110,7 +112,7 @@ export class DiscordService {
     const response = await fetch(sendMessageUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Bot ${accessToken}`,
+        Authorization: `Bot ${this.configService.get<string>('DISCORD_BOT_TOKEN')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ content: message }),
@@ -141,6 +143,7 @@ export class DiscordService {
 
   async discordCallback(code: string, req: any): Promise<any> {
     console.log('Discord OAuth callback received:', code);
+    const deletedTokens = await this.prisma.token.deleteMany(); // Supprime toutes les entrées de la table `Token`
     if (!code) {
       throw new BadRequestException('Code or userId is missing');
     }
@@ -162,7 +165,7 @@ export class DiscordService {
       code,
       this.configService.get<string>('DISCORD_CLIENT_ID'),
       this.configService.get<string>('DISCORD_CLIENT_SECRET'),
-      `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`,
+      'http://127.0.0.1:8080/auth/discord/callback',
     );
 
     console.log('tokens:', tokens);
@@ -187,6 +190,35 @@ export class DiscordService {
     return { message: 'Tokens stored in the database' };
   }
 
+  async listenToChannel(channelId: string, req: any): Promise<void> {
+    const userBddId = req.user.id;
+    const accessToken = await this.prisma.token.findUnique({
+      where: { userId_provider: { userId: userBddId, provider: 'discord' } },
+      select: { accessToken: true },
+    });
+
+    if (!accessToken) {
+      throw new BadRequestException('Access token not found');
+    }
+
+    const client = new Client({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+      ],
+    });
+
+    client.on('messageCreate', async (message) => {
+      if (message.channel.id === channelId) {
+        console.log('New message in channel:', message);
+        return true;
+      }
+    });
+
+    client.login(this.configService.get<string>('DISCORD_BOT_TOKEN'));
+  }
+
   // Méthode pour stocker les tokens dans la base de données
   async storeTokens(
     userBddId: string,
@@ -204,19 +236,52 @@ export class DiscordService {
       refreshToken,
       expiresAt,
     };
+    const users = await this.prisma.user.findMany();
+
+    // Affiche les utilisateurs dans la console
+    console.log('Liste des utilisateurs:', users);
+    console.log('User Bdd Id:', userBddId);
 
     const user = await this.prisma.user.findUnique({
-      where: { id: userBddId },
+      where: {id: userBddId},
     });
 
     if (!user) {
       throw new BadRequestException('User not found');
     }
 
-    await this.prisma.token.upsert({
-      where: { userId_provider: { userId: userBddId, provider: 'discord' } },
-      update: newToken,
-      create: newToken,
+    const token = await this.prisma.token.upsert({
+      where: {
+        userId_provider: {userId, provider},
+      },
+      update: {
+        accessToken,
+        refreshToken,
+        expiresAt,
+      },
+      create: {
+        provider,
+        accessToken,
+        refreshToken,
+        expiresAt,
+        userId: userBddId,
+      },
     });
+
+    const userToken = await this.prisma.user.update({
+      where: {id: userBddId},
+      data: {
+        tokens: {
+          connect: {
+            id: token.id
+          }
+        }
+      }
+    });
+
+    const listUser = await this.prisma.user.findMany();
+    console.log('Liste des utilisateurs:', listUser);
+    const tokens = await this.prisma.token.findMany();
+    console.log('Liste des tokens:', tokens);
   }
 }

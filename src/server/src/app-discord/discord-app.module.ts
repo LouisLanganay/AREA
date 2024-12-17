@@ -11,7 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
             envFilePath: '../../.env', // Chemin vers votre fichier .env
         }),
     ],
-    //controllers: [DiscordController],
+    controllers: [DiscordController],
     providers: [DiscordService, PrismaService],
 })
 export class DiscordModule {}
