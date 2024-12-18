@@ -223,7 +223,7 @@ export class DiscordService {
       }
 
       // Bannir l'utilisateur
-      await guild.members.ban(userId, { reason });
+      await guild.members.kick(userId);
       console.log(`Utilisateur ${userId} banni avec succès.`);
 
       return `L'utilisateur ${userId} a été banni avec succès pour la raison : "${reason}".`;
