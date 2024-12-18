@@ -1,5 +1,5 @@
 import { updateUser } from "@/api/User";
-import { useAuth } from "@/auth/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   AlertDialog,
   AlertDialogAction,

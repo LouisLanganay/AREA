@@ -1,6 +1,6 @@
 import { getServices } from '@/api/Services';
 import { getWorkflow, updateWorkflow } from '@/api/Workflows';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/interfaces/Services';

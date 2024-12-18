@@ -1,5 +1,5 @@
 import { login as loginApi } from '@/api/Auth';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useOAuth } from '@/hooks/useOAuth';

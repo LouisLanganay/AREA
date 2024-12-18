@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import React, { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';

@@ -42,7 +42,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Event, Workflow } from '@/interfaces/Workflows';
 import { Service } from '@/interfaces/Services';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   Dialog,
   DialogContent,

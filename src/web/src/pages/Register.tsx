@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { register as registerApi } from '@/api/Auth';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { providers } from '@/utils/authProviders';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

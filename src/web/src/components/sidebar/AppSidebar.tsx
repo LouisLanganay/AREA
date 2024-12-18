@@ -1,4 +1,4 @@
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   Sidebar,
   SidebarContent,

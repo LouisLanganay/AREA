@@ -1,6 +1,6 @@
 import { oauthCallback } from '@/api/Auth';
 import { getServices } from '@/api/Services';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
@@ -164,7 +164,7 @@ export default function Services() {
                   size='sm'
                   onClick={() => {
                     if (service.auth)
-                      openServiceOAuthUrl(service.auth.callback_uri, service.id);
+                      openServiceOAuthUrl(service.auth.uri, service.id);
                   }}
                   disabled={authInProgress(service.id)}
                 >

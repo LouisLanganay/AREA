@@ -1,5 +1,5 @@
 import DiscordIcon from '@/assets/discord-icon.svg';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import { Button } from '@/components/ui/button';
 import DotPattern from '@/components/ui/dot-pattern';
