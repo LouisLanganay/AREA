@@ -39,7 +39,6 @@ export const useOAuth = () => {
 
   const openServiceOAuthUrl = async (url: string, serviceId: string) => {
     Cookies.set('service_oauth_provider', serviceId, { expires: 1/288 });
-    console.log(url);
 
     if (isPlatform('capacitor')) {
       App.addListener('appUrlOpen', async ({ url: redirectUrl }) => {

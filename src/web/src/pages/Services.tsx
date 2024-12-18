@@ -4,7 +4,6 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { useOAuth } from '@/hooks/useOAuth';
 import { Service } from '@/interfaces/Services';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import Cookies from 'js-cookie';
@@ -12,6 +11,9 @@ import { ArrowRightIcon, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+import { useOAuth } from '@/hooks/useOAuth';
+import { isPlatform } from '@ionic/react';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -20,8 +22,8 @@ export default function Services() {
   const token = searchParams.get('code');
   const { token: userToken } = useAuth();
   const navigate = useNavigate();
+  const isMobile = () => isPlatform('capacitor');
   const { openServiceOAuthUrl } = useOAuth();
-
   useEffect(() => {
     if (!token && Cookies.get('service_oauth_provider'))
       Cookies.remove('service_oauth_provider');
@@ -39,6 +41,21 @@ export default function Services() {
     };
     fetchServices();
   }, []);
+
+  async function handleConnectService(serviceId: string) {
+    const service = services.find(s => s.id === serviceId);
+    if (!service?.auth?.uri) return;
+    try {
+      const url = await axios.get(`${import.meta.env.VITE_API_URL}${service?.auth?.uri}`).then(res => res.data.redirectUrl);
+      const redirectUri = isMobile()
+        ? 'myapp://services'
+        : `${window.location.origin}/services`;
+      const finalUrl = url.replace('%5BREDIRECT_URI%5D', encodeURIComponent(redirectUri));
+      openServiceOAuthUrl(finalUrl, service.id);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   function authInProgress(serviceId?: string) {
     if (serviceId) {
@@ -163,8 +180,7 @@ export default function Services() {
                 <Button
                   size='sm'
                   onClick={() => {
-                    if (service.auth)
-                      openServiceOAuthUrl(service.auth.uri, service.id);
+                    handleConnectService(service.id);
                   }}
                   disabled={authInProgress(service.id)}
                 >
