@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { WorkflowNodeData } from '@/interfaces/Workflows';
-import { ExclamationTriangleIcon, SignalIcon } from '@heroicons/react/24/solid';
+import { CheckIcon, ExclamationTriangleIcon, SignalIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Badge } from '../ui/badge';
@@ -12,33 +12,43 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
   const getStatusColor = () => {
     switch (data.status) {
     case 'success':
-      return 'bg-green-100 border-green-200';
+      return 'bg-card ring-[1px] ring-green-500';
     case 'error':
-      return 'bg-red-100 border-red-200';
+      return 'bg-card ring-[1px] ring-red-500';
     case 'pending':
-      return 'bg-yellow-100 border-yellow-200';
+      return 'bg-card ring-[1px] ring-yellow-500';
     default:
-      return 'bg-white';
+      return 'bg-card';
     }
   };
 
-  console.info('data', data);
-
   return (
     <div className='flex flex-col'>
-      {data.isTrigger && (
-        <div className='w-fit p-1 flex flex-row items-center gap-1 bg-muted border border-b-0 rounded-t-lg'>
-          <SignalIcon className='size-4 text-muted-foreground' />
-          <div className='text-xs text-muted-foreground'>
-            {t('workflows.trigger')}
+      <div className='flex flex-row justify-between items-end gap-1'>
+        {data.isTrigger ? (
+          <div className='w-fit p-1 flex flex-row items-center gap-1 bg-muted border border-b-0 rounded-t-lg'>
+            <SignalIcon className='size-4 text-muted-foreground' />
+            <div className='text-xs text-muted-foreground'>
+              {t('workflows.trigger')}
+            </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div></div>
+        )}
+        {data.status === 'success' && (
+          <div className='w-fit m-1 px-1 py-0.5 flex flex-row items-center gap-1 bg-green-100 border border-green-200 rounded-lg'>
+            <CheckIcon className='size-4 text-green-600' />
+            <div className='text-xs text-green-600 font-light'>
+              {t('workflows.success')}
+            </div>
+          </div>
+        )}
+      </div>
       <div className={clsx(
-        'border shadow-sm text-sm px-2 py-2 w-[330px] h-fit ring-primary ring-0 transition-all',
+        'border shadow-sm text-sm px-2.5 py-2.5 w-[330px] h-fit ring-primary ring-0 transition-all',
         data.isTrigger ? 'rounded-b-lg rounded-r-lg' : 'rounded-lg',
         !data.isValid ? '!ring-destructive ring-1' : '',
-        data.selected ? '!ring-2' : '',
+        data.selected ? '!ring-[1.5px]' : '',
         getStatusColor()
       )}>
         <div className='flex flex-col justify-start gap-2'>
@@ -68,7 +78,7 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
           </div>
           <hr className='w-full border-border' />
           <div className='text-xs text-muted-foreground tracking-tight'>
-            {data.description}
+            {data.description || t('workflows.noDescription')}
           </div>
         </div>
 
@@ -80,7 +90,7 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
         <Handle
           type='source'
           position={Position.Bottom}
-          style={{ visibility: 'hidden' }}
+          className='!bg-card !size-3 !border-primary !ring-1 !ring-card'
         />
       </div>
     </div>

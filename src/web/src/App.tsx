@@ -16,6 +16,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import Cookies from 'js-cookie';
 import { discordOAuth, googleOAuth } from './api/Auth';
 import Login from './pages/Login';
+import ClientAPK from './pages/ClientAPK';
+import Loading from './pages/Loading';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -73,18 +75,18 @@ function LoginSuccess() {
     };
 
     switch (provider) {
-      case 'Google':
-        handleGoogle();
-        break;
-      case 'Discord':
-        handleDiscord();
-        break;
-      default:
-        break;
+    case 'Google':
+      handleGoogle();
+      break;
+    case 'Discord':
+      handleDiscord();
+      break;
+    default:
+      break;
     }
   }, [location]);
 
-  return <div>Loading...</div>;
+  return <Loading />;
 }
 
 function App() {
@@ -210,6 +212,13 @@ function App() {
                 path='/reset-password'
                 element={
                   <ResetPassword />
+                }
+              />
+
+              <Route
+                path='/client.apk'
+                element={
+                  <ClientAPK />
                 }
               />
             </Routes>

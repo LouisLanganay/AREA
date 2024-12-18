@@ -11,9 +11,9 @@ import { ConfigModule } from '@nestjs/config';
 import { WorkflowModule } from './workflow/workflow.module';
 import { BullModule } from '@nestjs/bullmq';
 import { WebhookModule } from './discordWebhook/discord-webhook.module';
-import {DiscordModule} from "./app-discord/discord-app.module";
-import { ServiceController } from "./service/route/service.controller";
-import { ServiceModule } from "./service/route/service.module";
+import { DiscordModule } from './app-discord/discord-app.module';
+import { ServiceController } from './service/route/service.controller';
+import { ServiceModule } from './service/route/service.module';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ import { ServiceModule } from "./service/route/service.module";
       },
     }),
     WebhookModule,
-    DiscordModule
+    DiscordModule,
   ],
   controllers: [AppController, AboutController, ServiceController],
   providers: [

@@ -1,6 +1,6 @@
 import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Event } from '@/interfaces/Workflows';
 import dagre from '@dagrejs/dagre';
-import { ConnectionLineType } from '@xyflow/react';
+import { ConnectionLineType, MarkerType } from '@xyflow/react';
 
 export function findNode(nodes: Event[] | undefined, nodeId: string): Event | undefined {
   if (!nodes || nodes.length === 0) return undefined;
@@ -28,21 +28,21 @@ export const validateWorkflow = (workflow: Workflow): boolean => {
   return validateFields(workflow.nodes);
 };
 
-export const edgeStyles = {
-  stroke: '#956FD6',
-  strokeWidth: 1,
-  strokeDasharray: '3,5',
-  animation: 'flowAnimation 1s linear infinite',
-};
-
-export const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[], direction = 'TB') => {
+export const getLayoutedElements = (
+  nodes: WorkflowNode[],
+  edges: WorkflowEdge[],
+  direction = 'TB',
+  ranksep = 100,
+  nodesep = 100,
+  edgesep = 50
+) => {
   const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR';
   dagreGraph.setGraph({
     rankdir: direction,
-    nodesep: 100,
-    ranksep: 100,
-    edgesep: 50,
+    nodesep: nodesep,
+    ranksep: ranksep,
+    edgesep: edgesep,
   });
 
   const normalNodes = nodes.filter(node => node.type === 'node');
@@ -83,7 +83,7 @@ export const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[]
       targetPosition: isHorizontal ? 'left' : 'top',
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
-        x: parentNode.position.x + (nodeWidth - 70) / 2,
+        x: parentNode.position.x + (nodeWidth - 36) / 2,
         y: parentNode.position.y + nodeHeight + 50,
       },
     };
@@ -94,8 +94,16 @@ export const getLayoutedElements = (nodes: WorkflowNode[], edges: WorkflowEdge[]
     edges: edges.map(edge => ({
       ...edge,
       type: ConnectionLineType.SmoothStep,
-      animated: true,
-      style: edgeStyles,
+      style: {
+        stroke: 'hsl(var(--muted-foreground))',
+        opacity: 0.5,
+      },
+      markerEnd: {
+        type: MarkerType.Arrow,
+        width: 20,
+        height: 20,
+        color: 'hsl(var(--muted-foreground))',
+      },
     }))
   };
 };

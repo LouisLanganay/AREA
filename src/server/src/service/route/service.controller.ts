@@ -9,6 +9,6 @@ export class ServiceController {
   @UseGuards(AuthGuard('jwt'))
   @Get()
   async getAllServices(@Req() req) {
-    return this.serviceRegister.getAllServices(req.user.id);
+    return this.serviceRegister.getAllServicesEnabled(req.user.id);
   }
 }

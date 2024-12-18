@@ -8,11 +8,11 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
-export function Toaster() {
+export function Toaster({ duration = 3000 }: { duration?: number }) {
   const { toasts } = useToast();
 
   return (
-    <ToastProvider>
+    <ToastProvider duration={duration}>
       {toasts.map(({ id, title, description, action, ...props }) => {
         return (
           <Toast key={id} {...props}>

@@ -1,4 +1,4 @@
-import { Service, Event, FieldGroup, Node } from '../../../shared/Workflow';
+import { Event, FieldGroup, Node, Service } from '../../../shared/Workflow';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -37,7 +37,11 @@ export class ServiceRegister {
     return Array.from(this.services.keys());
   }
 
-  async getAllServices(userId: string) {
+  getAllServices() {
+    return Array.from(this.services.values());
+  }
+
+  async getAllServicesEnabled(userId: string) {
     const serviceArray = Array.from(this.services.values());
 
     return await Promise.all(
@@ -156,7 +160,7 @@ export class ServiceRegister {
       );
     }
 
-    const node: Node = {
+    return {
       id: `node-${event.id_node}`,
       type: event.type,
       name: event.name,
@@ -171,8 +175,6 @@ export class ServiceRegister {
       variables: [],
       last_trigger: undefined,
     };
-
-    return node;
   }
 
   addChildNode(parentNode: Node, childNode: Node): void {
