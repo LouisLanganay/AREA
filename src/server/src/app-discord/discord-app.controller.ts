@@ -14,8 +14,6 @@ export class DiscordController {
         private configService: ConfigService,
     ) {}
 
-    private readonly redirectUri = 'http://127.0.0.1:8080/auth/discord/callback';
-
     @Get('authorize')
     generateAuthUrl(@Res() res: Response): void {
         const base = 'https://discord.com/oauth2/authorize';
@@ -24,7 +22,7 @@ export class DiscordController {
             client_id: this.configService.get('DISCORD_CLIENT_ID'),
             permissions: '8',
             integration_type: '0',
-            redirect_uri: this.configService.get<string>('IP_REDIRECT') + "auth/discord/callback",
+            redirect_uri: 'http://127.0.0.1:8080/auth/discord/callback',
             scope: 'bot applications.commands identify email',
         });
 
@@ -58,9 +56,22 @@ export class DiscordController {
     @UseGuards(AuthGuard('jwt'))
     async listenToChannel(
         @Body('channelId') channelId: string,
+        @Body('looking') lookingFor: string,
         @Req() req: any,
     ) {
-        await this.discordService.listenToChannel(channelId, req);
+        await this.discordService.listenToChannel(channelId, req, lookingFor);
+        return;
+    }
+
+    @Post('banne-user')
+    @UseGuards(AuthGuard('jwt'))
+    async banneUser(
+        @Body('guildId') guildId: string,
+        @Body('userId') userId: string,
+        @Body('reason') reason: string,
+        @Req() req: any,
+    ) {
+        await this.discordService.banUser(guildId, userId, reason);
         return;
     }
 }

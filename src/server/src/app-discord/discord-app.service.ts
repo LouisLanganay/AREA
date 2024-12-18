@@ -3,7 +3,7 @@ import fetch from 'node-fetch'; // Importation de node-fetch
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
-import { Client, GatewayIntentBits } from 'discord.js';
+import { Client, GatewayIntentBits, Guild } from 'discord.js';
 
 
 @Injectable()
@@ -12,6 +12,8 @@ export class DiscordService {
     private prisma: PrismaService,
     private configService: ConfigService,
   ) {}
+
+  public message: string[] = [];
 
   // Méthode pour échanger le code d'autorisation contre des tokens
   async exchangeCodeForTokens(
@@ -190,7 +192,53 @@ export class DiscordService {
     return { message: 'Tokens stored in the database' };
   }
 
-  async listenToChannel(channelId: string, req: any): Promise<void> {
+  async banUser(guildId: string, userId: string, reason: string = 'Aucune raison spécifiée'): Promise<string> {
+    const client = new Client({
+      intents: [
+        GatewayIntentBits.Guilds, // Pour accéder aux guildes (serveurs)
+        GatewayIntentBits.GuildMembers, // Pour gérer les membres de la guilde
+      ],
+    });
+
+    const BOT_TOKEN = this.configService.get<string>('DISCORD_BOT_TOKEN');
+
+
+    if (!BOT_TOKEN) {
+      throw new BadRequestException('Le token du bot Discord est manquant.');
+    }
+
+    try {
+      console.log('Bot connecté avec succès.');
+      await client.login(BOT_TOKEN);
+      console.log('Bot connecté avec succès.');
+      // Récupérer la guilde (serveur)
+      console.log('guildId:', guildId);
+      const guilds = await client.guilds.fetch();
+      console.log('Guildes accessibles :');
+      guilds.forEach((g) => console.log(`ID: ${g.id} | Nom: ${g.name}`));
+      const guild: Guild = await client.guilds.fetch(guildId);
+
+      if (!guild) {
+        throw new BadRequestException(`Serveur introuvable avec l'ID : ${guildId}`);
+      }
+
+      // Bannir l'utilisateur
+      await guild.members.ban(userId, { reason });
+      console.log(`Utilisateur ${userId} banni avec succès.`);
+
+      return `L'utilisateur ${userId} a été banni avec succès pour la raison : "${reason}".`;
+    } catch (error) {
+      console.error('Erreur lors du bannissement de l\'utilisateur :', error);
+      throw new BadRequestException(`Impossible de bannir l'utilisateur : ${error.message}`);
+    } finally {
+      // Déconnexion propre du bot après traitement
+      console.log('Déconnexion du bot...');
+      await client.destroy();
+      console.log('Bot déconnecté.');
+    }
+  }
+
+  async listenToChannel(channelId: string, req: any, lookingFor: string): Promise<void> {
     const userBddId = req.user.id;
     const accessToken = await this.prisma.token.findUnique({
       where: { userId_provider: { userId: userBddId, provider: 'discord' } },
@@ -211,7 +259,10 @@ export class DiscordService {
 
     client.on('messageCreate', async (message) => {
       if (message.channel.id === channelId) {
-        console.log('New message in channel:', message);
+        if (message.content.includes(lookingFor)) {
+            console.log('Message found:', message);
+            this.message.push(message.content);
+        }
         return true;
       }
     });
