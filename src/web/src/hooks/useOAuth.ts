@@ -1,6 +1,6 @@
 import { Browser } from '@capacitor/browser';
 import { isPlatform } from '@ionic/react';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { App } from '@capacitor/app';
 import Cookies from 'js-cookie';
 
