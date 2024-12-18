@@ -177,14 +177,10 @@ export class WorkflowController {
     status: 403,
     description: 'Forbidden.',
   })
-  async getWorkflowsByUser(@Param('userId') userId: string, @Req() req: any) {
-    const loggedInUserId = req.user.userId; // ID utilisateur connecté
-    if (userId !== loggedInUserId) {
-      throw new ForbiddenException(
-        'You are not authorized to access these workflows',
-      );
-    }
-    return this.workflowService.getWorkflowsByUser(userId);
+  async getWorkflowsByUser(@Req() req: any) {
+    const loggedInUserId = req.user.id; // ID utilisateur connecté
+    console.log('Fetching workflows for user:', loggedInUserId);
+    return this.workflowService.getWorkflowsByUser(loggedInUserId);
   }
 
   @UseGuards(AuthGuard('jwt'))
