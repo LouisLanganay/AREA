@@ -28,6 +28,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { useEffect, useState } from 'react';
 import { getWorkflows } from '@/api/Workflows';
 import { Workflow } from '@/interfaces/Workflows';
+import { useNavigate } from 'react-router-dom';
 
 interface SubItem {
   title: string;
@@ -91,6 +92,7 @@ export function AppSidebar() {
   const { user, token } = useAuth();
   const { t } = useTranslation();
   const [workflowItems, setWorkflowItems] = useState<WorkflowSubItem[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchWorkflows = async () => {
@@ -139,19 +141,30 @@ export function AppSidebar() {
                         <CollapsibleContent>
                           <SidebarMenuSub>
                             {item.subItems.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title} className='px-2 py-1.5 rounded-md cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'>
-                                <a href={subItem.url}>{subItem.title}</a>
+                              <SidebarMenuSubItem
+                                key={subItem.title}
+                                onClick={() => {
+                                  navigate(subItem.url);
+                                }}
+                                className='px-2 py-1.5 rounded-md cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                              >
+                                {subItem.title}
                               </SidebarMenuSubItem>
                             ))}
                           </SidebarMenuSub>
                         </CollapsibleContent>
                       </Collapsible>
                     ) : (
-                      <SidebarMenuButton asChild>
-                        <a href={item.url}>
+                      <SidebarMenuButton
+                        asChild
+                        onClick={() => {
+                          navigate(item.url);
+                        }}
+                      >
+                        <div>
                           <item.icon />
                           <span>{item.title}</span>
-                        </a>
+                        </div>
                       </SidebarMenuButton>
                     )}
                   </SidebarMenuItem>
