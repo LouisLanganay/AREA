@@ -61,6 +61,7 @@ model Workflow {
   nodes       Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  favorite    Boolean  @default(false) // Indique si le workflow est favori
 }
 
 model Token {

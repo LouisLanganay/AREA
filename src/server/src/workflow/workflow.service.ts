@@ -44,6 +44,7 @@ export class WorkflowService {
         enabled: true,
         createdAt: true,
         updatedAt: true,
+        favorite: true,
         nodes: {
           select: {
             id: true,
@@ -82,6 +83,7 @@ export class WorkflowService {
         enabled: true,
         createdAt: true,
         updatedAt: true,
+        favorite: true,
         nodes: {
           select: {
             id: true,

@@ -22,4 +22,8 @@ export class updateWorkflowDto {
 
   @IsOptional()
   updatedAt?: Date;
+
+  @IsOptional()
+  @IsBoolean()
+  favorite?: boolean;
 }
