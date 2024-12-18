@@ -122,7 +122,7 @@ export function EditWorkflowSidebar({
   };
 
   return (
-    <div className='w-[400px] bg-muted/50 p-4 border-l'>
+    <div className='w-full md:w-[400px] bg-muted/50 p-4 border-l z-30'>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
@@ -159,7 +159,7 @@ export function EditWorkflowSidebar({
           {selectedNode.fieldGroups && (
             <div className='space-y-4'>
               {selectedNode.fieldGroups.map((group: FieldGroup) => (
-                <div key={group.id} className='space-y-4 bg-white border rounded-lg p-4 shadow-sm'>
+                <div key={group.id} className='space-y-4 bg-card border rounded-lg p-4 shadow-sm'>
                   <div className='flex items-center gap-2'>
                     <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
                       {getGroupIcon(group.type)}

@@ -1,9 +1,9 @@
-import axios from 'axios';
 import { createWorkflowRequest, getWorkflowResponse } from '@/interfaces/api/Workflows';
 import { Workflow } from '@/interfaces/Workflows';
+import axiosInstance from './axiosInstance';
 
 export const getWorkflows = async (token: string): Promise<Workflow[]> => {
-  const response = await axios.get<Workflow[]>(`${import.meta.env.VITE_API_URL}/workflows`, {
+  const response = await axiosInstance.get<Workflow[]>(`/workflows`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
@@ -13,18 +13,18 @@ export const getWorkflows = async (token: string): Promise<Workflow[]> => {
 };
 
 export const updateWorkflow = async (id: string, data: Partial<Workflow>, token: string) => {
-  const response = await axios.patch<Workflow>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, data,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
-    }
-  });
+  const response = await axiosInstance.patch<Workflow>(`/workflows/${id}`, data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true'
+      }
+    });
   return response.data;
 };
 
 export const deleteWorkflow = async (id: string, token: string) => {
-  const response = await axios.delete(`${import.meta.env.VITE_API_URL}/workflows/${id}`, {
+  const response = await axiosInstance.delete(`/workflows/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
@@ -34,7 +34,7 @@ export const deleteWorkflow = async (id: string, token: string) => {
 };
 
 export const getWorkflow = async (id: string, token: string): Promise<getWorkflowResponse> => {
-  const response = await axios.get<getWorkflowResponse>(`${import.meta.env.VITE_API_URL}/workflows/${id}`, {
+  const response = await axiosInstance.get<getWorkflowResponse>(`/workflows/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'ngrok-skip-browser-warning': 'true'
@@ -49,8 +49,8 @@ export const getWorkflow = async (id: string, token: string): Promise<getWorkflo
 };
 
 export const createWorkflow = async (data: createWorkflowRequest, token: string) => {
-  const response = await axios.post<Workflow>(
-    `${import.meta.env.VITE_API_URL}/workflows`,
+  const response = await axiosInstance.post<Workflow>(
+    `/workflows`,
     {
       ...data,
       image: "https://example.com/workflow.png",

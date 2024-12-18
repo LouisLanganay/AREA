@@ -45,8 +45,8 @@ export const useOAuth = () => {
         if (redirectUrl.includes('services')) {
           await Browser.close();
 
-          const urlObj = new URL(redirectUrl);
-          const token = urlObj.searchParams.get('code');
+          //const urlObj = new URL(redirectUrl);
+          //const token = urlObj.searchParams.get('code');
 
           // TODO: Call the API to get the token
 

@@ -29,11 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFontScale } from "@/context/FontScaleContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -83,12 +83,12 @@ export default function Settings() {
       });
 
       toast({
-        title: t("settings.account.saveSuccess"),
         description: t("settings.account.saveSuccessDescription"),
+        variant: "success",
       });
     } catch (error) {
+      console.error("Failed to update user", error);
       toast({
-        title: t("settings.account.saveError"),
         description: t("settings.account.saveErrorDescription"),
         variant: "destructive",
       });
@@ -103,8 +103,8 @@ export default function Settings() {
 
   const handleDeleteAccount = () => {
     toast({
-      title: t("settings.security.delete.confirmation.title"),
       description: t("settings.security.delete.confirmation.description"),
+      variant: "destructive",
     });
   };
 
@@ -202,13 +202,14 @@ export default function Settings() {
                     {t("settings.appearance.darkMode.description")}
                   </p>
                 </div>
-                <Switch
-                  id="dark-mode"
-                  checked={theme === "dark"}
-                  onCheckedChange={(checked) =>
-                    setTheme(checked ? "dark" : "light")
-                  }
-                />
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                >
+                  {t("settings.appearance.darkMode.switch")}
+                  {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
+                </Button>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="font-size">

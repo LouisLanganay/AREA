@@ -11,24 +11,17 @@ export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
   return (
     <div
       className={`
-        rounded-md
-        bg-white
-        border
         shadow-sm
         text-sm
-        px-2
-        py-1
-        w-[70px]
+        w-fit
         cursor-pointer
-        hover:bg-muted/50
         transition-colors
+        px-2
+        group
       `}
       onClick={() => data.onAdd?.(data.parentId)}
     >
-      <div className="flex items-center">
-        <PlusCircleIcon className='w-4 h-4 mr-2' />
-        Add
-      </div>
+      <PlusCircleIcon className='size-5 fill-primary group-hover:scale-105 transition-all duration-300' />
 
       <Handle
         type='target'

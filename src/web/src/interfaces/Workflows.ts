@@ -30,7 +30,14 @@ type WorkflowEdge = {
 const nodeWidth = 330;
 const nodeHeight = 100;
 
-export { nodeWidth, nodeHeight };
+const flowStyles = `
+  @keyframes flowAnimation {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+`;
+
+export { nodeWidth, nodeHeight, flowStyles };
 export type { WorkflowNodeData, WorkflowNode, WorkflowEdge };
 
 interface Field {
