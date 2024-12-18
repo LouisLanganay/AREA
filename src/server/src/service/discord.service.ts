@@ -121,7 +121,7 @@ export const discordService: Service = {
     image: "https://www.svgrepo.com/show/353655/discord-icon.svg",
     Event: [],
     auth: {
-        uri: "/auth/discord",
-        callback_uri: "/auth/discord/callback"
+        uri: "/auth/discord/redirec",
+        callback_uri: "/auth/discord/callback",
     }
 };

@@ -134,7 +134,7 @@ export class DiscordService {
       permissions: '8',
       integration_type: '0',
       scope: 'bot applications.commands identify email',
-      redirect_uri: `${this.configService.get<string>('IP_FRONT_REDIRECT')}services`,
+      redirect_uri: `[REDIRECT_URI]`,
     });
     console.log(
       'Redirecting to Discord OAuth:',

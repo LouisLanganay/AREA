@@ -158,6 +158,12 @@ export class AuthController {
     return res.redirect(frontendRedirectUrl);
   }
 
+  @Get('discord/redirect')
+    async discordAuthRedirect(@Req() req) {
+        const redirectUrl = await this.discordService.getRedirectUrl();
+        return {redirectUrl}
+    }
+
   //retourne le dans le body le lien de redirection
   //@Get('discord')
   async discordAuth() {
