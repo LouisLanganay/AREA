@@ -24,9 +24,13 @@ import {
   FolderIcon,
   LinkIcon,
   PlayCircleIcon,
+  StarIcon as StarIconSolid,
   TrashIcon,
   XMarkIcon
 } from '@heroicons/react/24/solid';
+import {
+  StarIcon as StarIconOutline
+} from '@heroicons/react/24/outline';
 import '@xyflow/react/dist/style.css';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,6 +61,44 @@ export function WorkflowHeader({
       description: t('workflows.linkCopiedDescription'),
       variant: 'info',
     });
+  };
+
+  const handleFavorite = async (value: boolean) => {
+    if (!workflow || !token) return;
+    setIsLoading(true);
+    setWorkflow(prevWorkflow => ({
+      ...prevWorkflow!,
+      favorite: value
+    }));
+    const myToast = toast({
+      description: t('workflows.updateLoadingDescription'),
+      variant: 'loading',
+    });
+    try {
+      const updatedWorkflow = await updateWorkflow(workflow.id, { favorite: value }, token);
+      setWorkflow(updatedWorkflow);
+      setUpdatedWorkflow(updatedWorkflow);
+      myToast.update({
+        id: myToast.id,
+        description: value
+          ? t('workflows.addedToFavorites')
+          : t('workflows.removedFromFavorites'),
+        variant: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to update workflow', error);
+      setWorkflow(prevWorkflow => ({
+        ...prevWorkflow!,
+        favorite: !value
+      }));
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -133,7 +175,7 @@ export function WorkflowHeader({
   if (!workflow) return null;
 
   return (
-    <header className='flex h-16 items-center gap-1 lg:gap-2 border-b px-4 z-20'>
+    <header className='flex h-14 items-center gap-1 lg:gap-2 border-b px-4 z-20'>
       <SidebarTrigger className='-ml-1' />
       <Separator orientation='vertical' className='h-4' />
       <Breadcrumb className='hidden sm:block'>
@@ -180,6 +222,13 @@ export function WorkflowHeader({
             <DropdownMenuSeparator />
             <DropdownMenuItem
               disabled={isLoading}
+              onClick={() => handleFavorite(!workflow.favorite)}
+            >
+              {workflow.favorite ? <StarIconSolid className='size-4 fill-yellow-400' /> : <StarIconOutline className='size-4 text-yellow-400' />}
+              {workflow.favorite ? t('workflows.removeFromFavorites') : t('workflows.addToFavorites')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              disabled={isLoading}
               onClick={() => handleRunWorkflow()}
             >
               <PlayCircleIcon className='w-4 h-4' />
@@ -208,6 +257,17 @@ export function WorkflowHeader({
           </DropdownMenuContent>
         </DropdownMenu>
         <div className='hidden lg:flex items-center gap-2'>
+          <Button
+            variant='ghost'
+            size='sm'
+            className='p-2'
+            onClick={() => handleFavorite(!workflow.favorite)}
+          >
+            {workflow.favorite ?
+              <StarIconSolid className='w-4 h-4 fill-yellow-400' /> :
+              <StarIconOutline className='w-4 h-4 text-yellow-400' />
+            }
+          </Button>
           <Button
             variant='outline'
             size='sm'

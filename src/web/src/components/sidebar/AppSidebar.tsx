@@ -10,8 +10,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import {
+  ChevronRightIcon,
   CursorArrowRaysIcon,
   HomeIcon,
   LifebuoyIcon,
@@ -21,8 +24,35 @@ import {
 import { useTranslation } from 'react-i18next';
 import LinkitLogoFull from '../../assets/linkitLogoFull';
 import { UserInfo } from './UserInfo';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { useEffect, useState } from 'react';
+import { getWorkflows } from '@/api/Workflows';
+import { Workflow } from '@/interfaces/Workflows';
 
-const getGroups = (t: (key: string) => string) => [
+interface SubItem {
+  title: string;
+  url: string;
+}
+
+interface MenuItem {
+  title: string;
+  icon: React.ComponentType;
+  url: string;
+  subItems?: SubItem[];
+}
+
+interface GroupItem {
+  title: string;
+  items: MenuItem[];
+  isAdmin?: boolean;
+}
+
+interface WorkflowSubItem {
+  title: string;
+  url: string;
+}
+
+const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[]): GroupItem[] => [
   {
     title: t('sidebar.groups.application'),
     items: [
@@ -34,7 +64,8 @@ const getGroups = (t: (key: string) => string) => [
       {
         title: t('sidebar.items.workflows'),
         icon: Squares2X2Icon,
-        url: '/workflows'
+        url: '/workflows',
+        subItems: workflowItems
       },
       {
         title: t('sidebar.items.services'),
@@ -57,9 +88,29 @@ const getGroups = (t: (key: string) => string) => [
 ];
 
 export function AppSidebar() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { t } = useTranslation();
-  const groups = getGroups(t);
+  const [workflowItems, setWorkflowItems] = useState<WorkflowSubItem[]>([]);
+
+  useEffect(() => {
+    const fetchWorkflows = async () => {
+      if (!token) return;
+      try {
+        const workflows = await getWorkflows(token);
+        const items = workflows.map(workflow => ({
+          title: workflow.name,
+          url: `/workflows/${workflow.id}`
+        }));
+        setWorkflowItems(items);
+      } catch (error) {
+        console.error('Failed to fetch workflows:', error);
+      }
+    };
+
+    fetchWorkflows();
+  }, [token]);
+
+  const groups = getGroups(t, workflowItems);
 
   return (
     <Sidebar>
@@ -76,12 +127,33 @@ export function AppSidebar() {
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
+                    {item.subItems ? (
+                      <Collapsible defaultOpen className='group/collapsible'>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton>
+                            <item.icon />
+                            <span>{item.title}</span>
+                            <ChevronRightIcon className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.subItems.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.title} className='px-2 py-1.5 rounded-md cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'>
+                                <a href={subItem.url}>{subItem.title}</a>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ) : (
+                      <SidebarMenuButton asChild>
+                        <a href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    )}
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>

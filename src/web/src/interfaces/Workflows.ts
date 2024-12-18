@@ -94,6 +94,7 @@ interface Workflow {
   image: string;
   nodes: Event[];
   enabled?: boolean;
+  favorite: boolean;
 }
 
 export type {
