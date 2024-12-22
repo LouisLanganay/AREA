@@ -22,7 +22,6 @@ import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
 import {
   EllipsisHorizontalIcon,
   FolderIcon,
-  LinkIcon,
   PlayCircleIcon,
   StarIcon as StarIconSolid,
   TrashIcon,
@@ -35,6 +34,7 @@ import '@xyflow/react/dist/style.css';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
 
 export function WorkflowHeader({
   workflow,
@@ -53,15 +53,8 @@ export function WorkflowHeader({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmWorkflowName, setConfirmWorkflowName] = useState('');
   const { token } = useAuth();
-
-  const copyWorkflowUrl = () => {
-    const url = `${window.location.origin}/workflows/${workflow?.id}`;
-    navigator.clipboard.writeText(url);
-    toast({
-      description: t('workflows.linkCopiedDescription'),
-      variant: 'info',
-    });
-  };
+  const [workflowName, setWorkflowName] = useState(getWorkflowName(workflow.name));
+  const workflowPath = getWorkflowPath(workflow.name);
 
   const handleFavorite = async (value: boolean) => {
     if (!workflow || !token) return;
@@ -172,41 +165,90 @@ export function WorkflowHeader({
     }, 3000);
   };
 
+  const handleNameUpdate = async () => {
+    if (!workflow || !token || workflowName === getWorkflowName(workflow.name)) return;
+    setIsLoading(true);
+    try {
+      const newName = workflowPath
+        ? `${workflowPath}/${workflowName}`
+        : workflowName;
+
+      const updatedWorkflow = await updateWorkflow(workflow.id, { name: newName }, token);
+      setWorkflow(updatedWorkflow);
+      setUpdatedWorkflow(updatedWorkflow);
+      toast({
+        description: t('workflows.updateSuccessDescription'),
+        variant: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to update workflow name', error);
+      setWorkflowName(getWorkflowName(workflow.name));
+      toast({
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!workflow) return null;
 
   return (
     <header className='flex h-14 items-center gap-1 lg:gap-2 border-b px-4 z-20'>
       <SidebarTrigger className='-ml-1' />
-      <Separator orientation='vertical' className='h-4' />
+      <Separator orientation='vertical' className='h-6' />
       <Breadcrumb className='hidden sm:block'>
-        <BreadcrumbList>
+        <BreadcrumbList className='flex-nowrap'>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/workflows" className='flex items-center gap-1'>
+            <BreadcrumbLink href='/workflows' className='flex items-center gap-1'>
               <FolderIcon className='w-4 h-4' />
               Workflows
             </BreadcrumbLink>
           </BreadcrumbItem>
+          {workflowPath && workflowPath.split('/').map((folder, index, array) => (
+            <React.Fragment key={index}>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/workflows?folder=${array.slice(0, index + 1).join('/')}`}>
+                  {folder}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </React.Fragment>
+          ))}
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>{workflow.name}</BreadcrumbPage>
+            <BreadcrumbPage>
+              <input
+                value={workflowName}
+                onChange={(e) => {
+                  setWorkflowName(e.target.value);
+                }}
+                onBlur={handleNameUpdate}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.currentTarget.blur();
+                  }
+                }}
+                className='font-medium h-auto px-1 rounded-sm bg-transparent focus-visible:ring-0 transition-all duration-100 outline-none'
+              />
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <div className='flex sm:hidden'>
+      <div className='flex sm:hidden flex-1 w-10'>
         <Button
           variant='ghost'
           size='sm'
           onClick={() => navigate('/workflows')}
+          className='shrink-0'
         >
           <ArrowLeftIcon className='w-4 h-4' />
           <span className='hidden lg:block'>{t('workflows.back')}</span>
         </Button>
-        <div className='flex-1 flex items-center overflow-hidden'>
-          <span className='text-sm font-bold md:font-semibold text-nowrap hidden lg:block'>
-            {workflow.name}
-          </span>
-          <span className='text-xs font-bold md:font-semibold text-nowrap block lg:hidden'>
-            {workflow.name.length > 10 ? workflow.name.slice(0, 5) + '..' : workflow.name}
+        <div className='flex items-center overflow-hidden min-w-0'>
+          <span className='text-sm font-medium truncate min-w-0'>
+            {workflowName}
           </span>
         </div>
       </div>
@@ -240,12 +282,6 @@ export function WorkflowHeader({
             >
               {workflow.enabled ? <CheckIcon className='size-4' /> : <XMarkIcon className='size-4' />}
               {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={copyWorkflowUrl}
-            >
-              <LinkIcon className='size-4' />
-              {t('workflows.copyLink')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onSelect={() => setIsDeleteDialogOpen(true)}
@@ -292,15 +328,7 @@ export function WorkflowHeader({
               {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
             </div>
           </Button>
-          <Button
-            variant='outline'
-            size='sm'
-            className='p-2'
-            onClick={copyWorkflowUrl}
-          >
-            <LinkIcon className='w-4 h-4' />
-          </Button>
-          <Separator orientation='vertical' className='h-4' />
+          <Separator orientation='vertical' className='h-6' />
           <Button
             variant='destructiveOutline'
             size='sm'

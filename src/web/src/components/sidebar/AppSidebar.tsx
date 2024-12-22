@@ -19,7 +19,13 @@ import {
   HomeIcon,
   LifebuoyIcon,
   Squares2X2Icon,
-  UsersIcon
+  UsersIcon,
+  FolderIcon,
+  DocumentIcon,
+  PlusIcon,
+  FolderOpenIcon,
+  SparklesIcon,
+  XMarkIcon
 } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import LinkitLogoFull from '../../assets/linkitLogoFull';
@@ -28,7 +34,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { useEffect, useState } from 'react';
 import { getWorkflows } from '@/api/Workflows';
 import { Workflow } from '@/interfaces/Workflows';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
+import clsx from 'clsx';
+import Cookies from 'js-cookie';
+import { Button } from '../ui/button';
+import { RocketLaunchIcon } from '@heroicons/react/24/outline';
 
 interface SubItem {
   title: string;
@@ -51,6 +62,10 @@ interface GroupItem {
 interface WorkflowSubItem {
   title: string;
   url: string;
+}
+
+interface WorkflowGroup {
+  [key: string]: Workflow[];
 }
 
 const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[]): GroupItem[] => [
@@ -91,19 +106,18 @@ const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[])
 export function AppSidebar() {
   const { user, token } = useAuth();
   const { t } = useTranslation();
-  const [workflowItems, setWorkflowItems] = useState<WorkflowSubItem[]>([]);
+  const [workflowGroups, setWorkflowGroups] = useState<WorkflowGroup>({});
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isPremiumBannerVisible, setIsPremiumBannerVisible] = useState(true);
 
   useEffect(() => {
     const fetchWorkflows = async () => {
       if (!token) return;
       try {
         const workflows = await getWorkflows(token);
-        const items = workflows.map(workflow => ({
-          title: workflow.name,
-          url: `/workflows/${workflow.id}`
-        }));
-        setWorkflowItems(items);
+        const groups = groupWorkflowsByFolder(workflows);
+        setWorkflowGroups(groups);
       } catch (error) {
         console.error('Failed to fetch workflows:', error);
       }
@@ -112,12 +126,79 @@ export function AppSidebar() {
     fetchWorkflows();
   }, [token]);
 
-  const groups = getGroups(t, workflowItems);
+  useEffect(() => {
+    const bannerHidden = Cookies.get('premium-banner-hidden');
+    if (bannerHidden) {
+      setIsPremiumBannerVisible(false);
+    }
+  }, []);
+
+  const hidePremiumBanner = () => {
+    setIsPremiumBannerVisible(false);
+    Cookies.set('premium-banner-hidden', 'true', { expires: 1 }); // 1 day expiration
+  };
+
+  const renderWorkflowItems = (path: string, workflows: Workflow[]) => {
+    return workflows.map((workflow) => (
+      <SidebarMenuSubItem
+        key={workflow.id}
+        onClick={() => navigate(`/workflows/${workflow.id}`)}
+        className={clsx(
+          'transition-colors text-nowrap overflow-hidden duration-200 flex flex-row items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+          location.pathname === `/workflows/${workflow.id}` ? '!bg-sidebar-border !text-sidebar-accent-foreground' : ''
+        )}
+      >
+        <DocumentIcon className='size-4 flex-shrink-0' />
+        {getWorkflowName(workflow.name)}
+      </SidebarMenuSubItem>
+    ));
+  };
+
+  const renderFolderStructure = () => {
+    return Object.entries(workflowGroups).map(([path, workflows]) => {
+      if (!path) {
+        // Root workflows
+        return (
+          <SidebarMenuSub key="root">
+            {renderWorkflowItems('', workflows)}
+          </SidebarMenuSub>
+        );
+      }
+
+      const pathParts = path.split('/');
+      // Folder with workflows
+      return (
+        <SidebarMenuSub key={path}>
+          <Collapsible defaultOpen className='group/subfolder'>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton>
+                <FolderIcon className={clsx(
+                  'size-3 flex-shrink-0 block',
+                  'group-data-[state=open]/subfolder:hidden'
+                )} />
+                <FolderOpenIcon className={clsx(
+                  'size-3 flex-shrink-0 hidden',
+                  'group-data-[state=open]/subfolder:block'
+                )} />
+                <span>{pathParts[pathParts.length - 1]}</span>
+                <ChevronRightIcon className='size-3 ml-auto transition-transform duration-200 group-data-[state=open]/subfolder:rotate-90' />
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent className='ml-3.5 mt-1'>
+              {renderWorkflowItems(path, workflows)}
+            </CollapsibleContent>
+          </Collapsible>
+        </SidebarMenuSub>
+      );
+    });
+  };
+
+  const groups = getGroups(t, []);
 
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className='flex items-center px-2 pt-2'>
+        <div className='flex items-center px-2 pt-2 cursor-pointer' onClick={() => navigate('/')}>
           <LinkitLogoFull className='w-24 h-fit object-contain fill-foreground' />
         </div>
       </SidebarHeader>
@@ -129,7 +210,7 @@ export function AppSidebar() {
               <SidebarMenu>
                 {group.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    {item.subItems ? (
+                    {item.title === t('sidebar.items.workflows') ? (
                       <Collapsible defaultOpen className='group/collapsible'>
                         <CollapsibleTrigger asChild>
                           <SidebarMenuButton>
@@ -139,27 +220,19 @@ export function AppSidebar() {
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.subItems.map((subItem) => (
-                              <SidebarMenuSubItem
-                                key={subItem.title}
-                                onClick={() => {
-                                  navigate(subItem.url);
-                                }}
-                                className='px-2 py-1.5 rounded-md cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                              >
-                                {subItem.title}
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
+                          {renderFolderStructure()}
+                          <SidebarMenuButton
+                            onClick={() => navigate('/workflows?new=true')}
+                          >
+                            <PlusIcon className='size-3' />
+                            <span>{t('sidebar.items.newWorkflow')}</span>
+                          </SidebarMenuButton>
                         </CollapsibleContent>
                       </Collapsible>
                     ) : (
                       <SidebarMenuButton
                         asChild
-                        onClick={() => {
-                          navigate(item.url);
-                        }}
+                        onClick={() => navigate(item.url)}
                       >
                         <div>
                           <item.icon />
@@ -175,6 +248,42 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
+        <div className='flex flex-col'>
+          {isPremiumBannerVisible && (
+            <div className='p-3 rounded-lg border border-primary/20 bg-primary/10 relative group/premium-banner overflow-hidden'>
+              <div className="absolute inset-0 z-0">
+                <div className="absolute bg-second/70 size-16 rounded-full blur-2xl animate-blob" />
+                <div className="absolute inset-[90%] bg-primary size-14 rounded-full blur-2xl animate-blob animation-delay-2000" />
+              </div>
+              <div className="relative z-10">
+                <button
+                  onClick={hidePremiumBanner}
+                  className='absolute right-0 top-0 p-1 rounded-md hover:bg-second-bis/20 transition-all duration-200 group-hover/premium-banner:opacity-100 opacity-0'
+                >
+                  <XMarkIcon className='size-3 text-primary' />
+                </button>
+                <div className='flex items-center gap-2 mb-2'>
+                  <SparklesIcon className='size-4 text-primary' />
+                  <span className='text-sm font-medium text-primary'>
+                    {t('sidebar.premium.title')}
+                  </span>
+                </div>
+                <p className='text-sm bg-clip-text text-transparent bg-text-gradient-ai'>
+                  {t('sidebar.premium.description')}
+                </p>
+                <Button
+                  variant='ia'
+                  size='xs'
+                  onClick={() => navigate('/premium')}
+                  className='mt-2 w-full group/button'
+                >
+                  {t('sidebar.premium.button')}
+                  <RocketLaunchIcon className='size-3 transition-transform duration-300 group-hover/button:-translate-y-1 group-hover/button:translate-x-1 group-hover/button:rotate-12' />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
         <SidebarMenuItem className='list-none'>
           <SidebarMenuButton asChild>
             <a href='https://github.com/LouisLanganay/AREA'>

@@ -35,6 +35,11 @@
       "application": "Application",
       "administration": "Administration"
     },
+    "premium": {
+      "title": "AI Premium",
+      "description": "Build your workflows with the power of AI. Only available with premium.",
+      "button": "Upgrade Now"
+    },
     "items": {
       "home": "Home",
       "workflows": "My Workflows",
@@ -47,7 +52,8 @@
       "addAccount": "Add Account",
       "currentAccount": "Current",
       "switchTheme": "Switch Theme",
-      "documentation": "Documentation"
+      "documentation": "Documentation",
+      "newWorkflow": "New Workflow"
     }
   },
   "settings": {
@@ -148,6 +154,11 @@
     "selectAll": "Select All",
     "selectRow": "Select Row",
     "name": "Name",
+    "updateItem": "Update Workflow",
+    "live": "Live",
+    "workflow": "workflow",
+    "workflows": "workflows",
+    "paused": "Paused",
     "copyLink": "Copy Link",
     "quickActions": "Quick Actions",
     "enabled": "Enabled",
@@ -157,6 +168,7 @@
     "addToFavorites": "Add to favorite",
     "updateLoadingDescription": "Updating workflow...",
     "openMenu": "Open Menu",
+    "updateSuccessDescription": "Workflow name updated",
     "actions": "Actions",
     "changesToSave": "This workflow has changes to save",
     "discardChanges": "Discard changes",
@@ -187,12 +199,22 @@
         "descriptionPlaceholder": "Enter workflow description"
       },
       "cancel": "Cancel",
+      "back": "Back",
       "nextStep": "Next Step",
+      "create": "Create Workflow",
       "trigger": {
         "title": "Select Trigger",
         "description": "Choose an event that will trigger your workflow",
         "back": "Back",
         "create": "Create Workflow"
+      },
+      "folder": {
+        "title": "Choose a folder",
+        "description": "Select an existing folder or create a new one for your workflow",
+        "existing": "Existing folders",
+        "new": "New folder",
+        "newPlaceholder": "Enter folder name",
+        "createNew": "Create new folder"
       }
     },
     "noResults": "No results found",
@@ -232,7 +254,8 @@
     "createSuccess": "Workflow created successfully",
     "createSuccessDescription": "The workflow has been created.",
     "createError": "Error creating workflow",
-    "createErrorDescription": "An error occurred while creating the workflow. Please try again."
+    "createErrorDescription": "An error occurred while creating the workflow. Please try again.",
+    "rootFolder": "Root folder"
   },
   "login": {
     "title": "Sign in to your account",

@@ -93,6 +93,8 @@ interface Workflow {
   description: string;
   image: string;
   nodes: Event[];
+  createdAt: number;
+  updatedAt: number;
   enabled?: boolean;
   favorite: boolean;
 }
