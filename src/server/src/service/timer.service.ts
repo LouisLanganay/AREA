@@ -1,101 +1,56 @@
 import { Service, Event, FieldGroup } from '../../../shared/Workflow';
 
-export const EventTimeOfDayReached: Event = {
+export const EventDateReached: Event = {
     type: "action",
-    id_node: "timeOfDayReached",
-    name: "Specific Time of Day Reached",
-    description: "Trigger when a specific time of day is reached.",
+    id_node: "dateReached",
+    name: "Date Reached",
+    description: "Trigger when a specific date and time is reached.",
     serviceName: "timer",
     fieldGroups: [
         {
-            id: "timeDetails",
-            name: "Time Details",
-            description: "Details of the time to check",
+            id: "dateDetails",
+            name: "Date Details",
+            description: "Details of the target date and time",
             type: "group",
             fields: [
                 {
-                    id: "hour",
-                    type: "number",
+                    id: "targetDate",
+                    type: "string",
                     required: true,
-                    description: "Hour (24-hour format)",
-                },
-                {
-                    id: "minute",
-                    type: "number",
-                    required: true,
-                    description: "Minute",
+                    description: "The target date and time in ISO format (e.g., '2025-01-03T15:00:00Z').",
                 },
             ],
         },
     ],
     check: async (parameters: FieldGroup[]) => {
-        const timeDetails = parameters.find(p => p.id === "timeDetails");
+        console.log("========START DATE REACHED ACTION========");
 
-        if (!timeDetails) {
-            throw new Error("Missing 'timeDetails' in parameters.");
+        const dateDetails = parameters.find(p => p.id === "dateDetails");
+
+        if (!dateDetails) {
+            throw new Error("Missing 'dateDetails' in parameters.");
         }
 
-        const hour = timeDetails.fields.find(f => f.id === "hour")?.value;
-        const minute = timeDetails.fields.find(f => f.id === "minute")?.value;
+        const targetDateStr = dateDetails.fields.find(f => f.id === "targetDate")?.value;
 
-        if (hour == null || minute == null) {
-            throw new Error("'hour' and 'minute' are required fields.");
+        if (!targetDateStr) {
+            throw new Error("'targetDate' is a required field.");
+        }
+
+        const targetDate = new Date(targetDateStr);
+        if (isNaN(targetDate.getTime())) {
+            throw new Error("'targetDate' is not a valid ISO format.");
         }
 
         const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-
-        return currentHour === hour && currentMinute === minute;
+    
+        if (now >= targetDate) {
+            console.log(`Target date already reached: ${targetDate.toISOString()}`);
+        }
+        return now >= targetDate;
     },
 };
 
-export const EventPomodoroCycleComplete: Event = {
-    type: "action",
-    id_node: "pomodoroCycleComplete",
-    name: "Pomodoro Cycle Complete",
-    description: "Trigger when a Pomodoro cycle is complete.",
-    serviceName: "timer",
-    fieldGroups: [
-        {
-            id: "cycleDetails",
-            name: "Cycle Details",
-            description: "Details for the Pomodoro cycle",
-            type: "group",
-            fields: [
-                {
-                    id: "duration",
-                    type: "number",
-                    required: true,
-                    description: "Duration of the Pomodoro cycle in minutes",
-                },
-            ],
-        },
-    ],
-    check: async (parameters: FieldGroup[]) => {
-        const cycleDetails = parameters.find(p => p.id === "cycleDetails");
-
-        if (!cycleDetails) {
-            throw new Error("Missing 'cycleDetails' in parameters.");
-        }
-
-        const duration = cycleDetails.fields.find(f => f.id === "duration")?.value;
-
-        if (duration == null) {
-            throw new Error("'duration' is a required field.");
-        }
-
-        const startTime = new Date().getTime();
-        const endTime = startTime + duration * 60 * 1000;
-
-        return new Promise<boolean>((resolve) => {
-            setTimeout(() => {
-                console.log(`Pomodoro cycle of ${duration} minutes completed.`);
-                resolve(true);
-            }, duration * 60 * 1000);
-        });
-    },
-};
 
 export const TimerService: Service = {
     id: "timer",
@@ -103,5 +58,5 @@ export const TimerService: Service = {
     description: "Service to handle events based on time",
     loginRequired: false,
     image: "https://www.svgrepo.com/show/532140/timer.svg",
-    Event: [EventTimeOfDayReached, EventPomodoroCycleComplete],
+    Event: [],
 };

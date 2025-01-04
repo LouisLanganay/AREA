@@ -14,7 +14,7 @@ import {
     EventgetMessageDiscord,
     EventnotifyUserDiscord,
 } from './service/discord.service';
-import { TimerService, EventPomodoroCycleComplete, EventTimeOfDayReached } from './service/timer.service';
+import { TimerService, EventDateReached } from './service/timer.service';
 import {FieldGroup} from '../../shared/Workflow';
 import {updateUserDto} from './users/dto/update-user.dto';
 
@@ -29,8 +29,7 @@ async function defineAllService(app: any) {
     allService.addEventToService('discord', EventgetMessageDiscord);
     allService.addEventToService('testService', EventCheckFreezingTemperature);
     allService.addEventToService('testService', EventSendMail);
-    allService.addEventToService('timer', EventPomodoroCycleComplete);
-    allService.addEventToService('timer', EventTimeOfDayReached);
+    allService.addEventToService('timer', EventDateReached);
 
     const monitor = new EventMonitor();
     await monitor.monitoringWorkflows(await allService.getAllServices());

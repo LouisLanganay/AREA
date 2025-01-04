@@ -168,6 +168,8 @@ export class EventMonitor {
   ) {
     const service = serviceList.find((s) => s.id === action.serviceName);
 
+    console.log('Service:', service);
+    console.log('Action:', action);
     if (service) {
       const event = service.Event.find((e) => e.id_node === action.id_node);
 
