@@ -23,8 +23,6 @@ export const EventDateReached: Event = {
         },
     ],
     check: async (parameters: FieldGroup[]) => {
-        console.log("========START DATE REACHED ACTION========");
-
         const dateDetails = parameters.find(p => p.id === "dateDetails");
 
         if (!dateDetails) {
@@ -44,10 +42,12 @@ export const EventDateReached: Event = {
 
         const now = new Date();
     
-        if (now >= targetDate) {
-            console.log(`Target date already reached: ${targetDate.toISOString()}`);
+        const oneMinuteAfterTarget = new Date(targetDate.getTime() + 60 * 1000);
+        if (now >= targetDate && now < oneMinuteAfterTarget) {
+            console.log(`Target date reached: ${targetDate.toISOString()} (within 1 minute).`);
+            return true;
         }
-        return now >= targetDate;
+        return false;
     },
 };
 
