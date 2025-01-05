@@ -247,4 +247,46 @@ export class UsersService {
   async deleteUser(id: string) {
     await this.prismaService.user.delete({ where: { id } });
   }
+
+  async addTokenService(
+    userId: string,
+    provider: string,
+    accessToken: string,
+    refreshToken?: string,
+    expiresIn?: number,
+  ) {
+    const exists = await this.prismaService.token.findFirst({
+      where: {
+        userId: userId,
+        provider: provider,
+      },
+    });
+
+    if (exists) {
+      return this.prismaService.token.update({
+        where: {
+          userId_provider: {
+            userId,
+            provider,
+          },
+        },
+        data: {
+          accessToken,
+          refreshToken,
+          expiresAt: new Date(Date.now() + expiresIn * 1000),
+        },
+      });
+    }
+
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+    return this.prismaService.token.create({
+      data: {
+        userId,
+        provider,
+        accessToken,
+        refreshToken,
+        expiresAt,
+      },
+    });
+  }
 }

@@ -285,4 +285,23 @@ export class AuthService {
       access_token: this.jwtService.sign({ id: userData.id }),
     };
   }
+
+  async gCalendarRedirect(code: string, userId: string) {
+    const token = await this.googleAuthService.exchangeCodeForTokensGoogle(
+      code,
+      process.env.GOOGLE_REDIRECT_URI_SERVICE,
+    );
+    if (!token) {
+      return new InternalServerErrorException({
+        err_code: 'GCALENDAR_EXCHANGE_FAIL',
+      });
+    }
+    await this.usersService.addTokenService(
+      userId,
+      'gcalendar',
+      token.access_token,
+      token.refresh_token,
+      token.expires_in,
+    );
+  }
 }

@@ -67,8 +67,8 @@ model Workflow {
 model Token {
   id           Int       @id @default(autoincrement())
   provider     String // Nom du fournisseur, par exemple "google", "github"
-  accessToken  String // Token d'accès pour l'API du fournisseur
-  refreshToken String? // Token de rafraîchissement (peut être null si non fourni par le fournisseur)
+  accessToken  String    @db.Text // Token d'accès pour l'API du fournisseur
+  refreshToken String?   @db.Text // Token de rafraîchissement (peut être null si non fourni par le fournisseur)
   expiresAt    DateTime? // Date d'expiration du token d'accès
   userId       String // Relation avec le modèle User
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)

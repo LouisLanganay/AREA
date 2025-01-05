@@ -46,6 +46,12 @@ export class ServiceRegister {
 
     return await Promise.all(
       serviceArray.map(async (service) => {
+        if (service.loginRequired === false) {
+          return {
+            ...service,
+            enable: true,
+          };
+        }
         const token = await this.prismaService.token.findFirst({
           where: {
             provider: service.id,
