@@ -1,7 +1,7 @@
 import { Event, FieldGroup, Service } from '../../../shared/Workflow';
 import { defaultFieldGroup } from './register.service';
 import { PrismaService } from '../prisma/prisma.service';
-import {Field} from "../../../shared/Users";
+import { Field } from '../../../shared/Users';
 
 export class EventMonitor {
   private prisma: PrismaService;
@@ -20,10 +20,60 @@ export class EventMonitor {
       throw new Error(`Event with ID "${event.id_node}" not found.`);
     }
 
-    if (typeof event.execute === 'function') {
-      const result = await event.check([params]);
+    const workflows = await this.prisma.workflow.findMany({
+      where: { enabled: true },
+    });
 
-      // console.log(result);
+    const workflow = workflows.find((wf) => wf.id === workflowId);
+    if (!workflow) {
+      console.error(`Workflow ID ${workflowId} not found.`);
+      return;
+    }
+
+    const workflowFields: Field[] = [
+      {
+        id: 'workflow_id',
+        type: 'string',
+        description: 'Workflow ID',
+        value: workflow.id,
+        required: true,
+      },
+      {
+        id: 'workflow_name',
+        type: 'string',
+        description: 'Workflow Name',
+        value: workflow.name || 'Unnamed Workflow',
+        required: true,
+      },
+      {
+        id: 'workflow_enabled',
+        type: 'boolean',
+        description: 'Is Workflow Enabled',
+        value: workflow.enabled,
+        required: true,
+      },
+      {
+        id: 'user_id',
+        type: 'string',
+        description: 'user id',
+        value: workflow.userId,
+        required: true,
+      },
+    ];
+
+    const nodeFieldGroupWorkflow: FieldGroup = {
+      id: 'workflow_information',
+      name: 'Workflow Information',
+      description: 'Details about the current workflow',
+      type: 'workflow_info',
+      fields: workflowFields,
+    };
+
+    if (typeof event.execute === 'function') {
+      // console.log(params, nodeFieldGroupWorkflow);
+      const result = await event.check([params, nodeFieldGroupWorkflow]);
+
+      console.log(result);
       if (result) {
         await this.executeDependentNodes(
           event.id_node,
