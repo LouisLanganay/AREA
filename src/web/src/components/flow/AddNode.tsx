@@ -11,7 +11,6 @@ export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
   return (
     <div
       className={`
-        shadow-sm
         text-sm
         w-fit
         cursor-pointer
