@@ -6,7 +6,7 @@ interface createWorkflowRequest {
   name: string;
   description: string;
   enabled: boolean;
-  nodes: Event[];
+  triggers: Event[];
 }
 
 export type {

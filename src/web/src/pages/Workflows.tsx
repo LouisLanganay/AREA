@@ -135,7 +135,7 @@ export default function Workflows() {
             {workflow.favorite && <StarIcon className='size-4 text-yellow-400' />}
             <span>{getWorkflowName(workflow.name)}</span>
             <Separator orientation='vertical' className='h-4' />
-            {extractServices(workflow.nodes).map((service) => {
+            {extractServices(workflow.triggers).map((service) => {
               const icon = Array.isArray(services) ? services.find((s) => s.id === service)?.image : null;
 
               if (icon) {
@@ -325,10 +325,12 @@ export default function Workflows() {
     }, 3000); // 3 seconds delay
   };
 
-  function extractServices(nodes: Event[], services: string[] = []) {
-    for (const node of nodes) {
-      if (node.serviceName)
-        services.push(node.serviceName);
+  function extractServices(triggers: Event[], services: string[] = []) {
+    for (const trigger of triggers) {
+      if (trigger.serviceName)
+        services.push(trigger.serviceName);
+      if (trigger.children)
+        extractServices(trigger.children, services);
     }
     return services;
   }
@@ -346,11 +348,12 @@ export default function Workflows() {
         ? `${finalFolder}/${newWorkflowName || t('workflows.newWorkflow')}`
         : newWorkflowName || t('workflows.newWorkflow');
 
+      selectedTrigger.children = [];
       const newWorkflow = await createWorkflow({
         name: finalName,
         description: newWorkflowDescription,
         enabled: true,
-        nodes: [selectedTrigger]
+        triggers: [selectedTrigger]
       }, token);
 
       setWorkflows((prev) => [...prev, newWorkflow]);
@@ -635,7 +638,7 @@ export default function Workflows() {
                       >
                         <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
                           {service.image ? (
-                            <img src={'https://www.svgrepo.com/show/353655/discord-icon.svg'} alt={service.name} className='size-4 object-contain' />
+                            <img src={service.image} alt={service.name} className='size-4 object-contain' />
                           ) : (
                             <div className='flex items-center justify-center size-4'>
                               <span>{service.name.charAt(0)}</span>

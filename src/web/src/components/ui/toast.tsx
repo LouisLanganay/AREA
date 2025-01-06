@@ -31,13 +31,13 @@ const toastVariants = cva(
       variant: {
         default: "bg-muted text-foreground border border-border",
         destructive:
-          "destructive bg-muted text-foreground border border-border",
+          "destructive bg-muted text-foreground border border-destructive",
         success:
-          "bg-muted text-foreground border border-border",
+          "bg-muted text-foreground border border-green-500",
         loading:
           "bg-muted text-foreground border border-border",
         info:
-          "bg-muted text-foreground border border-border",
+          "bg-muted text-foreground border border-blue-500",
       },
     },
     defaultVariants: {

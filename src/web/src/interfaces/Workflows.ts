@@ -65,7 +65,7 @@ interface Event {
   description: string;
   serviceName: string;
   fieldGroups: FieldGroup[];
-  dependsOn: string | null;
+  children?: Event[];
   execute?: (parameters: FieldGroup[]) => void;
   check?: (parameters: FieldGroup[]) => Promise<boolean>;
 }
@@ -92,7 +92,7 @@ interface Workflow {
   name: string;
   description: string;
   image: string;
-  nodes: Event[];
+  triggers: Event[];
   createdAt: number;
   updatedAt: number;
   enabled?: boolean;

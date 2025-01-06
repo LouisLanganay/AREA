@@ -151,6 +151,7 @@
     }
   },
   "workflows": {
+    "fetchErrorDescription": "Failed to fetch data from the server. Please try again.",
     "selectAll": "Select All",
     "selectRow": "Select Row",
     "name": "Name",
