@@ -3,6 +3,7 @@ import fetch from 'node-fetch'; // Importation de node-fetch
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 import { Client, GatewayIntentBits, Guild } from 'discord.js';
 
 
@@ -11,6 +12,7 @@ export class DiscordService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private httpService: HttpService,
   ) {}
 
   public message: string[] = [];
@@ -167,7 +169,7 @@ export class DiscordService {
       code,
       this.configService.get<string>('DISCORD_CLIENT_ID'),
       this.configService.get<string>('DISCORD_CLIENT_SECRET'),
-      'http://127.0.0.1:8080/auth/discord/callback',
+      this.configService.get<string>('DISCORD_REDIRECT_URI_SERVICE'),
     );
 
     console.log('tokens:', tokens);

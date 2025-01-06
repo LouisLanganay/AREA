@@ -3,10 +3,13 @@ import { DiscordService } from '../app-discord/discord-app.service';
 import {FieldGroup} from "../../../shared/Users";
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+
 
 const prismaService = new PrismaService();
 const configService = new ConfigService();
-const discordServiceMethodes = new DiscordService(prismaService, configService);
+const httpService = new HttpService(); // Instanciez ou injectez si nécessaire
+const discordServiceMethodes = new DiscordService(prismaService, configService, httpService);
 
 export const EventgetMessageDiscord: Event = {
     type: "action",
