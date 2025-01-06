@@ -42,10 +42,10 @@ export class WorkflowService {
     }
 
     const triggersWithNodes = await Promise.all(
-        workflow.triggers.map(async (trigger) => ({
-          ...trigger,
-          children: await this.fetchNodesRecursively(trigger.id),
-        })),
+      workflow.triggers.map(async (trigger) => ({
+        ...trigger,
+        children: await this.fetchNodesRecursively(trigger.id),
+      })),
     );
 
     const { userId: _, ...rest } = workflow;
@@ -80,15 +80,15 @@ export class WorkflowService {
     });
 
     return Promise.all(
-        workflows.map(async (workflow) => ({
-          ...workflow,
-          triggers: await Promise.all(
-              workflow.triggers.map(async (trigger) => ({
-                ...trigger,
-                children: await this.fetchNodesRecursively(trigger.id),
-              })),
-          ),
-        })),
+      workflows.map(async (workflow) => ({
+        ...workflow,
+        triggers: await Promise.all(
+          workflow.triggers.map(async (trigger) => ({
+            ...trigger,
+            children: await this.fetchNodesRecursively(trigger.id),
+          })),
+        ),
+      })),
     );
   }
 
@@ -109,7 +109,11 @@ export class WorkflowService {
     return createdWorkflow;
   }
 
-  private async createNodeRecursively(node: any, workflowId: string, parentNodeId?: string) {
+  private async createNodeRecursively(
+    node: any,
+    workflowId: string,
+    parentNodeId?: string,
+  ) {
     const createdNode = await this.prisma.node.create({
       data: {
         id_node: node.id_node,
@@ -186,14 +190,18 @@ export class WorkflowService {
     });
 
     return Promise.all(
-        nodes.map(async (node) => ({
-          ...node,
-          nodes: await this.fetchNodesRecursively(node.id),
-        })),
+      nodes.map(async (node) => ({
+        ...node,
+        nodes: await this.fetchNodesRecursively(node.id),
+      })),
     );
   }
 
-  private mapNodesForCreate(nodes: any[], workflowId: string, parentNodeId?: string): any[] {
+  private mapNodesForCreate(
+    nodes: any[],
+    workflowId: string,
+    parentNodeId?: string,
+  ): any[] {
     return nodes.map((node) => ({
       id_node: node.id_node,
       type: node.type,
@@ -205,12 +213,14 @@ export class WorkflowService {
       conditions: node.conditions || null,
       variables: node.variables || null,
       children: node.children?.length
-          ? {
-            create: this.mapNodesForCreate(node.children, workflowId, node.id_node),
+        ? {
+            create: this.mapNodesForCreate(
+              node.children,
+              workflowId,
+              node.id_node,
+            ),
           }
-          : undefined,
+        : undefined,
     }));
   }
-
-
 }
