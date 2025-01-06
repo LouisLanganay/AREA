@@ -88,7 +88,6 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async createWorkflow(@Body() data: CreateWorkflowDto, @Req() req: any) {
-    console.log('Creating workflow:', data);
     console.log(data.nodes[0], data.nodes[0].fieldGroups);
     return this.workflowService.createWorkflow(data, req.user.id);
   }
@@ -257,15 +256,6 @@ export class WorkflowController {
     @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    console.log('Updating workflow:', id);
-    console.log('Data:', data);
-    console.log('User ID:', data.nodes[0]);
-    for (const node of data.nodes) {
-      console.log('Node:', node);
-      for (const fieldGroup of node.fieldGroups) {
-        console.log('Field Group:', fieldGroup);
-      }
-    }
     return this.workflowService.updateWorkflow(data, userId, id);
   }
 
