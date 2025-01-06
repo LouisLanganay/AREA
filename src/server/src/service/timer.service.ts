@@ -52,6 +52,77 @@ export const EventDateReached: Event = {
     },
 };
 
+export const EventDayAndTimeReached: Event = {
+    type: "action",
+    id_node: "dayAndTimeReached",
+    name: "Day and Time Reached",
+    description: "Trigger when a specific day of the week and time are reached.",
+    serviceName: "timer",
+    fieldGroups: [
+        {
+            id: "scheduleDetails",
+            name: "Schedule Details",
+            description: "Details of the target day and time",
+            type: "group",
+            fields: [
+                {
+                    id: "dayOfWeek",
+                    type: "string",
+                    required: true,
+                    description: "The target day of the week (e.g., 'Monday', 'Tuesday').",
+                },
+                {
+                    id: "hour",
+                    type: "number",
+                    required: true,
+                    description: "The target hour (24-hour format).",
+                },
+                {
+                    id: "minute",
+                    type: "number",
+                    required: true,
+                    description: "The target minute.",
+                },
+            ],
+        },
+    ],
+    check: async (parameters: FieldGroup[]) => {
+        console.log("========START DAY AND TIME REACHED ACTION========");
+
+        const scheduleDetails = parameters.find(p => p.id === "scheduleDetails");
+
+        if (!scheduleDetails) {
+            throw new Error("Missing 'scheduleDetails' in parameters.");
+        }
+
+        const dayOfWeek = scheduleDetails.fields.find(f => f.id === "dayOfWeek")?.value;
+        const hour = scheduleDetails.fields.find(f => f.id === "hour")?.value;
+        const minute = scheduleDetails.fields.find(f => f.id === "minute")?.value;
+
+        if (!dayOfWeek || hour == null || minute == null) {
+            throw new Error("All fields ('dayOfWeek', 'hour', 'minute') are required.");
+        }
+
+        const now = new Date();
+        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+
+        if (
+            currentDay.toLowerCase() === dayOfWeek.toLowerCase() &&
+            currentHour === hour &&
+            currentMinute === minute
+        ) {
+            console.log(`Day and time reached: ${dayOfWeek}, ${hour}:${minute}`);
+            return true;
+        }
+
+        console.log('NOT REACHED YET OR ALREADY PASSED');
+        return false;
+    },
+};
+
+
 
 export const TimerService: Service = {
     id: "timer",
