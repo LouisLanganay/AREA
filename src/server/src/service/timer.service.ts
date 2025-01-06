@@ -104,9 +104,14 @@ export const EventDayAndTimeReached: Event = {
         }
 
         const now = new Date();
-        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
+        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long', timeZone: 'Europe/Paris' });
+        const currentHour = parseInt(
+            now.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'Europe/Paris' })
+        );
+        const currentMinute = parseInt(
+            now.toLocaleString('en-US', { minute: 'numeric', timeZone: 'Europe/Paris' })
+        );
+
 
         if (
             currentDay.toLowerCase() === dayOfWeek.toLowerCase() &&
