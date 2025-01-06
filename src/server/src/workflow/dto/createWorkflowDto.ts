@@ -20,10 +20,6 @@ class NodeDto {
   @IsString()
   serviceName: string; // Nom du service (ex: "YouTube")
 
-  @IsOptional()
-  @IsString()
-  dependsOn?: string; // ID du node parent (facultatif)
-
   @IsArray()
   fieldGroups: any[]; // Informations supplémentaires sous forme de tableau
 
@@ -34,6 +30,11 @@ class NodeDto {
   @IsOptional()
   @IsArray()
   variables?: any[]; // Variables optionnelles
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NodeDto)
+  children: NodeDto[];
 }
 
 export class CreateWorkflowDto {
@@ -52,5 +53,5 @@ export class CreateWorkflowDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => NodeDto)
-  nodes: NodeDto[];
+  triggers: NodeDto[];
 }

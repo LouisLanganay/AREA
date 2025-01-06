@@ -45,6 +45,11 @@ model Node {
   fieldGroups Json // Stocke les FieldGroup sous forme JSON
   conditions  Json? // Conditions associées (facultatif)
   variables   Json? // Variables associées (facultatif)
+
+  parentNodeId  String?  // Clé étrangère vers le parent
+  parentNode    Node?    @relation("NodeToNode", fields: [parentNodeId], references: [id])
+  children      Node[]   @relation("NodeToNode")
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   Token       Token[]
@@ -58,7 +63,7 @@ model Workflow {
   description String
   image       String
   enabled     Boolean  @default(true) // Indique si le workflow est actif ou non
-  nodes       Node[] // Relation avec les nodes
+  triggers    Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -87,3 +92,4 @@ model PasswordReset {
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
