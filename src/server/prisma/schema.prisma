@@ -61,6 +61,7 @@ model Workflow {
   nodes       Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  historyWorkflow historyWorkflow[]
 }
 
 model Token {
@@ -86,4 +87,12 @@ model PasswordReset {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model historyWorkflow {
+  id            Int      @id @default(autoincrement())
+  workflowId    String
+  workflow      Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  executionDate DateTime @default(now())
+  status        String   @default("success")
 }

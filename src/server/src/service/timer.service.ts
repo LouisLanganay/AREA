@@ -42,6 +42,7 @@ export const EventDateReached: Event = {
 
         const now = new Date();
     
+        // TODO: quand historique sera disponible, vérifier si pas déjà executé pour ce jour au lieu d'une fenêtre de 1 minute
         const oneMinuteAfterTarget = new Date(targetDate.getTime() + 60 * 1000);
         if (now >= targetDate && now < oneMinuteAfterTarget) {
             console.log(`Target date reached: ${targetDate.toISOString()} (within 1 minute).`);
