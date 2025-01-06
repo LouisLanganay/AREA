@@ -87,8 +87,6 @@ export const EventDayAndTimeReached: Event = {
         },
     ],
     check: async (parameters: FieldGroup[]) => {
-        console.log("========START DAY AND TIME REACHED ACTION========");
-
         const scheduleDetails = parameters.find(p => p.id === "scheduleDetails");
 
         if (!scheduleDetails) {
@@ -118,11 +116,8 @@ export const EventDayAndTimeReached: Event = {
             currentHour === hour &&
             currentMinute === minute
         ) {
-            console.log(`Day and time reached: ${dayOfWeek}, ${hour}:${minute}`);
             return true;
         }
-
-        console.log('NOT REACHED YET OR ALREADY PASSED');
         return false;
     },
 };
