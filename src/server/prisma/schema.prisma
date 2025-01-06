@@ -27,8 +27,10 @@ model User {
   updatedAt      DateTime        @updatedAt // Date de dernière mise à jour, mise à jour automatiquement
   lastConnection DateTime? // Dernière connexion de l'utilisateur, optionnel
   tokens         Token[]
+  role           String          @default("user") // Indique si l'utilisateur est un administrateur
   PasswordReset  PasswordReset[]
   Webhook        Webhook[]
+  status         String          @default("active") // Statut de l'utilisateur (ex: "active", "banned")²
 
   @@map("users") // Nom personnalisé pour la table dans la base de données (facultatif)
 }
@@ -57,11 +59,12 @@ model Workflow {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   description String
-  image       String //n de expiration peut être restreinte selon les produits Google ou les ressources surveillées.
+  image       String
   enabled     Boolean  @default(true) // Indique si le workflow est actif ou non
   nodes       Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  historyWorkflow historyWorkflow[]
   favorite    Boolean  @default(false) // Indique si le workflow est favori
 }
 
@@ -88,6 +91,14 @@ model PasswordReset {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model historyWorkflow {
+  id            Int      @id @default(autoincrement())
+  workflowId    String
+  workflow      Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  executionDate DateTime @default(now())
+  status        String   @default("success")
 }
 
 model Webhook {

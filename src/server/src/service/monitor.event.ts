@@ -1,7 +1,7 @@
 import { Event, FieldGroup, Service } from '../../../shared/Workflow';
 import { defaultFieldGroup } from './register.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { Field } from '../../../shared/Users';
+import {Field} from "../../../shared/Users";
 
 export class EventMonitor {
   private prisma: PrismaService;

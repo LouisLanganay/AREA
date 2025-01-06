@@ -93,6 +93,7 @@ export class UsersService {
         email: true,
         password: true,
         provider: true,
+        status: true,
       },
     });
   }
@@ -286,6 +287,61 @@ export class UsersService {
         accessToken,
         refreshToken,
         expiresAt,
+      },
+    });
+  }
+
+  async checkRole(id: string, role: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        role: true,
+      },
+    });
+    if (!user) throw new NotFoundException({ err_code: 'NOT_FOUND_USER' });
+    return user.role === role;
+  }
+
+  async getAllUsers() {
+    return this.prismaService.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        displayName: true,
+        avatarUrl: true,
+        role: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        lastConnection: true,
+        provider: true,
+      },
+    });
+  }
+
+  async setRole(id: string, role: string) {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        role,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async setStatus(id: string, status: string) {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+        updatedAt: new Date(),
       },
     });
   }

@@ -58,6 +58,9 @@ export class AuthService {
         err_code: 'USER_NOT_FOUND',
       });
     }
+    if (user.status !== 'active') {
+      throw new UnauthorizedException({ err_code: 'USER_NOT_ACTIVE' });
+    }
     if (!user.password) {
       throw new UnauthorizedException({ err_code: 'USER_NOT_LOCAL_REG' });
     }
@@ -90,6 +93,12 @@ export class AuthService {
       await this.sendRegisterEmail(createUserDto, 'google');
     }
     const userData = await this.usersService.findByEmail(user.email, 'google');
+    console.log(userData);
+    if (!userData || userData.status !== 'active') {
+      throw new UnauthorizedException({
+        err_code: 'USER_NOT_ACTIVE',
+      });
+    }
     const payload = { id: userData.id };
     await this.usersService.setLastConnection(payload.id);
     return {
@@ -238,6 +247,11 @@ export class AuthService {
         err_code: 'USER_CREATION_FAIL_GG',
       });
     }
+    if (userData.status !== 'active') {
+      throw new UnauthorizedException({
+        err_code: 'USER_NOT_ACTIVE',
+      });
+    }
     return {
       access_token: this.jwtService.sign({ id: userData.id }),
     };
@@ -279,6 +293,11 @@ export class AuthService {
     if (!userData) {
       throw new InternalServerErrorException({
         err_code: 'USER_CREATION_FAIL_DC',
+      });
+    }
+    if (userData.status !== 'active') {
+      throw new UnauthorizedException({
+        err_code: 'USER_NOT_ACTIVE',
       });
     }
     return {
