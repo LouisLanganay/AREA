@@ -467,5 +467,38 @@
     "error": "Authentication is taking more than 10 seconds. Please try again.",
     "authenticating": "Authenticating...",
     "pleaseWait": "Please wait while we verify your information."
+  },
+  "premium": {
+    "title": "Choose Your Plan",
+    "description": "Unlock the full potential of automation with our premium features",
+    "recommended": "Recommended",
+    "tiers": {
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "description": "Perfect for getting started with automation",
+        "button": "Get Started",
+        "features": {
+          "workflows": "Up to 5 active workflows",
+          "integrations": "Basic integrations",
+          "storage": "1GB storage",
+          "support": "Community support"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$10",
+        "description": "For power users who need more automation",
+        "button": "Upgrade to Pro",
+        "features": {
+          "everything": "Everything in Free",
+          "ai": "AI-powered workflow suggestions",
+          "priority": "Priority execution",
+          "analytics": "Advanced analytics",
+          "storage": "Unlimited storage",
+          "support": "Priority support"
+        }
+      }
+    }
   }
 }

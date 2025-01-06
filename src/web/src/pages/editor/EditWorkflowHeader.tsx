@@ -146,7 +146,8 @@ export function WorkflowHeader({
   };
 
   const formatWorkflowName = (name: string) => {
-    return name.toUpperCase().replace(/\s+/g, '-');
+    const workflowName = getWorkflowName(name);
+    return workflowName.toUpperCase().replace(/\s+/g, '-');
   };
 
   const handleRunWorkflow = () => {

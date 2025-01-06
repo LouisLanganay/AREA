@@ -1,5 +1,5 @@
 import { getServices } from '@/api/Services';
-import { createWorkflow, deleteWorkflow, getWorkflows } from '@/api/Workflows';
+import { createWorkflow, deleteWorkflow, getWorkflows, updateWorkflow } from '@/api/Workflows';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -196,6 +196,19 @@ export default function Workflows() {
                   <PencilSquareIcon className='w-4 h-4' />
                   {t('workflows.edit')}
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={(e) => handleToggleEnabled(workflow, e)}>
+                  {workflow.enabled ? (
+                    <>
+                      <PauseIcon className='w-4 h-4' />
+                      {t('workflows.disable')}
+                    </>
+                  ) : (
+                    <>
+                      <PlayIcon className='w-4 h-4' />
+                      {t('workflows.enable')}
+                    </>
+                  )}
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={(e) => {
                   e.stopPropagation();
@@ -366,6 +379,41 @@ export default function Workflows() {
     setNewFolder('');
     setIsCreatingNewFolder(false);
     setSelectedTrigger(null);
+  };
+
+  const handleToggleEnabled = async (workflow: Workflow, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!token) return;
+
+    const myToast = toast({
+      description: workflow.enabled ? t('workflows.disabling') : t('workflows.enabling'),
+      variant: 'loading',
+    });
+
+    try {
+      const updatedWorkflow = await updateWorkflow(
+        workflow.id,
+        { ...workflow, enabled: !workflow.enabled },
+        token
+      );
+
+      setWorkflows(prevWorkflows =>
+        prevWorkflows.map(w => w.id === workflow.id ? updatedWorkflow : w)
+      );
+
+      myToast.update({
+        id: myToast.id,
+        description: workflow.enabled ? t('workflows.disableSuccess') : t('workflows.enableSuccess'),
+        variant: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to toggle workflow status', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.toggleError'),
+        variant: 'destructive',
+      });
+    }
   };
 
   return (

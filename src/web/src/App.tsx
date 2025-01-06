@@ -18,6 +18,7 @@ import { discordOAuth, googleOAuth } from './api/Auth';
 import Login from './pages/Login';
 import ClientAPK from './pages/ClientAPK';
 import Loading from './pages/Loading';
+import Premium from './pages/Premium';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -180,6 +181,15 @@ function App() {
                       <Workflows />
                     </Layout>
                   </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path='/premium'
+                element={
+                  <Layout>
+                    <Premium />
+                  </Layout>
                 }
               />
 
