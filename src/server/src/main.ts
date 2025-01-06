@@ -10,9 +10,10 @@ import {
     EventCheckFreezingTemperature, EventSendMail,
 } from './service/meteo.service';
 import {
-    discordService,
-    EventgetMessageDiscord,
+    discordService, EventBanUserDiscord,
+    EventlistenMessageDiscord,
     EventnotifyUserDiscord,
+    EventsendMessageDiscord,
 } from './service/discord.service';
 import {FieldGroup} from '../../shared/Workflow';
 import {updateUserDto} from './users/dto/update-user.dto';
@@ -24,7 +25,10 @@ async function defineAllService(app: any) {
     allService.addService(TestService);
 
     allService.addEventToService('discord', EventnotifyUserDiscord);
-    allService.addEventToService('discord', EventgetMessageDiscord);
+    allService.addEventToService('discord', EventlistenMessageDiscord);
+    allService.addEventToService('discord', EventsendMessageDiscord);
+    allService.addEventToService('discord', EventBanUserDiscord);
+
     allService.addEventToService('testService', EventCheckFreezingTemperature);
     allService.addEventToService('testService', EventSendMail);
 
