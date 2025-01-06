@@ -42,9 +42,12 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
+      "switchAccountSuccess": "Account switched successfully",
       "logout": "Logout",
       "addAccount": "Add Account",
-      "currentAccount": "Current"
+      "currentAccount": "Current",
+      "switchTheme": "Switch Theme",
+      "documentation": "Documentation"
     }
   },
   "settings": {
@@ -91,7 +94,8 @@
       "description": "Customize the application's appearance.",
       "darkMode": {
         "label": "Dark Mode",
-        "description": "Enable dark mode for a comfortable visual experience in low light."
+        "description": "Enable dark mode for a comfortable visual experience in low light.",
+        "switch": "Switch mode"
       },
       "fontSize": {
         "label": "Font Size",
@@ -144,16 +148,48 @@
     "selectAll": "Select All",
     "selectRow": "Select Row",
     "name": "Name",
+    "copyLink": "Copy Link",
+    "quickActions": "Quick Actions",
     "enabled": "Enabled",
     "openMenu": "Open Menu",
     "actions": "Actions",
-    "edit": "Edit",
+    "changesToSave": "This workflow has changes to save",
+    "discardChanges": "Discard changes",
+    "success": "Completed",
+    "save2": "Save",
+    "saving": "Workflow is being saved...",
+    "edit": "Edit in Builder",
     "filterByName": "Filter by name...",
+    "deletingWorkflow": "Deleting workflow...",
+    "deleteCancelledDescription": "Deletion cancelled.",
+    "noDescription": "No description",
     "bulkActions": "Bulk Actions",
     "enableAll": "Enable All",
     "disableAll": "Disable All",
+    "runWorkflowDescription": "Running workflow...",
+    "runWorkflowDescriptionSuccess": "Workflow run successfully !",
     "columns": "Columns",
-    "create": "Create Workflow",
+    "create": "Create new workflow",
+    "enableSuccess": "Workflow updated",
+    "enableSuccessDescription": "The workflow has been updated.",
+    "creation": {
+      "info": {
+        "title": "Create New Workflow",
+        "subtitle": "Enter basic information about your workflow",
+        "name": "Name",
+        "description": "Description",
+        "namePlaceholder": "Enter workflow name",
+        "descriptionPlaceholder": "Enter workflow description"
+      },
+      "cancel": "Cancel",
+      "nextStep": "Next Step",
+      "trigger": {
+        "title": "Select Trigger",
+        "description": "Choose an event that will trigger your workflow",
+        "back": "Back",
+        "create": "Create Workflow"
+      }
+    },
     "noResults": "No results found",
     "selectedRows": "{{selected}} of {{total}} rows selected",
     "previous": "Previous",
@@ -165,7 +201,7 @@
     "confirmDeleteTitle": "Confirm deletion",
     "confirmDelete": "Are you sure you want to delete the workflow '{{workflowName}}'?",
     "linkCopied": "Link copied to clipboard",
-    "linkCopiedDescription": "You can now share the link to your workflow with others",
+    "linkCopiedDescription": "Link copied to clipboard.",
     "updateErrorTitle": "Error updating workflow",
     "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
     "deleteErrorTitle": "Error deleting workflow",
@@ -185,7 +221,13 @@
     "nodeAddedTitle": "Node Added",
     "nodeAddedDescription": "The node has been added to the workflow.",
     "save": "Save changes",
-    "back": "Back"
+    "back": "Back",
+    "deleteSuccess": "Workflow deleted successfully",
+    "deleteSuccessDescription": "The workflow has been deleted.",
+    "createSuccess": "Workflow created successfully",
+    "createSuccessDescription": "The workflow has been created.",
+    "createError": "Error creating workflow",
+    "createErrorDescription": "An error occurred while creating the workflow. Please try again."
   },
   "login": {
     "title": "Sign in to your account",
@@ -203,6 +245,7 @@
     "forgotPassword": "Forgot password?"
   },
   "register": {
+    "usernameUnavailable": "Username is already used",
     "createAccount": "Create an account",
     "fillInDetails": "Fill in your details to create a new account",
     "username": "Username",
@@ -224,7 +267,22 @@
   "error": {
     "USER_NOT_FOUND": "User not found",
     "INTERNAL_SERVER_ERROR": "Internal server error",
-    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later."
+    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later.",
+    "USERNAME_ALREADY_USE": "The username is already taken.",
+    "EMAIL_ALREADY_USE": "The email is already in use.",
+    "FIELD_ALREADY_USE": "This field value is already in use.",
+    "DB_UNAVAILABLE": "Database unavailable. Internal error occurred.",
+    "USER_NOT_LOCAL_REG": "User not found.",
+    "INVALID_CREDENTIAL": "Incorrect password.",
+    "HACH_FAIL": "Internal error occurred while creating the password.",
+    "INTERNAL_FRONT_URL": "Internal server error.",
+    "FAIL_SEND_MAIL": "Internal error occurred while sending the email.",
+    "USER_NOT_FOUND_RESET": "Invalid token. User does not exist.",
+    "INVALID_TOKEN": "The reset token is invalid.",
+    "TOKEN_EXPIRED": "The reset token has expired.",
+    "WORKFLOW_INVALID_PERM": "Insufficient permissions to delete or update the workflow.",
+    "WORKFLOW_UNKNOWN": "The workflow does not exist.",
+    "USER_FORBIDDEN_EDIT": "You do not have permission to edit this user."
   },
   "common": {
     "loading": "Loading..."
@@ -268,7 +326,8 @@
     },
     "auth": {
       "signin": "Sign in",
-      "register": "Register"
+      "register": "Register",
+      "dashboard": "Open Dashboard"
     },
     "mobile": {
       "discover": "Discover our mobile app.",
@@ -297,12 +356,21 @@
         "description": "Our mobile app is designed to be user-friendly and easy to use, with a focus on simplicity and efficiency."
       },
       "performance": {
-        "title": "Performance",
-        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays."
+        "title": "AI Capabilities",
+        "description": "Leverage our AI-driven tools to automate workflows effortlessly. Experience intelligent automation tailored to your needs.",
+        "ai": {
+          "title": "AI Workflow Generation",
+          "description": "Generate your workflows with our AI workflow builder. No need to code, just describe your workflow and let the AI do the rest."
+        }
       },
       "scalability": {
         "title": "Scalability",
-        "description": "Create unlimited workflows and automate as many tasks as you need. Our platform grows with your automation needs."
+        "description": "All actions and reactions in our app are highly customizable, allowing you to tailor workflows to your specific needs.",
+        "sidebar": {
+          "titleGroup": "Server Options",
+          "label": "Server ID",
+          "title": "Send a message on a channel"
+        }
       },
       "connect": {
         "title": "Connect Your Apps",
@@ -358,5 +426,18 @@
     "backToLogin": "Back to login",
     "success": "Password reset successful",
     "successDescription": "Your password has been reset successfully. You can now login with your new password."
+  },
+  "client": {
+    "apk": {
+      "startIn": "Download start in {{seconds}} seconds",
+      "title": "Downloading the LinkIt client...",
+      "description": "If the download doesn't start automatically, ",
+      "download": "click here"
+    }
+  },
+  "loading": {
+    "error": "Authentication is taking more than 10 seconds. Please try again.",
+    "authenticating": "Authenticating...",
+    "pleaseWait": "Please wait while we verify your information."
   }
 }

@@ -7,11 +7,12 @@
     "dev": "vite --port=8081",
     "build": "tsc -b && vite build && npx cap sync",
     "apk": "cd android && ./gradlew assembleDebug",
-    "lint": "eslint . --fix",
+    "lint": "eslint src --fix",
     "preview": "vite preview"
   },
   "dependencies": {
     "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.2",
     "@capacitor/browser": "^6.0.4",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/core": "^6.1.2",
@@ -29,7 +30,7 @@
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slider": "^1.2.1",
-    "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-switch": "^1.1.1",
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.2",
@@ -43,6 +44,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^11.13.1",
     "i18next": "^23.16.6",
+    "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.460.0",
     "motion": "^11.11.17",
@@ -59,6 +61,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/lodash": "^4.17.13",
     "@types/node": "^22.9.0",
     "@types/react": "^18.3.12",

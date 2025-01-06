@@ -73,7 +73,6 @@ export class EventMonitor {
     if (typeof event.execute === 'function') {
       const result = await event.check([params, nodeFieldGroupWorkflow]);
 
-      console.log(result);
       if (result) {
         const root_node = workflow.triggers.find((node) => node.id_node === event.id_node);
         await this.executeDependentNodes(
@@ -104,6 +103,7 @@ export class EventMonitor {
     const dependentNodes = workflow.triggers.filter((node) => {
       return node.parentNodeId === nodeId;
     });
+
 
     for (const node of dependentNodes) {
       const service = serviceList.find((s) => s.id === node.serviceName);

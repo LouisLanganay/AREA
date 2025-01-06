@@ -1,4 +1,4 @@
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,10 @@ import {
   ArrowLeftStartOnRectangleIcon,
   ArrowsRightLeftIcon,
   ChevronUpDownIcon,
+  Cog6ToothIcon,
+  MoonIcon,
   PlusIcon,
+  SunIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +37,8 @@ import { useState } from 'react';
 import { LoginForm } from '../auth/LoginForm';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/interfaces/User';
+import { useTheme } from '@/context/ThemeContext';
+import { toast } from '@/hooks/use-toast';
 
 export function UserInfo({
   user,
@@ -44,6 +49,7 @@ export function UserInfo({
   const { t } = useTranslation();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const addAccount = () => {
     setShowLoginDialog(true);
@@ -53,6 +59,10 @@ export function UserInfo({
     const success = await logout();
     if (!success)
       navigate('/login');
+  };
+
+  const handleThemeSwitch = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -79,7 +89,7 @@ export function UserInfo({
                   ) : (
                     <div className='flex items-center justify-center bg-sidebar-accent text-sidebar-accent-foreground size-8'>
                       <span className='text-xs'>
-                        {user?.username.slice(0, 2).toUpperCase()}
+                        {user?.username?.slice(0, 2).toUpperCase()}
                       </span>
                     </div>
                   )}
@@ -122,7 +132,7 @@ export function UserInfo({
                             className='h-full w-full object-cover'
                           />
                         ) : (
-                          <span>{account.user?.username.slice(0, 2).toUpperCase()}</span>
+                          <span>{account.user?.username?.slice(0, 2).toUpperCase()}</span>
                         )}
                       </div>
                       <span className="truncate">
@@ -155,7 +165,13 @@ export function UserInfo({
                       {accounts.map((account) => (
                         <DropdownMenuItem
                           key={account.token}
-                          onClick={() => switchAccount(account.token)}
+                          onClick={() => {
+                            switchAccount(account.token);
+                            toast({
+                              description: t('sidebar.items.switchAccountSuccess'),
+                              variant: 'success',
+                            });
+                          }}
                           className='justify-between min-w-[--radix-dropdown-menu-trigger-width]'
                           disabled={isCurrentAccount(account.token)}
                         >
@@ -168,7 +184,7 @@ export function UserInfo({
                                   className='h-full w-full object-cover'
                                 />
                               ) : (
-                                <span>{account.user?.username.slice(0, 2).toUpperCase()}</span>
+                                <span>{account.user?.username?.slice(0, 2).toUpperCase()}</span>
                               )}
                             </div>
                             {account.user?.displayName || account.user?.username}
@@ -192,6 +208,19 @@ export function UserInfo({
                 </DropdownMenuSub>
               </div>
 
+              <DropdownMenuItem onClick={() => handleThemeSwitch()}>
+                {theme === 'light' ? (
+                  <MoonIcon className='size-4' />
+                ) : (
+                  <SunIcon className='size-4' />
+                )}
+                <span>{t('sidebar.items.switchTheme')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <Cog6ToothIcon className='size-4' />
+                <span>{t('sidebar.items.settings')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleLogout()}>
                 <ArrowLeftStartOnRectangleIcon className='size-4' />
                 <span>{t('sidebar.items.logout')}</span>

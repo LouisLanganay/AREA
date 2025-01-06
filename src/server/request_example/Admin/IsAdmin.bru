@@ -1,0 +1,15 @@
+meta {
+  name: IsAdmin
+  type: http
+  seq: 1
+}
+
+get {
+  url: http://localhost:8080/users/isAdmin
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM5ZDZiOGFkLWJiYzItNDAzMC04ZDkyLTYzZWYzYzhlNjdlYyIsImlhdCI6MTczNTk4NjQ5MCwiZXhwIjoxNzM1OTkwMDkwfQ.Iu1SGmtXXc706A9vtUa_jYhdfb9P9wgUb_5nQ8EKrC4
+}

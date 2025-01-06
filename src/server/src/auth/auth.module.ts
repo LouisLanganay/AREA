@@ -9,8 +9,11 @@ import { MailerService } from '../mailer/mailer.service';
 import * as process from 'node:process';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { DiscordStrategy } from './strategy/discord.strategy';
-import {DiscordService} from "../app-discord/discord-app.service";
-import { PrismaModule } from '../prisma/prisma.module'
+import { DiscordService } from '../app-discord/discord-app.service';
+import { PrismaModule } from '../prisma/prisma.module';
+import { HttpModule } from '@nestjs/axios';
+import { GoogleAuthService } from './external-services/google.auth.service';
+import { DiscordAuthService } from './external-services/discord.auth.service';
 
 @Module({
   imports: [
@@ -22,6 +25,7 @@ import { PrismaModule } from '../prisma/prisma.module'
     UsersModule, // Module pour la gestion des utilisateurs
     PassportModule,
     PrismaModule,
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -31,6 +35,8 @@ import { PrismaModule } from '../prisma/prisma.module'
     GoogleStrategy,
     DiscordStrategy,
     DiscordService,
+    GoogleAuthService,
+    DiscordAuthService,
   ],
   exports: [AuthService],
 })

@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   Get,
   HttpCode,
+  Patch,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
@@ -189,18 +190,14 @@ export class WorkflowController {
     status: 403,
     description: 'Forbidden.',
   })
-  async getWorkflowsByUser(@Param('userId') userId: string, @Req() req: any) {
-    const loggedInUserId = req.user.userId; // ID utilisateur connecté
-    if (userId !== loggedInUserId) {
-      throw new ForbiddenException(
-        'You are not authorized to access these workflows',
-      );
-    }
-    return this.workflowService.getWorkflowsByUser(userId);
+  async getWorkflowsByUser(@Req() req: any) {
+    const loggedInUserId = req.user.id; // ID utilisateur connecté
+    console.log('Fetching workflows for user:', loggedInUserId);
+    return this.workflowService.getWorkflowsByUser(loggedInUserId);
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Put(':id')
+  @Patch(':id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update an existing workflow' })
   @ApiParam({
@@ -268,12 +265,12 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async updateWorkflow(
-    @Param('id') id: string,
     @Body() data: updateWorkflowDto,
     @Req() req: any,
+    @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    return this.workflowService.updateWorkflow(data, userId);
+    return this.workflowService.updateWorkflow(data, userId, id);
   }
 
   @UseGuards(AuthGuard('jwt'))

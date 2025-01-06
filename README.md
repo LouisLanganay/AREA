@@ -98,6 +98,10 @@ This project uses Docker to simplify the setup and ensure consistent development
 
 ---
 
+## **Create a New Service**
+
+To create a new service in the project, you got a doc at [Create a Service](src/server/src/service/HowToCreateAService.md).
+
 ## **Additional Notes**
 
 - Ensure Docker and Docker Compose are installed on your machine before running the commands.

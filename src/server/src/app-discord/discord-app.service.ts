@@ -1,204 +1,338 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
-import fetch from 'node-fetch';  // Importation de node-fetch
-import { PrismaService } from '../prisma/prisma.service'
-import {Prisma} from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import fetch from 'node-fetch'; // Importation de node-fetch
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { Client, GatewayIntentBits, Guild } from 'discord.js';
 
 
 @Injectable()
 export class DiscordService {
-    constructor(private prisma: PrismaService, private configService: ConfigService) {}
+  constructor(
+    private prisma: PrismaService,
+    private configService: ConfigService,
+  ) {}
 
-    // Méthode pour échanger le code d'autorisation contre des tokens
-    async exchangeCodeForTokens(
-        code: string,
-        clientId: string,
-        clientSecret: string,
-        redirectUri: string,
-    ) {
-        const tokenUrl = 'https://discord.com/api/oauth2/token';
+  public message: string[] = [];
 
-        // Corps de la requête pour échanger le code contre des tokens
-        const body = new URLSearchParams({
-            client_id: clientId,
-            client_secret: clientSecret,
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: redirectUri,
-            scope: 'identify email',
-        });
+  // Méthode pour échanger le code d'autorisation contre des tokens
+  async exchangeCodeForTokens(
+    code: string,
+    clientId: string,
+    clientSecret: string,
+    redirectUri: string,
+  ) {
+    const tokenUrl = 'https://discord.com/api/oauth2/token';
 
-        const response = await fetch(tokenUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body,
-        });
+    // Corps de la requête pour échanger le code contre des tokens
+    const body = new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: 'authorization_code',
+      code: code,
+      redirect_uri: redirectUri,
+    });
 
-        if (!response.ok) {
-            throw new Error('Failed to get tokens from Discord');
-        }
+    const response = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body,
+    });
 
-        const data = await response.json();
-
-        return {
-            access_token: data.access_token,
-            refresh_token: data.refresh_token,
-            expires_in: data.expires_in,
-        };
+    if (!response.ok) {
+      throw new Error('Failed to get tokens from Discord');
     }
 
-    // Méthode pour récupérer les informations du compte Discord de l'utilisateur
-    async getUserInfo(accessToken: string) {
-        const userInfoUrl = 'https://discord.com/api/v10/users/@me';
+    const data = await response.json();
 
-        const response = await fetch(userInfoUrl, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+    return {
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+    };
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch user info from Discord');
-        }
+  // Méthode pour récupérer les informations du compte Discord de l'utilisateur
+  async getUserInfo(accessToken: string) {
+    const userInfoUrl = 'https://discord.com/api/v10/users/@me';
 
-        const data = await response.json();
+    const response = await fetch(userInfoUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-        return data;
+    if (!response.ok) {
+      throw new Error('Failed to fetch user info from Discord');
     }
 
-    async getUserGuilds(accessToken: string): Promise<any> {
-        const userGuildsUrl = 'https://discord.com/api/v10/users/@me/guilds';
+    const data = await response.json();
 
-        const response = await fetch(userGuildsUrl, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+    return data;
+  }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch user guilds from Discord');
-        }
+  async getUserGuilds(accessToken: string): Promise<any> {
+    const userGuildsUrl = 'https://discord.com/api/v10/users/@me/guilds';
 
-        const data = await response.json();
+    const response = await fetch(userGuildsUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-        return data
+    if (!response.ok) {
+      throw new Error('Failed to fetch user guilds from Discord');
     }
 
-    // Méthode pour écrire dans un channel Discord
-    async sendMessageToChannel(channelId: string, message: string, userBddId: string): Promise<void> {
-        const sendMessageUrl = `https://discord.com/api/v10/channels/${channelId}/messages`;
+    const data = await response.json();
 
-        const accessToken = await this.prisma.token.findUnique({
-            where: {userId_provider: {userId: userBddId, provider: 'discord'}},
-            select: {accessToken: true},
-        });
+    return data;
+  }
 
-        if (!accessToken) {
-            throw new BadRequestException('Access token not found');
-        }
+  // Méthode pour écrire dans un channel Discord
+  async sendMessageToChannel(
+    channelId: string,
+    message: string,
+    req: any,
+  ): Promise<void> {
+    const sendMessageUrl = `https://discord.com/api/v10/channels/${channelId}/messages`;
 
-        const response = await fetch(sendMessageUrl, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bot ${accessToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ content: message }),
-        });
+    const userBddId = req.user.id;
+    const accessToken = await this.prisma.token.findUnique({
+      where: { userId_provider: { userId: userBddId, provider: 'discord' } },
+      select: { accessToken: true },
+    });
 
-        if (!response.ok) {
-            throw new Error('Failed to send message to Discord channel');
-        }
+    if (!accessToken) {
+      throw new BadRequestException('Access token not found');
     }
 
-    async getRedirectUrl(): Promise<string> {
-        // Return l'url d'autehenfication de Discord
-        const base = 'https://discord.com/oauth2/authorize';
-        const params = new URLSearchParams({
-            client_id: this.configService.get<string>('DISCORD_CLIENT_ID'),
-            response_type: 'code',
-            permissions: '8',
-            integration_type: '0',
-            scope: 'bot applications.commands identify email',
-            redirect_uri: `${this.configService.get<string>('IP_FRONT_REDIRECT')}services`,
-        });
-        console.log('Redirecting to Discord OAuth:', `${base}?${params.toString()}`);
-        return `${base}?${params.toString()}`;
+    const response = await fetch(sendMessageUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bot ${this.configService.get<string>('DISCORD_BOT_TOKEN')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content: message }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to send message to Discord channel');
+    }
+  }
+
+  async getRedirectUrl(): Promise<string> {
+    // Return l'url d'autehenfication de Discord
+    const base = 'https://discord.com/oauth2/authorize';
+    const params = new URLSearchParams({
+      client_id: this.configService.get<string>('DISCORD_CLIENT_ID'),
+      response_type: 'code',
+      permissions: '8',
+      integration_type: '0',
+      scope: 'bot applications.commands identify email',
+      redirect_uri: `[REDIRECT_URI]`,
+    });
+    console.log(
+      'Redirecting to Discord OAuth:',
+      `${base}?${params.toString()}`,
+    );
+    return `${base}?${params.toString()}`;
+  }
+
+  async discordCallback(code: string, req: any): Promise<any> {
+    console.log('Discord OAuth callback received:', code);
+    const deletedTokens = await this.prisma.token.deleteMany(); // Supprime toutes les entrées de la table `Token`
+    if (!code) {
+      throw new BadRequestException('Code or userId is missing');
     }
 
-    async discordCallback(code: string, req:any): Promise<any> {
-        console.log('Discord OAuth callback received:', code);
-        if (!code) {
-            throw new BadRequestException('Code or userId is missing');
-        }
+    console.log(
+      'DISCORD_CLIENT_ID:',
+      this.configService.get<string>('DISCORD_CLIENT_ID'),
+    );
+    console.log(
+      'DISCORD_CLIENT_SECRET:',
+      this.configService.get<string>('DISCORD_CLIENT_SECRET'),
+    );
+    console.log(
+      'IP_REDIRECT:',
+      `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`,
+    );
 
-        console.log('DISCORD_CLIENT_ID:', this.configService.get<string>('DISCORD_CLIENT_ID'));
-        console.log('DISCORD_CLIENT_SECRET:', this.configService.get<string>('DISCORD_CLIENT_SECRET'));
-        console.log('IP_REDIRECT:', `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`);
+    const tokens = await this.exchangeCodeForTokens(
+      code,
+      this.configService.get<string>('DISCORD_CLIENT_ID'),
+      this.configService.get<string>('DISCORD_CLIENT_SECRET'),
+      'http://127.0.0.1:8080/auth/discord/callback',
+    );
 
-        const tokens = await this.exchangeCodeForTokens(
-            code,
-            this.configService.get<string>('DISCORD_CLIENT_ID'),
-            this.configService.get<string>('DISCORD_CLIENT_SECRET'),
-            `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`,
-        );
+    console.log('tokens:', tokens);
 
-        console.log('tokens:', tokens);
+    const userData = await this.getUserInfo(tokens.access_token);
+    const userBddId = req.user.id;
+    const email: string = userData.email;
+    console.log('User data email:', email);
 
-        const userData = await this.getUserInfo(tokens.access_token);
-        const userBddId = req.user.id;
-        const email: string = userData.email;
-        console.log('User data email:', email);
-
-        if (!email) {
-            throw new Error("Email not found in the Discord token response.");
-        }
-
-        await this.storeTokens(
-            userBddId,
-            userData.id,
-            tokens.access_token,
-            tokens.refresh_token,
-            tokens.expires_in,
-        );
-
-        return { message: 'Tokens stored in the database' };
+    if (!email) {
+      throw new Error('Email not found in the Discord token response.');
     }
 
-    // Méthode pour stocker les tokens dans la base de données
-    async storeTokens(
-        userBddId: string,
-        userId: string,
-        accessToken: string,
-        refreshToken: string,
-        expiresIn: number,
-        provider: string = 'discord',
-    ): Promise<void> {
-        const expiresAt = new Date(Date.now() + expiresIn * 1000); // Calculer la date d'expiration du token
-        const newToken: Prisma.TokenUncheckedCreateInput = {
-            provider,
-            userId,
-            accessToken,
-            refreshToken,
-            expiresAt,
-        }
+    await this.storeTokens(
+      userBddId,
+      userData.id,
+      tokens.access_token,
+      tokens.refresh_token,
+      tokens.expires_in,
+    );
 
-        const user = await this.prisma.user.findUnique({
-            where: {id: userBddId},
-        });
+    return { message: 'Tokens stored in the database' };
+  }
 
-        if (!user) {
-            throw new BadRequestException('User not found');
-        }
+  async banUser(guildId: string, userId: string, reason: string = 'Aucune raison spécifiée'): Promise<string> {
+    const client = new Client({
+      intents: [
+        GatewayIntentBits.Guilds, // Pour accéder aux guildes (serveurs)
+        GatewayIntentBits.GuildMembers, // Pour gérer les membres de la guilde
+      ],
+    });
 
-        await this.prisma.token.upsert({
-            where: {userId_provider: {userId: userBddId, provider: 'discord'}},
-            update: newToken,
-            create: newToken,
-        });
+    const BOT_TOKEN = this.configService.get<string>('DISCORD_BOT_TOKEN');
+
+
+    if (!BOT_TOKEN) {
+      throw new BadRequestException('Le token du bot Discord est manquant.');
     }
+
+    try {
+      console.log('Bot connecté avec succès.');
+      await client.login(BOT_TOKEN);
+      console.log('Bot connecté avec succès.');
+      // Récupérer la guilde (serveur)
+      console.log('guildId:', guildId);
+      const guilds = await client.guilds.fetch();
+      console.log('Guildes accessibles :');
+      guilds.forEach((g) => console.log(`ID: ${g.id} | Nom: ${g.name}`));
+      const guild: Guild = await client.guilds.fetch(guildId);
+
+      if (!guild) {
+        throw new BadRequestException(`Serveur introuvable avec l'ID : ${guildId}`);
+      }
+
+      // Bannir l'utilisateur
+      await guild.members.kick(userId);
+      console.log(`Utilisateur ${userId} banni avec succès.`);
+
+      return `L'utilisateur ${userId} a été banni avec succès pour la raison : "${reason}".`;
+    } catch (error) {
+      console.error('Erreur lors du bannissement de l\'utilisateur :', error);
+      throw new BadRequestException(`Impossible de bannir l'utilisateur : ${error.message}`);
+    } finally {
+      // Déconnexion propre du bot après traitement
+      console.log('Déconnexion du bot...');
+      await client.destroy();
+      console.log('Bot déconnecté.');
+    }
+  }
+
+  async listenToChannel(channelId: string, req: any, lookingFor: string): Promise<void> {
+    const userBddId = req.user.id;
+    const accessToken = await this.prisma.token.findUnique({
+      where: { userId_provider: { userId: userBddId, provider: 'discord' } },
+      select: { accessToken: true },
+    });
+
+    if (!accessToken) {
+      throw new BadRequestException('Access token not found');
+    }
+
+    const client = new Client({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+      ],
+    });
+
+    client.on('messageCreate', async (message) => {
+      if (message.channel.id === channelId) {
+        if (message.content.includes(lookingFor)) {
+            console.log('Message found:', message);
+            this.message.push(message.content);
+        }
+        return true;
+      }
+    });
+
+    client.login(this.configService.get<string>('DISCORD_BOT_TOKEN'));
+  }
+
+  // Méthode pour stocker les tokens dans la base de données
+  async storeTokens(
+    userBddId: string,
+    userId: string,
+    accessToken: string,
+    refreshToken: string,
+    expiresIn: number,
+    provider: string = 'discord',
+  ): Promise<void> {
+    const expiresAt = new Date(Date.now() + expiresIn * 1000); // Calculer la date d'expiration du token
+    const newToken: Prisma.TokenUncheckedCreateInput = {
+      provider,
+      userId,
+      accessToken,
+      refreshToken,
+      expiresAt,
+    };
+    const users = await this.prisma.user.findMany();
+
+    // Affiche les utilisateurs dans la console
+    console.log('Liste des utilisateurs:', users);
+    console.log('User Bdd Id:', userBddId);
+
+    const user = await this.prisma.user.findUnique({
+      where: {id: userBddId},
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const token = await this.prisma.token.upsert({
+      where: {
+        userId_provider: {userId, provider},
+      },
+      update: {
+        accessToken,
+        refreshToken,
+        expiresAt,
+      },
+      create: {
+        provider,
+        accessToken,
+        refreshToken,
+        expiresAt,
+        userId: userBddId,
+      },
+    });
+
+    const userToken = await this.prisma.user.update({
+      where: {id: userBddId},
+      data: {
+        tokens: {
+          connect: {
+            id: token.id
+          }
+        }
+      }
+    });
+
+    const listUser = await this.prisma.user.findMany();
+    console.log('Liste des utilisateurs:', listUser);
+    const tokens = await this.prisma.token.findMany();
+    console.log('Liste des tokens:', tokens);
+  }
 }

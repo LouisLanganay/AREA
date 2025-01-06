@@ -1,4 +1,4 @@
-import { AuthProvider, useAuth } from '@/auth/AuthContext';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import React, { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
@@ -7,13 +7,17 @@ import { ThemeProvider } from './context/ThemeContext';
 import AdminPanel from './pages/AdminPanel';
 import EditWorkflow from './pages/EditWorkflow';
 import Home from './pages/Home';
-import Login from './pages/Login';
 import Register from './pages/Register';
 import Services from './pages/Services';
 import Settings from './pages/Settings';
 import Workflows from './pages/Workflows';
 import ResetPassword from './pages/ResetPassword';
 import ForgotPassword from './pages/ForgotPassword';
+import Cookies from 'js-cookie';
+import { discordOAuth, googleOAuth } from './api/Auth';
+import Login from './pages/Login';
+import ClientAPK from './pages/ClientAPK';
+import Loading from './pages/Loading';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -32,29 +36,57 @@ function Logout() {
 }
 
 function LoginSuccess() {
-  const { login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const provider = Cookies.get('oauth_provider');
+  const code = params.get('code');
+  const { login } = useAuth();
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get('token');
+    if (!code) return;
 
-    if (token) {
-      const handleLogin = async () => {
-        try {
-          await login(token);
-          navigate('/workflows');
-        } catch (error) {
-          console.error('Login failed:', error);
-          navigate('/login');
-        }
-      };
-      handleLogin();
+    const handleGoogle = async () => {
+      try {
+        const response = await googleOAuth(code);
+        await processLogin(response.access_token);
+      } catch (error) {
+        console.error("Error authenticating with Google", error);
+        navigate('/login');
+      }
+    };
+
+    const handleDiscord = async () => {
+      try {
+        const response = await discordOAuth(code);
+        await processLogin(response.access_token);
+      } catch (error) {
+        console.error("Error authenticating with Discord", error);
+        navigate('/login');
+      }
+    };
+
+    const processLogin = async (token: string) => {
+      Cookies.remove('oauth_provider');
+      if (token) {
+        await login(token);
+        navigate('/workflows');
+      }
+    };
+
+    switch (provider) {
+    case 'Google':
+      handleGoogle();
+      break;
+    case 'Discord':
+      handleDiscord();
+      break;
+    default:
+      break;
     }
   }, [location]);
 
-  return <div>Loading...</div>;
+  return <Loading />;
 }
 
 function App() {
@@ -180,6 +212,13 @@ function App() {
                 path='/reset-password'
                 element={
                   <ResetPassword />
+                }
+              />
+
+              <Route
+                path='/client.apk'
+                element={
+                  <ClientAPK />
                 }
               />
             </Routes>

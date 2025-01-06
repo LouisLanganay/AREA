@@ -5,13 +5,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { register as registerApi } from '@/api/Auth';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { providers } from '@/utils/authProviders';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { registerResponse } from '@/interfaces/api/Auth';
 import { apiError } from '@/interfaces/api/Errors';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { checkIfUsernameIsAvailable } from '@/api/User';
+import { Loader2 } from 'lucide-react';
+import { useOAuth } from '@/hooks/useOAuth';
+import { Input } from '@/components/ui/input';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -27,13 +31,46 @@ export default function Register() {
 
   type RegisterSchema = z.infer<typeof registerSchema>;
   const { login } = useAuth();
+  const { openOAuthUrl } = useOAuth();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
 
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterSchema>({
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema)
   });
+
+  const handleUsernameChange = async (username: string) => {
+    if (!username) {
+      setIsUsernameAvailable(null);
+      return;
+    }
+
+    try {
+      const available = await checkIfUsernameIsAvailable(username);
+      setIsUsernameAvailable(!available.used);
+    } catch(error) {
+      console.error("Failed to check if username is available", error);
+      setIsUsernameAvailable(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'username') {
+        setIsLoading(true);
+        if (value.username) {
+          handleUsernameChange(value.username);
+        } else {
+          setIsUsernameAvailable(null);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const onSubmit = async (data: RegisterSchema) => {
     setIsLoading(true);
@@ -79,14 +116,16 @@ export default function Register() {
           {providers.map(provider => (
             <Button
               variant='outline'
-              size='icon'
-              onClick={() => window.location.href = provider.redirect || ''}
+              size='sm'
+              key={provider.name}
+              onClick={() => openOAuthUrl(provider.redirect, provider.name)}
             >
               <img
                 src={provider.icon}
                 alt={provider.name}
                 className='h-full max-h-4'
               />
+              <span>{provider.name}</span>
             </Button>
           ))}
         </div>
@@ -105,13 +144,15 @@ export default function Register() {
               <label htmlFor='username' className='block text-sm font-medium'>
                 {t('register.username')}
               </label>
-              <input
+              <Input
                 {...register('username')}
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.usernamePlaceholder')}
               />
               {errors.username && (
                 <p className='text-sm text-red-500 mt-1'>{errors.username.message}</p>
+              )}
+              {isUsernameAvailable === false && (
+                <p className='text-sm text-red-500 mt-1'>{t('register.usernameUnavailable')}</p>
               )}
             </div>
 
@@ -119,10 +160,9 @@ export default function Register() {
               <label htmlFor='email' className='block text-sm font-medium'>
                 {t('register.email')}
               </label>
-              <input
+              <Input
                 {...register('email')}
                 type='email'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.emailPlaceholder')}
               />
               {errors.email && (
@@ -134,10 +174,9 @@ export default function Register() {
               <label htmlFor='password' className='block text-sm font-medium'>
                 {t('register.password')}
               </label>
-              <input
+              <Input
                 {...register('password')}
                 type='password'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.passwordPlaceholder')}
               />
               {errors.password && (
@@ -149,10 +188,9 @@ export default function Register() {
               <label htmlFor='confirmPassword' className='block text-sm font-medium'>
                 {t('register.confirmPassword')}
               </label>
-              <input
+              <Input
                 {...register('confirmPassword')}
                 type='password'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.confirmPasswordPlaceholder')}
               />
               {errors.confirmPassword && (
@@ -167,8 +205,13 @@ export default function Register() {
             </p>
           )}
 
-          <Button type='submit' className='w-full' disabled={isLoading}>
-            {isLoading ? t('common.loading') : t('register.createAccount')}
+          <Button
+            type='submit'
+            className='w-full'
+            disabled={isLoading || isUsernameAvailable === false}
+          >
+            {t('register.createAccount')}
+            {isLoading && <Loader2 className='size-4 animate-spin' />}
           </Button>
         </form>
         <p className='text-sm text-muted-foreground'>

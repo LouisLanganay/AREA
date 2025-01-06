@@ -1,8 +1,29 @@
-import { IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class updateWorkflowDto {
+  @IsOptional()
   @IsString()
-  id: string;
+  name?: string;
 
-  data: any;
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  image?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  enabled?: boolean;
+
+  @IsOptional()
+  nodes?: any;
+
+  @IsOptional()
+  updatedAt?: Date;
+
+  @IsOptional()
+  @IsBoolean()
+  favorite?: boolean;
 }

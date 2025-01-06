@@ -2,11 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   Param,
-  Post,
-  Put,
+  Patch,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -48,7 +48,7 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: "Update the current user's information" })
-  @Put('update')
+  @Patch('update/:id')
   @ApiBody({
     type: updateUserDto,
   })
@@ -71,7 +71,14 @@ export class UsersController {
   })
   @HttpCode(200)
   @UseGuards(AuthGuard('jwt'))
-  async updateUser(@Req() req, @Body() body: updateUserDto) {
+  async updateUser(
+    @Req() req,
+    @Body() body: updateUserDto,
+    @Param('id') id: string,
+  ) {
+    if (req.user.id !== id) {
+      throw new ForbiddenException({ err_code: 'USER_FORBIDDEN_EDIT' });
+    }
     return await this.userService.updateUser(body, req.user.id);
   }
 
@@ -105,5 +112,93 @@ export class UsersController {
   @Get('/use/:username')
   async checkUsername(@Param('username') username: string) {
     return { used: await this.userService.checkUserUsernameExist(username) };
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a user by ID (for admin)' })
+  @ApiResponse({
+    status: 204,
+    description: 'The user has been successfully deleted.',
+  })
+  @HttpCode(204)
+  @UseGuards(AuthGuard('jwt'))
+  async deleteUserById(@Param('id') id: string) {
+    const isAdmin = await this.userService.checkRole(id, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_FORBIDDEN_DELETE' });
+    }
+    await this.userService.deleteUser(id);
+  }
+
+  @Get('isAdmin')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Check if the user is an admin' })
+  @ApiResponse({
+    status: 200,
+    description: 'The user is an admin.',
+    schema: {
+      example: { isAdmin: true },
+    },
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async isAdmin(@Req() req: any) {
+    return { isAdmin: await this.userService.checkRole(req.user.id, 'admin') };
+  }
+
+  @Get('allUsers')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all users (for admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'All users',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async allUsers(@Req() req: any) {
+    const isAdmin = await this.userService.checkRole(req.user.id, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+    }
+    return this.userService.getAllUsers();
+  }
+
+  @Get('setRole/:id/:role')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Set role for user(for admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Role has been set',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async setRole(
+    @Param('id') id: string,
+    @Param('role') role: string,
+    @Req() req: any,
+  ) {
+    const isAdmin = await this.userService.checkRole(req.user.id, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+    }
+    await this.userService.setRole(id, role);
+  }
+
+  @Get('setStatus/:id/:status')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Set status for user(for admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Status has been set',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async setStatus(
+    @Param('id') id: string,
+    @Param('status') status: string,
+    @Req() req: any,
+  ) {
+    const isAdmin = await this.userService.checkRole(req.user.id, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+    }
+    await this.userService.setStatus(id, status);
   }
 }

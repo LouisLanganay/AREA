@@ -1,45 +1,37 @@
 import { getServices } from '@/api/Services';
-import { getWorkflow } from '@/api/Workflows';
+import { getWorkflow, updateWorkflow } from '@/api/Workflows';
+import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { edgeStyles, findNode, getLayoutedElements } from '@/utils/workflows';
+import { Service } from '@/interfaces/Services';
+import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
+import { findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
-  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
   ConnectionLineType,
   Controls,
-  ReactFlow,
+  ReactFlow
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { isEqual } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Node as AreaNode, FieldGroup, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
 import AddNode from '../components/flow/AddNode';
 import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
-import { useAuth } from '@/auth/AuthContext';
-import { Service } from '@/interfaces/Services';
 
 const nodeTypes = {
   node: Node,
   custom2: AddNode,
 };
-
-const flowStyles = `
-  @keyframes flowAnimation {
-    from {
-      stroke-dashoffset: 24;
-    }
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-`;
 
 export default function EditWorkflow() {
   const { id } = useParams();
@@ -48,117 +40,76 @@ export default function EditWorkflow() {
   const [edges, setEdges] = useState<WorkflowEdge[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const navigate = useNavigate();
-  const [selectedNode, setSelectedNode] = useState<AreaNode | null>(null);
+  const [selectedNode, setSelectedNode] = useState<Event | null>(null);
   const [updatedWorkflow, setUpdatedWorkflow] = useState<Workflow | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
   const { token } = useAuth();
+  const hasChanges = !isEqual(workflow, updatedWorkflow);
+  const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
 
-  const flattenNodesAndCreateEdges = (
-    nodes: AreaNode[],
-    services: Service[],
-    parentX = 100,
-    parentY = 100,
-    level = 0,
-    parentId?: string
-  ): { nodes: WorkflowNode[], edges: WorkflowEdge[] } => {
+  const flattenNodesAndCreateEdges = useCallback((nodes: Event[], services: Service[]) => {
     let allEdges: WorkflowEdge[] = [];
+    const nodeMap = new Map<string, WorkflowNode>();
 
-    const flattenedNodes = nodes.flatMap((node, index) => {
+    const flattenedNodes = nodes.map((node, index) => {
       const hasInvalidFields = node.fieldGroups.some(group =>
         group.fields.some(field => field.required && !field.value)
       );
 
       const currentNode: WorkflowNode = {
-        id: node.id,
+        id: node.id_node,
         type: 'node',
-        position: {
-          x: parentX + (index * 300),
-          y: parentY + (level * 250)
-        },
+        position: { x: 100 + (index * 300), y: 100 },
         data: {
           label: node.name,
-          service: services.find(s => s.id === node.service.id),
+          service: services.find(s => s.id === node.serviceName),
           fieldGroups: node.fieldGroups,
           description: node.description,
-          isTrigger: node.type === 'reaction',
+          isTrigger: node.type === 'action',
           selected: false,
           isValid: !hasInvalidFields,
         },
       };
 
-      if (parentId) {
-        allEdges.push({
-          id: `${parentId}-${node.id}`,
-          source: parentId,
-          target: node.id,
-        });
+      nodeMap.set(node.id_node, currentNode);
+
+      if (node.dependsOn) {
+        allEdges.push({ id: `${node.dependsOn}-${node.id_node}`, source: node.dependsOn, target: node.id_node });
       }
 
-      if (node.nodes && node.nodes.length > 0) {
-        const { nodes: childNodes, edges: childEdges } = flattenNodesAndCreateEdges(
-          node.nodes,
-          services,
-          parentX + (index * 300),
-          parentY + 250,
-          level + 1,
-          node.id
-        );
-        allEdges = [...allEdges, ...childEdges];
-        return [currentNode, ...childNodes];
-      } else {
-        const addNode: WorkflowNode = {
-          id: `${node.id}-add`,
-          type: 'custom2',
-          position: {
-            x: parentX,
-            y: parentY + ((level + 1) * 250)
-          },
-          data: {
-            parentId: node.id,
-            onAdd: handleAddNode,
-          },
-        };
-        allEdges.push({
-          id: `${node.id}-${addNode.id}`,
-          source: node.id,
-          target: addNode.id,
-        });
+      return currentNode;
+    });
 
-        return [currentNode, addNode];
+    nodes.forEach(node => {
+      if (!nodes.some(n => n.dependsOn === node.id_node)) {
+        const addNode: WorkflowNode = {
+          id: `${node.id_node}-add`,
+          type: 'custom2',
+          position: { x: nodeMap.get(node.id_node)!.position.x, y: nodeMap.get(node.id_node)!.position.y + 250 },
+          data: { parentId: node.id_node, onAdd: handleAddNode },
+        };
+        allEdges.push({ id: `${node.id_node}-${addNode.id}`, source: node.id_node, target: addNode.id });
+        flattenedNodes.push(addNode);
       }
     });
 
     return { nodes: flattenedNodes, edges: allEdges };
-  };
+  }, []);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: WorkflowNode) => {
     if (node.type === 'node') {
-      const findNode = (nodes: AreaNode[]): AreaNode | null => {
-        for (const n of nodes) {
-          if (n.id === node.id) return n;
-          if (n.nodes) {
-            const found = findNode(n.nodes);
-            if (found) return found;
-          }
-        }
-        return null;
-      };
-
-      const areaNode = workflow?.nodes ? findNode(workflow.nodes) : null;
+      const areaNode = updatedWorkflow?.nodes.find(n => n.id_node === node.id) || null;
       setSelectedNode(areaNode);
 
       setNodes(nodes => nodes.map(n => ({
         ...n,
-        data: {
-          ...n.data,
-          selected: n.id === node.id
-        }
+        data: { ...n.data, selected: n.id === node.id }
       })));
     }
-  }, [workflow]);
+  }, [updatedWorkflow]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -182,112 +133,158 @@ export default function EditWorkflow() {
         setEdges(layoutedEdges);
       } catch (error) {
         console.error('Failed to fetch data', error);
+        toast({
+          description: t('workflows.fetchErrorDescription'),
+          variant: 'destructive',
+        });
         navigate('/workflows');
       }
     };
 
     fetchData();
-  }, [id, navigate]);
+  }, [id, navigate, token, flattenNodesAndCreateEdges]);
 
-  const handleFieldChange = (fieldId: string, value: any) => {
+  const handleFieldChange = useCallback((fieldId: string, value: any) => {
     if (!updatedWorkflow) return;
 
-    const updateNodeFields = (nodes: AreaNode[]): AreaNode[] => {
-      return nodes.map(node => ({
-        ...node,
-        fieldGroups: node.fieldGroups.map(group => ({
-          ...group,
-          fields: group.fields.map(field =>
-            field.id === fieldId ? { ...field, value } : field
-          )
-        })),
-        nodes: node.nodes ? updateNodeFields(node.nodes) : []
-      }));
-    };
-
-    const updatedNodes = updateNodeFields(updatedWorkflow.nodes);
-    setUpdatedWorkflow(prev => ({
-      ...prev!,
-      nodes: updatedNodes
+    const updateNodeFields = (nodes: Event[]): Event[] => nodes.map(node => ({
+      ...node,
+      fieldGroups: node.fieldGroups.map(group => ({
+        ...group,
+        fields: group.fields.map(field => field.id === fieldId ? { ...field, value } : field)
+      })),
     }));
 
+    const updatedNodes = updateNodeFields(updatedWorkflow.nodes);
+    setUpdatedWorkflow(prev => ({ ...prev!, nodes: updatedNodes }));
+
     setNodes(nodes => nodes.map(node => {
-      const workflowNode = findNodeInWorkflow(updatedNodes, node.id);
+      const workflowNode = updatedNodes.find(n => n.id_node === node.id);
       if (!workflowNode) return node;
 
       const hasInvalidFields = workflowNode.fieldGroups.some(group =>
         group.fields.some(field => field.required && !field.value)
       );
 
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          isValid: !hasInvalidFields
-        }
-      };
+      return { ...node, data: { ...node.data, isValid: !hasInvalidFields } };
     }));
-  };
 
-  const findNodeInWorkflow = (nodes: AreaNode[], nodeId: string): AreaNode | null => {
-    for (const node of nodes) {
-      if (node.id === nodeId) return node;
-      if (node.nodes) {
-        const found = findNodeInWorkflow(node.nodes, nodeId);
-        if (found) return found;
+    if (selectedNode) {
+      const updatedSelectedNode = updatedNodes.find(n => n.id_node === selectedNode.id_node);
+      if (updatedSelectedNode) {
+        setSelectedNode(updatedSelectedNode);
       }
     }
-    return null;
-  };
+  }, [updatedWorkflow, selectedNode]);
 
-  const handleClosePanel = () => {
+  const handleClosePanel = useCallback(() => {
     setSelectedNode(null);
-    setNodes(nodes => nodes.map(n => ({
-      ...n,
-      data: {
-        ...n.data,
-        selected: false
-      }
-    })));
-  };
+    setNodes(nodes => nodes.map(n => ({ ...n, data: { ...n.data, selected: false } })));
+  }, []);
 
-  const handleAddNode = (parentId: string) => {
+  const handleAddNode = useCallback((parentId: string) => {
     setSelectedParentId(parentId);
     setIsCommandOpen(true);
+  }, []);
 
-    console.info('Parent ID:', selectedParentId);
-  };
-
-  const handleSelectService = (service: Service, node: any) => {
-    // TODO: Implement the logic to add a new node
-    console.info('Selected service:', service);
-    console.info('Selected node:', node);
-    setIsCommandOpen(false);
-  };
-
-  const handleResetNode = (nodeId: string) => {
-    if (!workflow || !updatedWorkflow) return;
-    const defaultNode = findNode(workflow.nodes, nodeId);
-    if (!defaultNode) return;
-    const resetNodeInTree = (nodes: AreaNode[]): AreaNode[] => {
-      return nodes.map(node => {
-        if (node.id === nodeId) {
-          return defaultNode;
-        }
-        if (node.nodes) {
-          return {
-            ...node,
-            nodes: resetNodeInTree(node.nodes)
-          };
-        }
-        return node;
+  const handleSave = async () => {
+    if (!updatedWorkflow || !token) return;
+    if (!isValid) {
+      toast({
+        description: t('workflows.validationErrorDescription'),
+        variant: 'destructive',
       });
+      return;
+    }
+    const myToast = toast({
+      description: t('workflows.saving'),
+      variant: 'loading',
+    });
+
+    try {
+      await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
+      setWorkflow(updatedWorkflow);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.enableSuccessDescription'),
+        variant: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to update workflow', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSelectService = useCallback((service: Service, action: Event) => {
+    if (!updatedWorkflow) return;
+    const parentNode = nodes.find(n => n.id === selectedParentId);
+
+    if (!parentNode) {
+      console.error('Parent node not found');
+      return;
+    }
+
+    action.dependsOn = parentNode.id;
+
+    const hasInvalidFields = action.fieldGroups.some(group =>
+      group.fields.some(field => field.required && !field.value)
+    );
+
+    const newNode: WorkflowNode = {
+      id: action.id_node,
+      type: 'node',
+      position: { x: parentNode.position.x, y: parentNode.position.y + 150 },
+      data: {
+        label: service.name,
+        service: service,
+        fieldGroups: action.fieldGroups,
+        description: action.description,
+        isTrigger: false,
+        selected: false,
+        isValid: !hasInvalidFields,
+      },
     };
 
-    setUpdatedWorkflow(prev => ({
-      ...prev!,
-      nodes: resetNodeInTree(prev!.nodes)
-    }));
+    const newEdge: WorkflowEdge = { id: `${parentNode.id}-${newNode.id}`, source: parentNode.id, target: newNode.id };
+
+    const addNode: WorkflowNode = {
+      id: `${newNode.id}-add`,
+      type: 'custom2',
+      position: { x: newNode.position.x + 130, y: newNode.position.y + 125 },
+      data: { parentId: newNode.id, onAdd: handleAddNode },
+    };
+
+    const addEdge: WorkflowEdge = { id: `${newNode.id}-${addNode.id}`, source: newNode.id, target: addNode.id };
+
+    const updatedNodes = nodes.filter(n => n.id !== `${parentNode.id}-add`);
+    const updatedEdges = edges.filter(e => e.target !== `${parentNode.id}-add`);
+
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      [...updatedNodes, newNode, addNode],
+      [...updatedEdges, newEdge, addEdge],
+      'TB', 80, 100, 50
+    );
+
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+
+    updatedWorkflow.nodes = [...updatedWorkflow.nodes, action];
+    setIsCommandOpen(false);
+  }, [nodes, edges, updatedWorkflow, selectedParentId, handleAddNode]);
+
+  const handleResetNode = useCallback((nodeId: string) => {
+    if (!workflow || !updatedWorkflow) return;
+
+    const defaultNode = findNode(workflow.nodes, nodeId);
+    if (!defaultNode) return;
+
+    const resetNodeInTree = (nodes: Event[]): Event[] => nodes.map(node => node.id_node === nodeId ? defaultNode : node);
+
+    setUpdatedWorkflow(prev => ({ ...prev!, nodes: resetNodeInTree(prev!.nodes) }));
 
     setNodes(nodes => nodes.map(node => {
       if (node.id === nodeId) {
@@ -295,25 +292,14 @@ export default function EditWorkflow() {
           group.fields.some(field => field.required && !field.value)
         );
 
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            fieldGroups: defaultNode.fieldGroups,
-            isValid: !hasInvalidFields
-          }
-        };
+        return { ...node, data: { ...node.data, fieldGroups: defaultNode.fieldGroups, isValid: !hasInvalidFields } };
       }
       return node;
     }));
 
-    toast({
-      title: t('workflows.nodeResetTitle'),
-      description: t('workflows.nodeResetDescription')
-    });
-  };
+  }, [workflow, updatedWorkflow, toast, t]);
 
-  const hasChangesOnNode = (nodeId: string): boolean => {
+  const hasChangesOnNode = useCallback((nodeId: string): boolean => {
     if (!workflow || !updatedWorkflow) return false;
     const originalNode = findNode(workflow.nodes, nodeId);
     const currentNode = findNode(updatedWorkflow.nodes, nodeId);
@@ -331,47 +317,39 @@ export default function EditWorkflow() {
       });
     };
 
-    const compareNodes = (original: AreaNode, current: AreaNode): boolean => {
-      if (compareFieldGroups(original.fieldGroups, current.fieldGroups))
-        return true;
+    return compareFieldGroups(originalNode.fieldGroups, currentNode.fieldGroups);
+  }, [workflow, updatedWorkflow]);
 
-      if (original.nodes?.length !== current.nodes?.length)
-        return true;
-
-      if (original.nodes && current.nodes)
-        return original.nodes.some((originalChild, index) =>
-          compareNodes(originalChild, current.nodes![index])
-        );
-
-      return false;
-    };
-
-    return compareNodes(originalNode, currentNode);
-  };
-
-  const handleRemoveNode = (nodeId: string) => {
+  const handleRemoveNode = useCallback((nodeId: string) => {
     if (!updatedWorkflow) return;
 
-    const removeNodeFromTree = (nodes: AreaNode[]): AreaNode[] => {
-      return nodes.filter(node => {
-        if (node.id === nodeId) return false;
-        if (node.nodes) {
-          node.nodes = removeNodeFromTree(node.nodes);
+    const removeNodeFromTree = (nodes: Event[]): Event[] => nodes.filter(node => node.id_node !== nodeId);
+
+    setUpdatedWorkflow(prev => ({ ...prev!, nodes: removeNodeFromTree(prev!.nodes) }));
+
+    setNodes(nodes => {
+      const updatedNodes = nodes.filter(n => !n.id.startsWith(nodeId));
+
+      updatedNodes.forEach(node => {
+        if (!updatedNodes.some(n => n.data.parentId === node.id)) {
+          const addNode: WorkflowNode = {
+            id: `${node.id}-add`,
+            type: 'custom2',
+            position: { x: node.position.x + 130, y: node.position.y + 150 },
+            data: { parentId: node.id, onAdd: handleAddNode },
+          };
+          updatedNodes.push(addNode);
+          setEdges(edges => [...edges, { id: `${node.id}-${addNode.id}`, source: node.id, target: addNode.id }]);
         }
-        return true;
       });
-    };
 
-    setUpdatedWorkflow(prev => ({
-      ...prev!,
-      nodes: removeNodeFromTree(prev!.nodes)
-    }));
+      return updatedNodes;
+    });
 
-    setNodes(nodes => nodes.filter(n => !n.id.startsWith(nodeId)));
     setEdges(edges => edges.filter(e => !e.source.startsWith(nodeId) && !e.target.startsWith(nodeId)));
 
     handleClosePanel();
-  };
+  }, [updatedWorkflow, handleAddNode, handleClosePanel]);
 
   if (!workflow) return null;
 
@@ -381,6 +359,7 @@ export default function EditWorkflow() {
         workflow={workflow}
         updatedWorkflow={updatedWorkflow}
         setWorkflow={setWorkflow}
+        setUpdatedWorkflow={setUpdatedWorkflow}
       />
       <div className='w-full flex h-[calc(100vh-64px)]'>
         <div className={clsx(
@@ -389,39 +368,64 @@ export default function EditWorkflow() {
         )}>
           <style>{flowStyles}</style>
           <div className='bg-muted/50 h-full flex items-center justify-center w-full'>
-            <div className='w-full h-full'>
+            <div className='w-full h-full relative'>
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
                 onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
                 onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
-                onConnect={(params) => setEdges((eds) => addEdge({
-                  ...params,
-                  type: ConnectionLineType.SmoothStep,
-                  animated: true,
-                  style: edgeStyles,
-                }, eds))}
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag
                 connectionLineType={ConnectionLineType.SmoothStep}
-                defaultEdgeOptions={{
-                  type: 'step',
-                  style: edgeStyles,
-                }}
                 fitView
                 zoomOnPinch={false}
                 zoomOnDoubleClick={false}
                 onNodeClick={onNodeClick}
               >
+                <div className='w-full h-fit top-0 left-0 z-10 absolute'>
+                  {hasChanges && (
+                    <motion.div
+                      className={clsx(
+                        'justify-between items-center rounded-lg bg-background py-1 md:py-2 px-2 m-2 border   border-border gap-2',
+                        selectedNode ? 'hidden md:flex' : 'flex'
+                      )}
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    >
+                      <div className='flex items-center justify-center text-sm font-regular'>
+                        <InformationCircleIcon className='size-5 mr-2 shrink-0' />
+                        <span>{t('workflows.changesToSave')}</span>
+                      </div>
+                      <div className='flex items-center justify-center gap-2 flex-col md:flex-row'>
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          className='hidden md:flex'
+                          onClick={() => setUpdatedWorkflow(workflow)}
+                        >
+                          {t('workflows.discardChanges')}
+                        </Button>
+                        <Button
+                          variant='default'
+                          size='sm'
+                          disabled={!hasChanges || !isValid}
+                          onClick={handleSave}
+                        >
+                          {t('workflows.save')}
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
                 <Background />
                 <Controls showInteractive={false} className='Controls' showZoom={false} />
               </ReactFlow>
             </div>
           </div>
         </div>
-
         {selectedNode && (
           <EditWorkflowSidebar
             selectedNode={selectedNode}

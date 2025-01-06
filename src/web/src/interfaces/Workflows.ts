@@ -30,7 +30,14 @@ type WorkflowEdge = {
 const nodeWidth = 330;
 const nodeHeight = 100;
 
-export { nodeWidth, nodeHeight };
+const flowStyles = `
+  @keyframes flowAnimation {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+`;
+
+export { nodeWidth, nodeHeight, flowStyles };
 export type { WorkflowNodeData, WorkflowNode, WorkflowEdge };
 
 interface Field {
@@ -51,11 +58,14 @@ interface FieldGroup {
 }
 
 interface Event {
-  type : 'Action' | 'Reaction'
+  type : 'action' | 'reaction'
+  id_node: string;
   id: string;
   name: string;
   description: string;
-  parameters: FieldGroup[];
+  serviceName: string;
+  fieldGroups: FieldGroup[];
+  dependsOn: string | null;
   execute?: (parameters: FieldGroup[]) => void;
   check?: (parameters: FieldGroup[]) => Promise<boolean>;
 }
@@ -77,29 +87,12 @@ interface Variable {
   value: any;
 }
 
-interface Node {
-  id: string;
-  type: 'action' | 'reaction';
-  name: string;                   // ex: "Send a message"
-  description: string;            // ex: "Send a message to a channel"
-  service: {
-      id: string;
-      name: string;
-      description: string;
-  };
-  last_trigger?: number;           // timestamp
-  fieldGroups: FieldGroup[];
-  nodes: Node[];
-  conditions?: Condition[];
-  variables?: Variable[];
-}
-
 interface Workflow {
   id: string;
   name: string;
   description: string;
   image: string;
-  nodes: Node[];
+  nodes: Event[];
   enabled?: boolean;
 }
 
@@ -109,6 +102,5 @@ export type {
   Event,
   Condition,
   Variable,
-  Node,
   Workflow
 };
