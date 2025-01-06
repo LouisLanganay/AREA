@@ -28,6 +28,7 @@ model User {
   lastConnection DateTime? // Dernière connexion de l'utilisateur, optionnel
   tokens         Token[]
   PasswordReset  PasswordReset[]
+  Webhook        Webhook[]
 
   @@map("users") // Nom personnalisé pour la table dans la base de données (facultatif)
 }
@@ -56,7 +57,7 @@ model Workflow {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   description String
-  image       String
+  image       String //n de expiration peut être restreinte selon les produits Google ou les ressources surveillées.
   enabled     Boolean  @default(true) // Indique si le workflow est actif ou non
   nodes       Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
@@ -87,4 +88,17 @@ model PasswordReset {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model Webhook {
+  id         String    @id @default(uuid()) // Identifiant interne pour Prisma
+  channelId  String // "id" utilisé lors de l'appel à l'API watch
+  expiration DateTime? // Date/heure d'expiration du canal, si vous la gérez
+  token      String? // Le "token" personnalisé que vous pouvez définir (optionnel)
+  params     Json? // Pour stocker éventuellement "ttl" ou d'autres paramètres liés au webhook
+  createdAt  DateTime  @default(now()) // Date de création du record
+  updatedAt  DateTime  @updatedAt // Mis à jour automatiquement à chaque modification
+  userId     String? // Pour lier ce webhook à un utilisateur (si besoin)
+  workflowId String? // Pour lier ce webhook à un workflow (si besoin)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
