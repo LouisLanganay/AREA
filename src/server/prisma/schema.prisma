@@ -62,6 +62,7 @@ model Workflow {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   historyWorkflow historyWorkflow[]
+  favorite    Boolean  @default(false) // Indique si le workflow est favori
 }
 
 model Token {

@@ -35,14 +35,14 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowsUpDownIcon, CheckIcon, ChevronDownIcon, EllipsisHorizontalIcon, PencilSquareIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getServices } from '@/api/Services';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Event, Workflow } from '@/interfaces/Workflows';
 import { Service } from '@/interfaces/Services';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -55,6 +55,7 @@ import { Label } from "@/components/ui/label";
 import clsx from 'clsx';
 import { ArrowRightCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 
 export default function Workflows() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -72,6 +73,7 @@ export default function Workflows() {
   const [step, setStep] = useState(0);
   const [selectedTrigger, setSelectedTrigger] = useState<Event | null>(null);
   const { toast } = useToast();
+  const deleteTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const fetchWorkflows = async () => {
@@ -88,7 +90,6 @@ export default function Workflows() {
       if (!token) return;
       try {
         const data = await getServices(token);
-        console.log(data);
         setServices(data);
       } catch (error) {
         console.error('Failed to fetch services', error);
@@ -100,12 +101,15 @@ export default function Workflows() {
   }, []);
 
   const handleSelectTrigger = (action: Event) => {
-    console.log("selected trigger", action);
     setSelectedTrigger(action);
   };
 
   const handleEnable = async (id: string, value: boolean) => {
     if (!token) return;
+    const myToast = toast({
+      description: t('workflows.updatingWorkflow'),
+      variant: 'loading',
+    });
     setWorkflows((prevWorkflows) =>
       prevWorkflows.map((workflow) =>
         workflow.id === id ? { ...workflow, enabled: value } : workflow
@@ -113,6 +117,11 @@ export default function Workflows() {
     );
     try {
       const updatedWorkflow = await updateWorkflow(id, { enabled: value }, token);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.enableSuccessDescription'),
+        variant: 'success',
+      });
       setWorkflows((prevWorkflows) =>
         prevWorkflows.map((workflow) =>
           workflow.id === id ? updatedWorkflow : workflow
@@ -120,6 +129,11 @@ export default function Workflows() {
       );
     } catch (error) {
       console.error('Failed to update workflow', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.updateErrorDescription'),
+        variant: 'destructive',
+      });
       setWorkflows((prevWorkflows) =>
         prevWorkflows.map((workflow) =>
           workflow.id === id ? { ...workflow, enabled: !value } : workflow
@@ -130,26 +144,60 @@ export default function Workflows() {
 
   const handleDelete = async (id: string) => {
     if (!token) return;
+    const myToast = toast({
+      description: t('workflows.deletingWorkflow'),
+      variant: 'loading',
+      action: (
+        <ToastAction
+          altText={t('workflows.cancel')}
+          onClick={() => {
+            if (deleteTimeoutRef.current) {
+              clearTimeout(deleteTimeoutRef.current);
+              deleteTimeoutRef.current = null;
+              toast({
+                description: t('workflows.deleteCancelledDescription'),
+                variant: 'info',
+              });
+            }
+          }}
+        >
+          {t('workflows.cancel').toLowerCase()}
+        </ToastAction>
+      ),
+    });
+
     const workflowToDelete = workflows.find((workflow) => workflow.id === id);
-    setWorkflows((prevWorkflows) =>
-      prevWorkflows.filter((workflow) => workflow.id !== id)
-    );
-    try {
-      await deleteWorkflow(id, token);
-      toast({
-        title: t('workflows.deleteSuccess'),
-        description: t('workflows.deleteSuccessDescription'),
-        variant: 'success',
-      });
-    } catch (error) {
-      console.error('Failed to delete workflow', error);
-      if (workflowToDelete)
-        setWorkflows((prevWorkflows) => [...prevWorkflows, workflowToDelete]);
-    }
+
+    deleteTimeoutRef.current = setTimeout(async () => {
+      setWorkflows((prevWorkflows) =>
+        prevWorkflows.filter((workflow) => workflow.id !== id)
+      );
+      try {
+        await deleteWorkflow(id, token);
+        myToast.update({
+          id: myToast.id,
+          description: t('workflows.deleteSuccessDescription'),
+          variant: 'success',
+        });
+      } catch (error) {
+        console.error('Failed to delete workflow', error);
+        myToast.update({
+          id: myToast.id,
+          description: t('workflows.deleteErrorDescription'),
+          variant: 'destructive',
+        });
+        if (workflowToDelete)
+          setWorkflows((prevWorkflows) => [...prevWorkflows, workflowToDelete]);
+      }
+    }, 3000); // 3 seconds delay
   };
 
   const handleBulkEnable = async (value: boolean) => {
     if (!token) return;
+    const myToast = toast({
+      description: t('workflows.bulkUpdatingWorkflows'),
+      variant: 'loading',
+    });
     const selectedWorkflows = table.getFilteredSelectedRowModel().rows.map(row => row.original);
 
     setWorkflows((prevWorkflows) =>
@@ -164,8 +212,18 @@ export default function Workflows() {
       await Promise.all(
         selectedWorkflows.map(workflow => updateWorkflow(workflow.id, { enabled: value }, token))
       );
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.bulkUpdateSuccessDescription'),
+        variant: 'success',
+      });
     } catch (error) {
       console.error('Failed to update workflows', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.bulkUpdateErrorDescription'),
+        variant: 'destructive',
+      });
       setWorkflows((prevWorkflows) =>
         prevWorkflows.map((workflow) =>
           selectedWorkflows.some(selected => selected.id === workflow.id)
@@ -178,6 +236,10 @@ export default function Workflows() {
 
   const handleBulkDelete = async () => {
     if (!token) return;
+    const myToast = toast({
+      description: t('workflows.bulkDeletingWorkflows'),
+      variant: 'loading',
+    });
     const selectedWorkflows = table.getFilteredSelectedRowModel().rows.map(row => row.original);
     setWorkflows((prevWorkflows) =>
       prevWorkflows.filter(workflow => !selectedWorkflows.some(selected => selected.id === workflow.id))
@@ -186,13 +248,18 @@ export default function Workflows() {
       await Promise.all(
         selectedWorkflows.map(workflow => deleteWorkflow(workflow.id, token))
       );
-      toast({
-        title: t('workflows.bulkDeleteSuccess'),
+      myToast.update({
+        id: myToast.id,
         description: t('workflows.bulkDeleteSuccessDescription', { count: selectedWorkflows.length }),
         variant: 'success',
       });
     } catch (error) {
       console.error('Failed to delete workflows', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.bulkDeleteErrorDescription'),
+        variant: 'destructive',
+      });
       setWorkflows((prevWorkflows) => [...prevWorkflows, ...selectedWorkflows]);
     }
   };
@@ -207,6 +274,10 @@ export default function Workflows() {
 
   const handleCreate = async () => {
     if (!token || !selectedTrigger) return;
+    const myToast = toast({
+      description: t('workflows.creatingWorkflow'),
+      variant: 'loading',
+    });
 
     try {
       const newWorkflow = await createWorkflow({
@@ -220,16 +291,16 @@ export default function Workflows() {
       setIsCreateDialogOpen(false);
       setNewWorkflowName("");
       setNewWorkflowDescription("");
-      toast({
-        title: t('workflows.createSuccess'),
+      myToast.update({
+        id: myToast.id,
         description: t('workflows.createSuccessDescription'),
         variant: 'success',
       });
       navigate(`/workflows/${newWorkflow.id}`);
     } catch (error) {
       console.error('Failed to create workflow', error);
-      toast({
-        title: t('workflows.createError'),
+      myToast.update({
+        id: myToast.id,
         description: t('workflows.createErrorDescription'),
         variant: 'destructive',
       });
@@ -271,7 +342,10 @@ export default function Workflows() {
           <ArrowsUpDownIcon />
         </Button>
       ),
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => {
+        const name = row.getValue('name') as string;
+        return <div>{name.length > 20 ? name.slice(0, 20) + '..' : name}</div>;
+      },
     },
     {
       accessorKey: 'apps',

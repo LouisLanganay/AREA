@@ -86,6 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updatedAccounts = accounts.filter(acc => acc.token !== token);
     if (currentAccount) {
       saveAccounts(updatedAccounts);
+      removeAccount(currentAccount.token);
     }
 
     setToken(null);

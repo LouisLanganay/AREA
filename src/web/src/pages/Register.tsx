@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { register as registerApi } from '@/api/Auth';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { providers } from '@/utils/authProviders';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { checkIfUsernameIsAvailable } from '@/api/User';
 import { Loader2 } from 'lucide-react';
 import { useOAuth } from '@/hooks/useOAuth';
+import { Input } from '@/components/ui/input';
 
 export default function Register() {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ export default function Register() {
       const available = await checkIfUsernameIsAvailable(username);
       setIsUsernameAvailable(!available.used);
     } catch(error) {
+      console.error("Failed to check if username is available", error);
       setIsUsernameAvailable(null);
     } finally {
       setIsLoading(false);
@@ -142,9 +144,8 @@ export default function Register() {
               <label htmlFor='username' className='block text-sm font-medium'>
                 {t('register.username')}
               </label>
-              <input
+              <Input
                 {...register('username')}
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.usernamePlaceholder')}
               />
               {errors.username && (
@@ -159,10 +160,9 @@ export default function Register() {
               <label htmlFor='email' className='block text-sm font-medium'>
                 {t('register.email')}
               </label>
-              <input
+              <Input
                 {...register('email')}
                 type='email'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.emailPlaceholder')}
               />
               {errors.email && (
@@ -174,10 +174,9 @@ export default function Register() {
               <label htmlFor='password' className='block text-sm font-medium'>
                 {t('register.password')}
               </label>
-              <input
+              <Input
                 {...register('password')}
                 type='password'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.passwordPlaceholder')}
               />
               {errors.password && (
@@ -189,10 +188,9 @@ export default function Register() {
               <label htmlFor='confirmPassword' className='block text-sm font-medium'>
                 {t('register.confirmPassword')}
               </label>
-              <input
+              <Input
                 {...register('confirmPassword')}
                 type='password'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('register.confirmPasswordPlaceholder')}
               />
               {errors.confirmPassword && (

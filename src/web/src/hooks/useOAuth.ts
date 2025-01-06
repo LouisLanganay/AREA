@@ -1,6 +1,6 @@
 import { Browser } from '@capacitor/browser';
 import { isPlatform } from '@ionic/react';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { App } from '@capacitor/app';
 import Cookies from 'js-cookie';
 
@@ -45,8 +45,8 @@ export const useOAuth = () => {
         if (redirectUrl.includes('services')) {
           await Browser.close();
 
-          const urlObj = new URL(redirectUrl);
-          const token = urlObj.searchParams.get('code');
+          //const urlObj = new URL(redirectUrl);
+          //const token = urlObj.searchParams.get('code');
 
           // TODO: Call the API to get the token
 
