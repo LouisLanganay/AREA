@@ -27,7 +27,9 @@ model User {
   updatedAt      DateTime        @updatedAt // Date de dernière mise à jour, mise à jour automatiquement
   lastConnection DateTime? // Dernière connexion de l'utilisateur, optionnel
   tokens         Token[]
+  role           String          @default("user") // Indique si l'utilisateur est un administrateur
   PasswordReset  PasswordReset[]
+  status         String          @default("active") // Statut de l'utilisateur (ex: "active", "banned")²
 
   @@map("users") // Nom personnalisé pour la table dans la base de données (facultatif)
 }
@@ -45,6 +47,11 @@ model Node {
   fieldGroups Json // Stocke les FieldGroup sous forme JSON
   conditions  Json? // Conditions associées (facultatif)
   variables   Json? // Variables associées (facultatif)
+
+  parentNodeId  String?  // Clé étrangère vers le parent
+  parentNode    Node?    @relation("NodeToNode", fields: [parentNodeId], references: [id])
+  children      Node[]   @relation("NodeToNode")
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   Token       Token[]
@@ -58,9 +65,10 @@ model Workflow {
   description String
   image       String
   enabled     Boolean  @default(true) // Indique si le workflow est actif ou non
-  nodes       Node[] // Relation avec les nodes
+  triggers    Node[] // Relation avec les nodes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  historyWorkflow historyWorkflow[]
   favorite    Boolean  @default(false) // Indique si le workflow est favori
 }
 
@@ -87,4 +95,12 @@ model PasswordReset {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model historyWorkflow {
+  id            Int      @id @default(autoincrement())
+  workflowId    String
+  workflow      Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  executionDate DateTime @default(now())
+  status        String   @default("success")
 }

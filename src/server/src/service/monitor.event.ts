@@ -1,6 +1,6 @@
-import { Event, FieldGroup, Service } from '../../../shared/Workflow';
-import { defaultFieldGroup } from './register.service';
-import { PrismaService } from '../prisma/prisma.service';
+import {Event, FieldGroup, Service} from '../../../shared/Workflow';
+import {defaultFieldGroup} from './register.service';
+import {PrismaService} from '../prisma/prisma.service';
 import {Field} from "../../../shared/Users";
 
 export class EventMonitor {
@@ -11,10 +11,10 @@ export class EventMonitor {
   }
 
   async checkAction(
-      event: Event,
-      params: FieldGroup,
-      serviceList: Service[],
-      workflowId: string,
+    event: Event,
+    params: FieldGroup,
+    serviceList: Service[],
+    workflowId: string,
   ): Promise<void> {
     if (!event) {
       throw new Error(`Event with ID "${event.id_node}" not found.`);
@@ -22,6 +22,7 @@ export class EventMonitor {
 
     const workflows = await this.prisma.workflow.findMany({
       where: { enabled: true },
+      include: { triggers: true },
     });
 
     const workflow = workflows.find((wf) => wf.id === workflowId);
@@ -70,14 +71,14 @@ export class EventMonitor {
     };
 
     if (typeof event.execute === 'function') {
-      // console.log(params, nodeFieldGroupWorkflow);
       const result = await event.check([params, nodeFieldGroupWorkflow]);
-      console.log('Result:', result);
+
       if (result) {
+        const root_node = workflow.triggers.find((node) => node.id_node === event.id_node);
         await this.executeDependentNodes(
-            event.id_node,
-            workflowId,
-            serviceList,
+          root_node.id,
+          workflowId,
+          serviceList,
         );
       }
     }
@@ -90,7 +91,7 @@ export class EventMonitor {
   ): Promise<void> {
     const workflows = await this.prisma.workflow.findMany({
       where: { enabled: true },
-      include: { nodes: true },
+      include: { triggers: true },
     });
 
     const workflow = workflows.find((wf) => wf.id === workflowId);
@@ -99,9 +100,10 @@ export class EventMonitor {
       return;
     }
 
-    const dependentNodes = workflow.nodes.filter(
-      (node) => node.dependsOn === nodeId,
-    );
+    const dependentNodes = workflow.triggers.filter((node) => {
+      return node.parentNodeId === nodeId;
+    });
+
 
     for (const node of dependentNodes) {
       const service = serviceList.find((s) => s.id === node.serviceName);
@@ -110,9 +112,6 @@ export class EventMonitor {
         continue;
       }
 
-      // console.log(service);
-      // console.log(node);
-      // console.log(node.id_node);
       const event = service.Event.find((e) => e.id_node === node.id_node);
       if (!event) {
         console.error(`Event not found for ${node.name}`);
@@ -192,6 +191,7 @@ export class EventMonitor {
         };
 
         event.execute([nodeFieldGroup, nodeFieldGroupWorkflow]);
+        await this.executeDependentNodes(node.id, workflowId, serviceList);
       }
     }
   }
@@ -268,26 +268,59 @@ export class EventMonitor {
     }
   }
 
+  mapTriggers(triggers: any[]): any[] {
+    return triggers.map((trigger) => ({
+      id_node: trigger.id_node,
+      type: trigger.type,
+      name: trigger.name,
+      serviceName: trigger.serviceName,
+      fieldGroups: trigger.fieldGroups,
+      children: trigger.children ? this.mapTriggers(trigger.children) : [],
+    }));
+  }
+
   async monitoringWorkflows(serviceList: Service[]): Promise<void> {
     const handledWorkflows = new Set<string>();
     const interval = 30000;
 
     const processWorkflows = async () => {
       try {
+
         const workflows = await this.prisma.workflow.findMany({
           where: { enabled: true },
-          include: { nodes: true },
+          include: {
+            triggers: {
+              where: { parentNodeId: null },
+              include: { children: { include: { children: { include: { children: { include: { children: { include: { children: true } } } } } } } } },
+            },
+          },
         });
+
+        // const formattedWorkflows = workflows.map((workflow) => ({
+        //   name: workflow.name,
+        //   description: workflow.description,
+        //   image: workflow.image,
+        //   enabled: workflow.enabled,
+        //   triggers: this.mapTriggers(workflow.triggers),
+        // }));
+        //
+        // console.log("=======================FULL VERSION============================");
+        // console.log(JSON.stringify(workflows, null, 2));
+        // console.log("======================CLEAN VERSION=============================");
+        // console.log(JSON.stringify(formattedWorkflows, null, 2));
+        // console.log("=======================");
+        // console.log(JSON.stringify(formattedWorkflows.triggers, null, 2));
+        // console.log("===============================================================");
 
         const newWorkflows = workflows.filter(
           (workflow) => !handledWorkflows.has(workflow.id),
         );
 
         if (newWorkflows.length > 0) {
-          console.log(`Found ${newWorkflows.length} new workflows to handle.`);
+          // console.log(`Found ${newWorkflows.length} new workflows to handle.`);
 
           newWorkflows.forEach((workflow) => {
-            const actionNodes = workflow.nodes.filter(
+            const actionNodes = workflow.triggers.filter(
               (node) => node.type === 'action',
             );
 
@@ -306,9 +339,54 @@ export class EventMonitor {
         console.error('Error while processing workflows:', error);
       }
     };
+        //
+        // Identifie les IDs des workflows dans la base
+        // const activeWorkflowIds = new Set(workflows.map((workflow) => workflow.id));
+        //
+        // Supprime les workflows qui ne sont plus dans la base
+        // for (const workflowId of handledWorkflows) {
+        //   if (!activeWorkflowIds.has(workflowId)) {
+        //     console.log(`Workflow ID ${workflowId} no longer exists. Stopping monitoring.`);
+        //     handledWorkflows.delete(workflowId);
+        //   }
+        // }
+
+        // Filtrer les nouveaux workflows non encore monitorés
+        // const newWorkflows = workflows.filter(
+        //     (workflow) => !handledWorkflows.has(workflow.id),
+        // );
+
+        // if (newWorkflows.length > 0) {
+        //   console.log(`Found ${newWorkflows.length} new workflows to handle.`);
+        //
+          // Gestion des nouveaux workflows
+          // for (const workflow of newWorkflows) {
+            // Identifier les triggers de type "action"
+            // const actionNodes = workflow.triggers.filter(
+            //     (node) => node.type === 'action',
+            // );
+
+            // for (const node of actionNodes) {
+              // Démarrer la surveillance pour chaque trigger/action
+              // await this.transformNodeToEventAndRunMonitoring(
+              //     node,
+              //     serviceList,
+              //     workflow.id,
+              // );
+            // }
+
+            // Ajouter le workflow à la liste des workflows traités
+            // handledWorkflows.add(workflow.id);
+          // }
+        // }
+      // } catch (error) {
+      //   console.error('Error while processing workflows:', error);
+      // }
+    // };
 
     await processWorkflows();
 
     setInterval(processWorkflows, interval);
   }
 }
+
