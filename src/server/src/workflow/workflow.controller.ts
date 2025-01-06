@@ -51,31 +51,29 @@ export class WorkflowController {
               serviceName: 'Service 1',
               fieldGroups: [
                 {
-                  id: "information_group_1",
-                  name: "information group 1",
-                  description: "this is a new group of information",
-                  type: "type 1",
+                  id: 'information_group_1',
+                  name: 'information group 1',
+                  description: 'this is a new group of information',
+                  type: 'type 1',
                   fields: [
                     {
-                      id: "information 1",
-                      type: "type2",
+                      id: 'information 1',
+                      type: 'type2',
                       required: true,
-                      description: "the first inforamtion",
-                      value: "the value depends on type"
+                      description: 'the first inforamtion',
+                      value: 'the value depends on type',
                     },
                     {
-                      id: "information 2",
-                      type: "type2",
+                      id: 'information 2',
+                      type: 'type2',
                       required: true,
-                      description: "the seconde inforamtion",
-                      value: "the value depends on type"
-                    }
-                  ]
-                }
+                      description: 'the seconde inforamtion',
+                      value: 'the value depends on type',
+                    },
+                  ],
+                },
               ],
-              children: [
-                  "a new node same as triggers"
-              ],
+              children: ['a new node same as triggers'],
             },
           ],
         },
@@ -87,14 +85,14 @@ export class WorkflowController {
     description: 'The workflow has been successfully created.',
     schema: {
       example: {
-        id: "workflow id ",
-        userId: "user id",
-        name: "name of workflow",
-        description: "workflow description",
-        image: "https://example.com/workflow.png",
+        id: 'workflow id ',
+        userId: 'user id',
+        name: 'name of workflow',
+        description: 'workflow description',
+        image: 'https://example.com/workflow.png',
         enabled: true,
-        createdAt: "timestamp",
-        updatedAt: "timestamp"
+        createdAt: 'timestamp',
+        updatedAt: 'timestamp',
       },
     },
   })
@@ -270,7 +268,7 @@ export class WorkflowController {
     @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    return this.workflowService.updateWorkflow(data, userId, id);
+    return this.workflowService.updateWorkflow(data, userId);
   }
 
   @UseGuards(AuthGuard('jwt'))
