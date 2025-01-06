@@ -11,7 +11,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
-import { CreateWorkflowDto } from './dto/creatWorkflowDto';
+import { CreateWorkflowDto } from './dto/createWorkflowDto';
 import { AuthGuard } from '@nestjs/passport';
 import { updateWorkflowDto } from './dto/updateWorkflow.dto';
 import {
@@ -41,16 +41,37 @@ export class WorkflowController {
           description: 'This is a new workflow',
           image: 'https://example.com/image.png',
           enabled: true,
-          nodes: [
+          triggers: [
             {
-              id: 'node1',
+              id_node: 'node1',
               type: 'type1',
               name: 'Node 1',
               serviceName: 'Service 1',
-              dependsOn: [],
-              fieldGroups: [],
-              conditions: null,
-              variables: null,
+              fieldGroups: [
+                {
+                  id: 'information_group_1',
+                  name: 'information group 1',
+                  description: 'this is a new group of information',
+                  type: 'type 1',
+                  fields: [
+                    {
+                      id: 'information 1',
+                      type: 'type2',
+                      required: true,
+                      description: 'the first inforamtion',
+                      value: 'the value depends on type',
+                    },
+                    {
+                      id: 'information 2',
+                      type: 'type2',
+                      required: true,
+                      description: 'the seconde inforamtion',
+                      value: 'the value depends on type',
+                    },
+                  ],
+                },
+              ],
+              children: ['a new node same as triggers'],
             },
           ],
         },
@@ -62,24 +83,14 @@ export class WorkflowController {
     description: 'The workflow has been successfully created.',
     schema: {
       example: {
-        id: '123e4567-e89b-12d3-a456-426614174000',
-        name: 'New Workflow',
-        description: 'This is a new workflow',
-        image: 'https://example.com/image.png',
+        id: 'workflow id ',
+        userId: 'user id',
+        name: 'name of workflow',
+        description: 'workflow description',
+        image: 'https://example.com/workflow.png',
         enabled: true,
-        userId: '123e4567-e89b-12d3-a456-426614174000',
-        nodes: [
-          {
-            id: 'node1',
-            type: 'type1',
-            name: 'Node 1',
-            serviceName: 'Service 1',
-            dependsOn: [],
-            fieldGroups: [],
-            conditions: null,
-            variables: null,
-          },
-        ],
+        createdAt: 'timestamp',
+        updatedAt: 'timestamp',
       },
     },
   })
@@ -256,7 +267,7 @@ export class WorkflowController {
     @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    return this.workflowService.updateWorkflow(data, userId, id);
+    return this.workflowService.updateWorkflow(data, userId);
   }
 
   @UseGuards(AuthGuard('jwt'))
