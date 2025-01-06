@@ -23,7 +23,6 @@ export class EventMonitor {
     if (typeof event.execute === 'function') {
       const result = await event.check([params]);
 
-      // console.log(result);
       if (result) {
         await this.executeDependentNodes(
           event.id_node,
@@ -53,6 +52,7 @@ export class EventMonitor {
     const dependentNodes = workflow.nodes.filter(
       (node) => node.dependsOn === nodeId,
     );
+
 
     for (const node of dependentNodes) {
       const service = serviceList.find((s) => s.id === node.serviceName);
