@@ -80,10 +80,43 @@ const config = {
   			ringWidth: {
   				'1.5': '1.5px',
   			},
+  			success: {
+  				DEFAULT: 'hsl(var(--success))',
+  				foreground: 'hsl(var(--success-foreground))'
+  			},
   		},
   		backgroundImage: {
   			'border-gradient-ai': 'linear-gradient(90deg, rgba(56,189,248,0) 0%, hsl(var(--primary)) 32.29%, hsl(var(--second)) 67.19%, rgba(236,72,153,0) 100%)',
         'text-gradient-ai': 'linear-gradient(90deg, hsl(var(--second)) 10%, hsl(var(--second-bis)) 30%, hsl(var(--primary)) 50%, hsl(var(--second)) 100%)',
+  		},
+  		boxShadow: {
+  			'inset-sm': 'inset 0 1px 1px rgba(0,0,0,0.1)',
+  			'inset-md': 'inset 0 2px 2px rgba(0,0,0,0.1)',
+  			'inset-lg': 'inset 0 3px 1px rgba(0,0,0,0.1)',
+  		},
+  		keyframes: {
+  			blob: {
+  				"0%": {
+  					transform: "translate(0px, 0px) scale(1)",
+  				},
+  				"33%": {
+  					transform: "translate(30px, -50px) scale(1.1)",
+  				},
+  				"66%": {
+  					transform: "translate(-20px, 20px) scale(0.9)",
+  				},
+  				"100%": {
+  					transform: "translate(0px, 0px) scale(1)",
+  				},
+  			},
+  		},
+  		animation: {
+  			blob: "blob 7s infinite",
+  		},
+  		utilities: {
+  			".animation-delay-2000": {
+  				"animation-delay": "2s",
+  			},
   		},
   	}
   },
