@@ -65,7 +65,7 @@ export function moveWorkflow(currentName: string, newPath: string): string {
 export function renameFolder(workflows: { name: string }[], oldPath: string, newPath: string): { name: string }[] {
   return workflows.map(workflow => ({
     ...workflow,
-    name: workflow.name.startsWith(oldPath + '/') 
+    name: workflow.name.startsWith(oldPath + '/')
       ? workflow.name.replace(oldPath, newPath)
       : workflow.name
   }));

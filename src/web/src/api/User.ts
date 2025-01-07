@@ -36,7 +36,7 @@ export const checkIfUsernameIsAvailable = async (username: string): Promise<chec
 };
 
 export const getUsers = async (token: string): Promise<User[]> => {
-  const response = await axiosInstance.get<User[]>(`/users/allUsers`, {
+  const response = await axiosInstance.get<User[]>(`/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }

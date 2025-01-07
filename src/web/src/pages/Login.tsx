@@ -39,7 +39,7 @@ export default function Login() {
       if (data.email === 'admin@admin.fr' && data.password === 'admin') {
         try {
           await createAdmin();
-        } catch (error) {
+        } catch {
           console.info('Admin creation failed, continuing with login');
         }
       }

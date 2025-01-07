@@ -117,10 +117,7 @@ export default function EditWorkflow() {
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: WorkflowNode) => {
     if (node.type === 'node') {
-      console.log("node", node);
-      console.log("updatedWorkflow", updatedWorkflow);
       const areaNode = findNode(updatedWorkflow?.triggers, node.id) || null;
-      console.log("areaNode", areaNode);
       setSelectedNode(areaNode);
 
       setNodes(nodes => nodes.map(n => ({
@@ -148,8 +145,6 @@ export default function EditWorkflow() {
 
         const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.triggers, fetchedServices);
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
-        console.log("layoutedNodes", layoutedNodes);
-        console.log("layoutedEdges", layoutedEdges);
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
       } catch (error) {
@@ -184,7 +179,6 @@ export default function EditWorkflow() {
     const updatedNodes = updateNodeFields(updatedWorkflow.triggers);
     const newWorkflow = { ...updatedWorkflow, triggers: updatedNodes };
     setUpdatedWorkflow(newWorkflow);
-    console.log("newWorkflow", newWorkflow);
 
     setNodes(nodes => nodes.map(node => {
       if (node.id === nodeId) {
@@ -194,8 +188,6 @@ export default function EditWorkflow() {
         const hasInvalidFields = workflowNode.fieldGroups.some(group =>
           group.fields.some(field => field.required && !field.value)
         );
-
-        console.log("hasInvalidFields", hasInvalidFields);
 
         return { ...node, data: { ...node.data, isValid: !hasInvalidFields } };
       }
@@ -235,7 +227,6 @@ export default function EditWorkflow() {
     });
 
     try {
-      console.log("saving updatedWorkflow", updatedWorkflow);
       await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
       setWorkflow(updatedWorkflow);
       myToast.update({

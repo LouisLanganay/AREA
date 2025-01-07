@@ -63,8 +63,8 @@ export default function Premium() {
           <div
             key={tier.name}
             className={`rounded-2xl border p-8 relative ${
-              tier.highlighted 
-                ? 'border-primary/50 bg-primary/5' 
+              tier.highlighted
+                ? 'border-primary/50 bg-primary/5'
                 : 'border-border'
             }`}
           >
@@ -75,7 +75,7 @@ export default function Premium() {
                 </div>
               </div>
             )}
-            
+
             <div className="mb-8">
               <h2 className="text-2xl font-bold mb-2">{tier.name}</h2>
               <div className="mb-4">
@@ -96,7 +96,7 @@ export default function Premium() {
               ))}
             </ul>
 
-            <Button 
+            <Button
               className="w-full"
               variant={tier.highlighted ? 'default' : 'outline'}
               onClick={() => navigate('/register')}
@@ -108,4 +108,4 @@ export default function Premium() {
       </div>
     </div>
   );
-} 
+}
