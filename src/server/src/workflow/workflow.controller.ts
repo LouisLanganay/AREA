@@ -99,7 +99,6 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async createWorkflow(@Body() data: CreateWorkflowDto, @Req() req: any) {
-    console.log(data.nodes[0], data.nodes[0].fieldGroups);
     return this.workflowService.createWorkflow(data, req.user.id);
   }
 
