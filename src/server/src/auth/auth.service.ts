@@ -304,4 +304,9 @@ export class AuthService {
       access_token: this.jwtService.sign({ id: userData.id }),
     };
   }
+
+  async createAdmin() {
+    const hash = await this.hashPassword('admin');
+    await this.usersService.createAdmin(hash);
+  }
 }

@@ -1,0 +1,15 @@
+meta {
+  name: getall
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8080/users
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRjZjIzNzI2LTcyZjEtNDU2Ni1hYmVlLTk5OTA3N2NhMzQ2YiIsImlhdCI6MTczNjI2ODY2MiwiZXhwIjoxNzM2MjcyMjYyfQ.XlGWUq-OnraizCi08l4k6NvKNOvzHq9asK0EKyyNN3M
+}
