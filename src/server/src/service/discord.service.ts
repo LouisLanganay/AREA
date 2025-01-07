@@ -11,6 +11,38 @@ const configService = new ConfigService();
 const httpService = new HttpService(); // Instanciez ou injectez si nécessaire
 const discordServiceMethodes = new DiscordService(prismaService, configService, httpService);
 
+
+export const EventjoinGuildDiscord: Event = {
+    type: "action",
+    id_node: "joinGuildDiscord",
+    name: "Join Guild",
+    description: "Join a Discord server",
+    serviceName: "discord",
+    fieldGroups: [
+        {
+            id: "guildDetails",
+            name: "Guild Details",
+            description: "Information about the Discord server",
+            type: "group",
+            fields: [
+                { id: "guildId", type: "string", required: true, description: "The guild ID" }
+            ]
+        },
+    ],
+    check: async (parameters: FieldGroup[]) => {
+        const guildDetails = parameters.find(param => param.id === "guildDetails");
+        if (!guildDetails) {
+            console.error("Guild details not found");
+            return false;
+        }
+
+        const guildId = guildDetails?.fields.find(field => field.id === "guildId")?.value;
+        const userId = parameters.find((group) => group.id === "workflow_information")?.fields.find((field) => field.id === "user_id")?.value;
+
+        return await discordServiceMethodes.listenToNewMembers(guildId, userId);
+    }
+}
+
 export const EventlistenMessageDiscord: Event = {
     type: "action",
     id_node: "listenMessageDiscord",

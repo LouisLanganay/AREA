@@ -16,6 +16,7 @@ export class DiscordService {
   ) {}
 
   public messages: string[] = [];
+  public newMembers: string[] = [];
 
   // Méthode pour échanger le code d'autorisation contre des tokens
   async exchangeCodeForTokens(
@@ -277,6 +278,46 @@ export class DiscordService {
         console.log('Messages found:', this.messages);
         this.messages = [];
         return true;
+    }
+
+    client.login(this.configService.get<string>('DISCORD_BOT_TOKEN'));
+    return false;
+  }
+
+  async listenToNewMembers(guildId: string, user_id: string): Promise<boolean> {
+    console.log('New members:');
+    const userBddId = user_id;
+
+    console.log('User Bdd Id:', userBddId);
+    console.log('Guild ID:', guildId);
+    const accessToken = await this.prisma.token.findUnique({
+      where: { userId_provider: { userId: userBddId, provider: 'discord' } },
+      select: { accessToken: true },
+    });
+
+    if (!accessToken) {
+      throw new BadRequestException('Access token not found');
+    }
+
+    const client = new Client({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+      ],
+    });
+
+    client.on('guildMemberAdd', async (member) => {
+      if (member.guild.id === guildId) {
+        console.log('New member:', member.user.username);
+        this.newMembers.push(member.user.username);
+        return true;
+      }
+    });
+
+    if (this.newMembers.length > 0) {
+      console.log('New members found:', this.newMembers);
+      this.newMembers = [];
+      return true;
     }
 
     client.login(this.configService.get<string>('DISCORD_BOT_TOKEN'));

@@ -40,38 +40,4 @@ export class DiscordController {
         }
         return;
     }
-
-    @Post('send-message')
-    @UseGuards(AuthGuard('jwt'))
-    async sendMessage(
-        @Body('message') message: string,
-        @Body('channelId') channelId: string,
-        @Req() req: any,
-    ) {
-        await this.discordService.sendMessageToChannel(channelId, message, req);
-        return;
-    }
-
-    @Post('listen-to-channel')
-    @UseGuards(AuthGuard('jwt'))
-    async listenToChannel(
-        @Body('channelId') channelId: string,
-        @Body('looking') lookingFor: string,
-        @Req() req: any,
-    ) {
-        await this.discordService.listenToChannel(channelId, req, lookingFor);
-        return;
-    }
-
-    @Post('banne-user')
-    @UseGuards(AuthGuard('jwt'))
-    async banneUser(
-        @Body('guildId') guildId: string,
-        @Body('userId') userId: string,
-        @Body('reason') reason: string,
-        @Req() req: any,
-    ) {
-        await this.discordService.banUser(guildId, userId, reason);
-        return;
-    }
 }
