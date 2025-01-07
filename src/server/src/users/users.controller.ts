@@ -76,7 +76,10 @@ export class UsersController {
     @Body() body: updateUserDto,
     @Param('id') id: string,
   ) {
-    if (req.user.id !== id) {
+    if (
+      req.user.id !== id &&
+      !(await this.userService.checkRole(req.user.id, 'admin'))
+    ) {
       throw new ForbiddenException({ err_code: 'USER_FORBIDDEN_EDIT' });
     }
     return await this.userService.updateUser(body, req.user.id);
@@ -146,7 +149,7 @@ export class UsersController {
     return { isAdmin: await this.userService.checkRole(req.user.id, 'admin') };
   }
 
-  @Get('allUsers')
+  @Get()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users (for admin)' })
   @ApiResponse({
@@ -200,5 +203,22 @@ export class UsersController {
       throw new ForbiddenException({ err_code: 'USER_ADMIN' });
     }
     await this.userService.setStatus(id, status);
+  }
+
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by ID(for admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: UserDetailSuccess,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getUserById(@Param('id') id: string, @Req() req: any) {
+    const isAdmin = await this.userService.checkRole(req.user.id, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+    }
+    return this.userService.getUserInfo(id);
   }
 }
