@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/command';
 import { Service } from '@/interfaces/Services';
 import { Event } from '@/interfaces/Workflows';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 interface EditWorkflowCommandProps {
@@ -33,7 +34,11 @@ export function EditWorkflowCommand({
         <CommandList>
           <CommandEmpty>{t('workflows.noServicesFound')}</CommandEmpty>
           {services.map((service: Service) => (
-            <CommandGroup key={service.id} heading={service.name}>
+            <CommandGroup
+              key={service.id}
+              heading={service.name}
+              className={clsx(service.Event?.filter((action) => action.type !== 'action').length === 0 && 'hidden')}
+            >
               {service.Event?.filter((action) => action.type !== 'action')?.map((action) => (
                 <CommandItem
                   key={action.id_node}

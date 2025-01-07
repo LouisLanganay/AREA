@@ -134,8 +134,8 @@ export class WorkflowService {
     }
   }
 
-  async updateWorkflow(data: UpdateWorkflowDto, userId: string) {
-    const workflowId = data.id;
+  async updateWorkflow(data: UpdateWorkflowDto, userId: string, id: string) {
+    const workflowId = id;
 
     const workflow = await this.prisma.workflow.findUnique({
       where: { id: workflowId },

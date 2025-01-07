@@ -286,4 +286,9 @@ export class AuthController {
     }
     return await this.authService.discordOauth(code);
   }
+
+  @Get('createAdmin')
+  async createAdmin() {
+    return await this.authService.createAdmin();
+  }
 }

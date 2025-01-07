@@ -36,9 +36,9 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
           <div></div>
         )}
         {data.status === 'success' && (
-          <div className='w-fit m-1 px-1 py-0.5 flex flex-row items-center gap-1 bg-green-100 border border-green-200 rounded-lg'>
-            <CheckIcon className='size-4 text-green-600' />
-            <div className='text-xs text-green-600 font-light'>
+          <div className='w-fit my-1 px-1 py-0.5 flex flex-row items-center gap-1 bg-green-500/10 border border-green-500/20 rounded-lg'>
+            <CheckIcon className='size-4 text-green-500' />
+            <div className='text-xs text-green-500 font-light'>
               {t('workflows.success')}
             </div>
           </div>

@@ -13,7 +13,7 @@ interface EditWorkflowSidebarProps {
   selectedNode: Event | null;
   services: Service[];
   onClose: () => void;
-  onFieldChange: (fieldId: string, value: any) => void;
+  onFieldChange: (fieldId: string, value: any, nodeId: string) => void;
   onRemoveNode: (nodeId: string) => void;
   onResetNode: (nodeId: string) => void;
   hasChangesOnNode: (nodeId: string) => boolean;
@@ -43,7 +43,7 @@ export function EditWorkflowSidebar({
     }
   };
 
-  const renderField = (field: Field) => {
+  const renderField = (field: Field, nodeId: string) => {
     const currentValue = field.value;
     const isInvalid = field.required && !currentValue;
 
@@ -54,7 +54,7 @@ export function EditWorkflowSidebar({
           variantSize='sm'
           type='text'
           value={currentValue || ''}
-          onChange={(e) => onFieldChange(field.id, e.target.value)}
+          onChange={(e) => onFieldChange(field.id, e.target.value, nodeId)}
           required={field.required}
           className={isInvalid ? 'border-destructive !ring-0' : ''}
         />
@@ -65,7 +65,7 @@ export function EditWorkflowSidebar({
           type='number'
           variantSize='sm'
           value={currentValue || ''}
-          onChange={(e) => onFieldChange(field.id, parseFloat(e.target.value))}
+          onChange={(e) => onFieldChange(field.id, parseFloat(e.target.value), nodeId)}
           required={field.required}
           className={isInvalid ? 'border-destructive !ring-0' : ''}
         />
@@ -74,12 +74,12 @@ export function EditWorkflowSidebar({
       return (
         <Checkbox
           checked={currentValue || false}
-          onCheckedChange={(checked) => onFieldChange(field.id, checked)}
+          onCheckedChange={(checked) => onFieldChange(field.id, checked, nodeId)}
         />
       );
     case 'select':
       return (
-        <Select value={currentValue} onValueChange={(value) => onFieldChange(field.id, value)}>
+        <Select value={currentValue} onValueChange={(value) => onFieldChange(field.id, value, nodeId)}>
           <SelectTrigger>
             <SelectValue placeholder='Select an option' />
           </SelectTrigger>
@@ -97,14 +97,14 @@ export function EditWorkflowSidebar({
         <Calendar
           mode='single'
           selected={currentValue ? new Date(currentValue) : undefined}
-          onSelect={(date) => onFieldChange(field.id, date)}
+          onSelect={(date) => onFieldChange(field.id, date, nodeId)}
         />
       );
     case 'checkbox':
       return (
         <Checkbox
           checked={currentValue || false}
-          onCheckedChange={(checked) => onFieldChange(field.id, checked)}
+          onCheckedChange={(checked) => onFieldChange(field.id, checked, nodeId)}
         />
       );
     case 'color':
@@ -112,7 +112,7 @@ export function EditWorkflowSidebar({
         <Input
           type='color'
           value={currentValue || '#000000'}
-          onChange={(e) => onFieldChange(field.id, e.target.value)}
+          onChange={(e) => onFieldChange(field.id, e.target.value, nodeId)}
           required={field.required}
         />
       );
@@ -141,7 +141,7 @@ export function EditWorkflowSidebar({
                 </div>
               )}
             </div>
-            <div className='font-medium text-sm text-gray-900'>
+            <div className='font-medium text-sm text-foreground'>
               {selectedNode.description}
             </div>
           </div>
@@ -174,7 +174,7 @@ export function EditWorkflowSidebar({
                           <span className='text-sm text-destructive'>*</span>
                         )}
                       </Label>
-                      {renderField(field)}
+                      {renderField(field, selectedNode.id_node)}
                     </div>
                   ))}
                 </div>
