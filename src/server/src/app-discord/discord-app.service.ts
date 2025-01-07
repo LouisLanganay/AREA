@@ -3,6 +3,7 @@ import fetch from 'node-fetch'; // Importation de node-fetch
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 import { Client, GatewayIntentBits, Guild } from 'discord.js';
 
 
@@ -11,9 +12,10 @@ export class DiscordService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private httpService: HttpService,
   ) {}
 
-  public message: string[] = [];
+  public messages: string[] = [];
 
   // Méthode pour échanger le code d'autorisation contre des tokens
   async exchangeCodeForTokens(
@@ -97,11 +99,10 @@ export class DiscordService {
   async sendMessageToChannel(
     channelId: string,
     message: string,
-    req: any,
-  ): Promise<void> {
+    user_id: string): Promise<void> {
     const sendMessageUrl = `https://discord.com/api/v10/channels/${channelId}/messages`;
 
-    const userBddId = req.user.id;
+    const userBddId = user_id;
     const accessToken = await this.prisma.token.findUnique({
       where: { userId_provider: { userId: userBddId, provider: 'discord' } },
       select: { accessToken: true },
@@ -167,7 +168,7 @@ export class DiscordService {
       code,
       this.configService.get<string>('DISCORD_CLIENT_ID'),
       this.configService.get<string>('DISCORD_CLIENT_SECRET'),
-      'http://127.0.0.1:8080/auth/discord/callback',
+      this.configService.get<string>('DISCORD_REDIRECT_URI_SERVICE'),
     );
 
     console.log('tokens:', tokens);
@@ -238,8 +239,12 @@ export class DiscordService {
     }
   }
 
-  async listenToChannel(channelId: string, req: any, lookingFor: string): Promise<void> {
-    const userBddId = req.user.id;
+  async listenToChannel(channelId: string, lookingFor: string, user_id: string): Promise<boolean> {
+    const userBddId = user_id;
+
+    console.log('User Bdd Id:', userBddId);
+    console.log('Channel ID:', channelId);
+    console.log('Looking for:', lookingFor);
     const accessToken = await this.prisma.token.findUnique({
       where: { userId_provider: { userId: userBddId, provider: 'discord' } },
       select: { accessToken: true },
@@ -259,15 +264,23 @@ export class DiscordService {
 
     client.on('messageCreate', async (message) => {
       if (message.channel.id === channelId) {
+        // console.log('Message received:', message);
         if (message.content.includes(lookingFor)) {
-            console.log('Message found:', message);
-            this.message.push(message.content);
+            // console.log('Message found:', message);
+            this.messages.push(message.content);
+            return true;
         }
-        return true;
       }
     });
 
+    if (this.messages.length > 0) {
+        console.log('Messages found:', this.messages);
+        this.messages = [];
+        return true;
+    }
+
     client.login(this.configService.get<string>('DISCORD_BOT_TOKEN'));
+    return false;
   }
 
   // Méthode pour stocker les tokens dans la base de données

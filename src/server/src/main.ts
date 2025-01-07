@@ -11,9 +11,9 @@ import {
   EventSendMail,
 } from './service/meteo.service';
 import {
-  discordService,
-  EventgetMessageDiscord,
-  EventnotifyUserDiscord,
+    discordService, EventBanUserDiscord,
+    EventlistenMessageDiscord,
+    EventsendMessageDiscord,
 } from './service/discord.service';
 import {
   TimerService,
@@ -30,10 +30,13 @@ async function defineAllService(app: any) {
   allService.addService(TestService);
   allService.addService(TimerService);
 
-  allService.addEventToService('discord', EventnotifyUserDiscord);
-  allService.addEventToService('discord', EventgetMessageDiscord);
+
+    allService.addEventToService('discord', EventlistenMessageDiscord);
+    allService.addEventToService('discord', EventsendMessageDiscord);
+    allService.addEventToService('discord', EventBanUserDiscord);
   allService.addEventToService('testService', EventCheckFreezingTemperature);
   allService.addEventToService('testService', EventSendMail);
+
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
 
