@@ -6,10 +6,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ServiceRegister, defaultFieldGroup } from './service/register.service';
 import { EventMonitor } from './service/monitor.event';
 import {
-  TestService,
-  EventCheckFreezingTemperature,
-  EventSendMail,
+  WeatherService,
+  EventCheckTemperature
 } from './service/meteo.service';
+import {
+  MailTestService,
+  EventSendMail
+} from './service/mailTest.service';
 import {
   discordService, EventBanUserDiscord, EventjoinGuildDiscord,
   EventlistenMessageDiscord,
@@ -27,17 +30,18 @@ async function defineAllService(app: any) {
   const allService = app.get(ServiceRegister);
 
   allService.addService(discordService);
-  allService.addService(TestService);
+  allService.addService(WeatherService);
   allService.addService(TimerService);
-
+  allService.addService(MailTestService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
   allService.addEventToService('discord', EventBanUserDiscord);
   allService.addEventToService('discord', EventjoinGuildDiscord);
 
-  allService.addEventToService('testService', EventCheckFreezingTemperature);
-  allService.addEventToService('testService', EventSendMail);
+  allService.addEventToService('weather', EventCheckTemperature);
+
+  allService.addEventToService('mailTest', EventSendMail);
 
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
