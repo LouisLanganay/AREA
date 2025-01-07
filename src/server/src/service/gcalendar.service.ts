@@ -1,4 +1,63 @@
 import { Service, Event, FieldGroup } from '../../../shared/Workflow';
+import { BadRequestException } from '@nestjs/common';
+// src/services/CalendarService.ts
+import { google } from 'googleapis';
+import { UsersService } from '../users/users.service';
+
+export class CalendarService {
+  private calendar: any;
+  private readonly userService: UsersService;
+  private tokenIsSet: boolean = false;
+
+  constructor() {
+    // Initialisez l'authentification Google ici
+  }
+
+  async setToken(userId: string) {
+    const oAuth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      process.env.GOOGLE_REDIRECT_URI,
+    );
+
+    // Récupérez le token depuis votre base de données ou autre source sécurisée
+    // Ici, on suppose que vous avez une méthode pour obtenir le token d'un utilisateur
+    const accessToken = await this.getAccessToken(userId); // Implémentez cette méthode
+
+    if (!accessToken) {
+      throw new BadRequestException('Access token not found');
+    }
+
+    oAuth2Client.setCredentials({
+      access_token: accessToken.accessToken,
+      refresh_token: accessToken.refreshToken,
+    });
+
+    this.calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
+  }
+
+  private async getAccessToken(userId: string) {
+    return await this.userService.getTokenService(userId, 'gcalendar');
+  }
+
+  // Méthode pour ajouter un événement
+  async addEvent(calendarId: string, event: any, userId: string): Promise<any> {
+    try {
+      await this.setToken(userId);
+      const response = await this.calendar.events.insert({
+        calendarId,
+        requestBody: event,
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error(
+        'Error adding event to Google Calendar:',
+        error.response?.data || error.message,
+      );
+      throw new BadRequestException('Failed to add event to Google Calendar');
+    }
+  }
+}
 
 export const ListenEventGcalendar: Event = {
   type: 'action',
@@ -30,5 +89,190 @@ export const gcalendarService: Service = {
   auth: {
     uri: '/auth/google/redirect/gcalendar',
     callback_uri: '/auth/google/callback/gcalendar',
+  },
+};
+
+// src/events/EventAddGoogleCalendar.ts
+
+export const EventAddGoogleCalendar: Event = {
+  type: 'reaction',
+  id_node: 'addGoogleCalendarEvent',
+  name: 'Add Google Calendar Event',
+  description: 'Adds a new event to Google Calendar',
+  serviceName: 'googleCalendar',
+  fieldGroups: [
+    {
+      id: 'event_details',
+      name: 'Event Details',
+      description: 'Details of the Google Calendar event',
+      type: 'group',
+      fields: [
+        {
+          id: 'calendarId',
+          type: 'string',
+          required: false,
+          description:
+            'The ID of the calendar to add the event to (default: primary)',
+          value: 'primary',
+        },
+        {
+          id: 'summary',
+          type: 'string',
+          required: true,
+          description: 'Title of the event',
+        },
+        {
+          id: 'location',
+          type: 'string',
+          required: false,
+          description: 'Location of the event',
+        },
+        {
+          id: 'description',
+          type: 'string',
+          required: false,
+          description: 'Description of the event',
+        },
+        {
+          id: 'startDateTime',
+          type: 'string',
+          required: true,
+          description: 'Start date and time of the event (RFC3339 format)',
+        },
+        {
+          id: 'startTimeZone',
+          type: 'string',
+          required: true,
+          description: 'Time zone of the start time',
+        },
+        {
+          id: 'endDateTime',
+          type: 'string',
+          required: true,
+          description: 'End date and time of the event (RFC3339 format)',
+        },
+        {
+          id: 'endTimeZone',
+          type: 'string',
+          required: true,
+          description: 'Time zone of the end time',
+        },
+        {
+          id: 'attendees',
+          type: 'string',
+          required: false,
+          description: 'Comma-separated list of attendee emails',
+        },
+        {
+          id: 'reminders',
+          type: 'string',
+          required: false,
+          description:
+            'JSON string of reminders (e.g., [{"method":"email","minutes":1440},{"method":"popup","minutes":10}])',
+        },
+      ],
+    },
+  ],
+  execute: async (parameters: FieldGroup[]) => {
+    const calendarService = new CalendarService(); // Assurez-vous que ce service est correctement implémenté
+    const userId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'user_id')?.value;
+
+    const eventGroup = parameters.find((group) => group.id === 'event_details');
+
+    if (!eventGroup) {
+      console.error('Event details group not found');
+      throw new BadRequestException('Event details are missing');
+    }
+
+    const calendarIdField = eventGroup.fields.find(
+      (field) => field.id === 'calendarId',
+    );
+    const summaryField = eventGroup.fields.find(
+      (field) => field.id === 'summary',
+    );
+    const locationField = eventGroup.fields.find(
+      (field) => field.id === 'location',
+    );
+    const descriptionField = eventGroup.fields.find(
+      (field) => field.id === 'description',
+    );
+    const startDateTimeField = eventGroup.fields.find(
+      (field) => field.id === 'startDateTime',
+    );
+    const startTimeZoneField = eventGroup.fields.find(
+      (field) => field.id === 'startTimeZone',
+    );
+    const endDateTimeField = eventGroup.fields.find(
+      (field) => field.id === 'endDateTime',
+    );
+    const endTimeZoneField = eventGroup.fields.find(
+      (field) => field.id === 'endTimeZone',
+    );
+    const attendeesField = eventGroup.fields.find(
+      (field) => field.id === 'attendees',
+    );
+    const remindersField = eventGroup.fields.find(
+      (field) => field.id === 'reminders',
+    );
+
+    if (
+      !summaryField ||
+      !startDateTimeField ||
+      !startTimeZoneField ||
+      !endDateTimeField ||
+      !endTimeZoneField
+    ) {
+      console.error('Missing required event fields');
+      throw new BadRequestException('Required event fields are missing');
+    }
+
+    const calendarId = calendarIdField?.value || 'primary';
+    const summary = summaryField.value;
+    const location = locationField?.value;
+    const description = descriptionField?.value;
+    const startDateTime = startDateTimeField.value;
+    const startTimeZone = startTimeZoneField.value;
+    const endDateTime = endDateTimeField.value;
+    const endTimeZone = endTimeZoneField.value;
+    const attendees = attendeesField?.value
+      ? attendeesField.value.split(',').map((email) => email.trim())
+      : [];
+    let reminders = undefined;
+    if (remindersField?.value) {
+      try {
+        reminders = JSON.parse(remindersField.value);
+      } catch (e) {
+        console.error('Invalid reminders JSON', e);
+        throw new BadRequestException('Invalid reminders format');
+      }
+    }
+
+    const event = {
+      summary,
+      location,
+      description,
+      start: {
+        dateTime: startDateTime,
+        timeZone: startTimeZone,
+      },
+      end: {
+        dateTime: endDateTime,
+        timeZone: endTimeZone,
+      },
+      attendees: attendees.map((email: string) => ({ email })),
+      reminders: reminders
+        ? { useDefault: false, overrides: reminders }
+        : { useDefault: true },
+    };
+
+    try {
+      await calendarService.addEvent(calendarId, event, userId);
+      console.log('Event added successfully');
+    } catch (error) {
+      console.error('Failed to add event:', error);
+      throw new BadRequestException('Failed to add event to Google Calendar');
+    }
   },
 };

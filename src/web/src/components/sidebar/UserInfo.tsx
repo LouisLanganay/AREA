@@ -118,10 +118,10 @@ export function UserInfo({
                 </DropdownMenuItem>
                 {accounts.map((account) => (
                   <DropdownMenuItem
-                    key={account.token}
-                    onClick={() => switchAccount(account.token)}
+                    key={account.user?.id}
+                    onClick={() => switchAccount(account.user?.id)}
                     className='justify-between'
-                    disabled={isCurrentAccount(account.token)}
+                    disabled={isCurrentAccount(account.user?.id)}
                   >
                     <div className='flex items-center gap-2'>
                       <div className='flex-shrink-0 flex size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden'>
@@ -139,7 +139,7 @@ export function UserInfo({
                         {account.user?.displayName || account.user?.username}
                       </span>
                     </div>
-                    {isCurrentAccount(account.token) && (
+                    {isCurrentAccount(account.user?.id) && (
                       <Badge variant='outline' className="ml-2">
                         {t('sidebar.items.currentAccount')}
                       </Badge>
@@ -164,16 +164,16 @@ export function UserInfo({
                     <DropdownMenuSubContent>
                       {accounts.map((account) => (
                         <DropdownMenuItem
-                          key={account.token}
+                          key={account.user?.id}
                           onClick={() => {
-                            switchAccount(account.token);
+                            switchAccount(account.user?.id);
                             toast({
                               description: t('sidebar.items.switchAccountSuccess'),
                               variant: 'success',
                             });
                           }}
                           className='justify-between min-w-[--radix-dropdown-menu-trigger-width]'
-                          disabled={isCurrentAccount(account.token)}
+                          disabled={isCurrentAccount(account.user?.id)}
                         >
                           <div className='flex items-center gap-2'>
                             <div className='flex-shrink-0 flex size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden'>
@@ -189,7 +189,7 @@ export function UserInfo({
                             </div>
                             {account.user?.displayName || account.user?.username}
                           </div>
-                          {isCurrentAccount(account.token) && (
+                          {isCurrentAccount(account.user?.id) && (
                             <Badge variant='outline'>
                               {t('sidebar.items.currentAccount')}
                             </Badge>

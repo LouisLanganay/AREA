@@ -13,13 +13,16 @@ export const getWorkflows = async (token: string): Promise<Workflow[]> => {
 };
 
 export const updateWorkflow = async (id: string, data: Partial<Workflow>, token: string) => {
-  const response = await axiosInstance.patch<Workflow>(`/workflows/${id}`, data,
+  const response = await axiosInstance.patch<Workflow>(
+    `/workflows/${id}`,
+    data,
     {
       headers: {
         Authorization: `Bearer ${token}`,
         'ngrok-skip-browser-warning': 'true'
       }
-    });
+    }
+  );
   return response.data;
 };
 

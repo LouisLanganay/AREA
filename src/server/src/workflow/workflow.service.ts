@@ -1,7 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
-import { updateWorkflowDto } from './dto/updateWorkflow.dto';
+import { UpdateWorkflowDto } from './dto/updateWorkflow.dto';
+import { NodeDto } from './dto/node.dto';
 
 @Injectable()
 export class WorkflowService {
@@ -10,86 +11,84 @@ export class WorkflowService {
   async getWorkflowById(id: string, userId: string) {
     const workflow = await this.prisma.workflow.findUnique({
       where: { id },
-      select: {
-        id: true,
-        userId: true,
-        name: true,
-        description: true,
-        image: true,
-        enabled: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         triggers: {
           where: { parentNodeId: null },
-          select: {
-            id: true,
-            id_node: true,
-            type: true,
-            name: true,
-            serviceName: true,
-            fieldGroups: true,
-            conditions: true,
-            variables: true,
+          include: {
+            children: {
+              include: {
+                children: {
+                  include: {
+                    children: {
+                      include: {
+                        children: {
+                          include: {
+                            children: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
     });
 
-    if (!workflow || workflow.userId !== userId) {
+    if (!workflow) {
+      throw new ForbiddenException({
+        err_code: 'WORKFLOW_NOT_FOUND',
+      });
+    }
+
+    if (workflow.userId !== userId) {
       throw new ForbiddenException({
         err_code: 'WORKFLOW_INVALID_PERM',
       });
     }
 
-    const triggersWithNodes = await Promise.all(
-      workflow.triggers.map(async (trigger) => ({
-        ...trigger,
-        children: await this.fetchNodesRecursively(trigger.id),
-      })),
-    );
-
     const { userId: _, ...rest } = workflow;
-    return { ...rest, triggers: triggersWithNodes };
+    return rest;
   }
 
   async getWorkflowsByUser(userId: string) {
-    const workflows = await this.prisma.workflow.findMany({
+    const workflow = await this.prisma.workflow.findMany({
       where: { userId },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        image: true,
-        enabled: true,
-        createdAt: true,
-        updatedAt: true,
+      include: {
         triggers: {
           where: { parentNodeId: null },
-          select: {
-            id: true,
-            id_node: true,
-            type: true,
-            name: true,
-            serviceName: true,
-            fieldGroups: true,
-            conditions: true,
-            variables: true,
+          include: {
+            children: {
+              include: {
+                children: {
+                  include: {
+                    children: {
+                      include: {
+                        children: {
+                          include: {
+                            children: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
     });
 
-    return Promise.all(
-      workflows.map(async (workflow) => ({
-        ...workflow,
-        triggers: await Promise.all(
-          workflow.triggers.map(async (trigger) => ({
-            ...trigger,
-            children: await this.fetchNodesRecursively(trigger.id),
-          })),
-        ),
-      })),
-    );
+    if (!workflow) {
+      throw new ForbiddenException({
+        err_code: 'WORKFLOW_NOT_FOUND',
+      });
+    }
+
+    return workflow;
   }
 
   async createWorkflow(data: CreateWorkflowDto, userId: string) {
@@ -103,7 +102,6 @@ export class WorkflowService {
       },
     });
 
-    console.log(data.triggers);
     await this.createNodeRecursively(data.triggers[0], createdWorkflow.id);
 
     return createdWorkflow;
@@ -128,7 +126,6 @@ export class WorkflowService {
       },
     });
 
-    console.log(node.children.length);
     if (node.children?.length) {
       for (const child of node.children) {
         await this.createNodeRecursively(child, workflowId, createdNode.id);
@@ -136,26 +133,81 @@ export class WorkflowService {
     }
   }
 
-  async updateWorkflow(data: updateWorkflowDto, userId: string) {
-    const workflowId = data.id;
+  async updateWorkflow(data: UpdateWorkflowDto, userId: string, id: string) {
+    const workflowId = id;
+
     const workflow = await this.prisma.workflow.findUnique({
       where: { id: workflowId },
+      include: { triggers: true },
     });
 
     if (!workflow) {
       throw new ForbiddenException({ err_code: 'WORKFLOW_UNKNOWN' });
     }
+
     if (workflow.userId !== userId) {
       throw new ForbiddenException({ err_code: 'WORKFLOW_INVALID_PERM' });
     }
 
-    return this.prisma.workflow.update({
+    const updateData = {
+      ...(data.name && { name: data.name }),
+      ...(data.description && { description: data.description }),
+      ...(data.image && { image: data.image }),
+      ...(data.enabled !== undefined && { enabled: data.enabled }),
+      ...(data.favorite !== undefined && { favorite: data.favorite }),
+      updatedAt: new Date(),
+    };
+
+    const updatedWorkflow = await this.prisma.workflow.update({
       where: { id: workflowId },
-      data: data.data,
+      data: updateData,
     });
+
+    if (data.triggers) {
+      await this.updateTriggersRecursively(data.triggers, workflowId);
+    }
+
+    return this.getWorkflowById(workflowId, userId);
+  }
+
+  private async updateTriggersRecursively(
+    triggers: NodeDto[],
+    workflowId: string,
+    parentNodeId?: string,
+  ) {
+    if (!parentNodeId) {
+      await this.prisma.node.deleteMany({
+        where: { workflowId },
+      });
+    }
+
+    for (const trigger of triggers) {
+      const createdNode = await this.prisma.node.create({
+        data: {
+          id_node: trigger.id_node,
+          type: trigger.type,
+          name: trigger.name,
+          serviceName: trigger.serviceName,
+          workflowId: workflowId,
+          parentNodeId: parentNodeId || null,
+          fieldGroups: trigger.fieldGroups,
+          conditions: trigger.conditions || null,
+          variables: trigger.variables || null,
+        },
+      });
+
+      if (trigger.children?.length) {
+        await this.updateTriggersRecursively(
+          trigger.children,
+          workflowId,
+          createdNode.id,
+        );
+      }
+    }
   }
 
   async deleteWorkflow(id: string, userId: string) {
+    console.log(id, userId);
     const workflow = await this.prisma.workflow.findUnique({
       where: { id, userId },
       select: { id: true },

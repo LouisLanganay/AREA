@@ -13,7 +13,7 @@ import {
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
 import { AuthGuard } from '@nestjs/passport';
-import { updateWorkflowDto } from './dto/updateWorkflow.dto';
+import { UpdateWorkflowDto } from './dto/updateWorkflow.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -145,7 +145,7 @@ export class WorkflowController {
   })
   @HttpCode(200)
   async getWorkflowById(@Param('id') id: string, @Req() req: any) {
-    const userId = req.user.id; // Récupère l'ID utilisateur depuis le token
+    const userId = req.user.id;
     return this.workflowService.getWorkflowById(id, userId);
   }
 
@@ -187,7 +187,7 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async getWorkflowsByUser(@Req() req: any) {
-    const loggedInUserId = req.user.id; // ID utilisateur connecté
+    const loggedInUserId = req.user.id;
     console.log('Fetching workflows for user:', loggedInUserId);
     return this.workflowService.getWorkflowsByUser(loggedInUserId);
   }
@@ -203,7 +203,7 @@ export class WorkflowController {
     type: String,
   })
   @ApiBody({
-    type: updateWorkflowDto,
+    type: UpdateWorkflowDto,
     examples: {
       example1: {
         summary: 'Example update workflow',
@@ -261,12 +261,12 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async updateWorkflow(
-    @Body() data: updateWorkflowDto,
+    @Body() data: UpdateWorkflowDto,
     @Req() req: any,
     @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    return this.workflowService.updateWorkflow(data, userId);
+    return this.workflowService.updateWorkflow(data, userId, id);
   }
 
   @UseGuards(AuthGuard('jwt'))

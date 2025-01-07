@@ -11,9 +11,9 @@ import {
   EventSendMail,
 } from './service/meteo.service';
 import {
-  discordService,
-  EventgetMessageDiscord,
-  EventnotifyUserDiscord,
+  discordService, EventBanUserDiscord, EventjoinGuildDiscord,
+  EventlistenMessageDiscord,
+  EventsendMessageDiscord,
 } from './service/discord.service';
 import { gcalendarService } from './service/gcalendar.service';
 import {
@@ -32,15 +32,20 @@ async function defineAllService(app: any) {
   allService.addService(gcalendarService);
   allService.addService(TimerService);
 
-  allService.addEventToService('discord', EventnotifyUserDiscord);
-  allService.addEventToService('discord', EventgetMessageDiscord);
+
+  allService.addEventToService('discord', EventlistenMessageDiscord);
+  allService.addEventToService('discord', EventsendMessageDiscord);
+  allService.addEventToService('discord', EventBanUserDiscord);
+  allService.addEventToService('discord', EventjoinGuildDiscord);
+
   allService.addEventToService('testService', EventCheckFreezingTemperature);
   allService.addEventToService('testService', EventSendMail);
+
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
 
   const monitor = new EventMonitor();
-  await monitor.monitoringWorkflows(await allService.getAllServices());
+  monitor.startAutoFetchAndCheck(await allService.getAllServices());
 }
 
 async function bootstrap() {

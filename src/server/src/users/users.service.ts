@@ -291,6 +291,17 @@ export class UsersService {
     });
   }
 
+  async getTokenService(userId: string, provider: string) {
+    const token = await this.prismaService.token.findFirst({
+      where: {
+        userId,
+        provider,
+      },
+    });
+    if (!token) return null;
+    return token;
+  }
+
   async checkRole(id: string, role: string) {
     const user = await this.prismaService.user.findUnique({
       where: {
