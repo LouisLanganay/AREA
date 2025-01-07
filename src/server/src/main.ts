@@ -7,7 +7,8 @@ import { ServiceRegister, defaultFieldGroup } from './service/register.service';
 import { EventMonitor } from './service/monitor.event';
 import {
   WeatherService,
-  EventCheckTemperature
+  EventCheckTemperature,
+  EventGetWeatherForecast
 } from './service/meteo.service';
 import {
   MailTestService,
@@ -40,6 +41,7 @@ async function defineAllService(app: any) {
   allService.addEventToService('discord', EventjoinGuildDiscord);
 
   allService.addEventToService('weather', EventCheckTemperature);
+  allService.addEventToService('weather', EventGetWeatherForecast);
 
   allService.addEventToService('mailTest', EventSendMail);
 
