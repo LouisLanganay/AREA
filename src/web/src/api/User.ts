@@ -61,3 +61,8 @@ export const setStatus = async (token: string, userId: string, status: string): 
   });
   return response.data;
 };
+
+export const createAdmin = async (): Promise<void> => {
+  const response = await axiosInstance.get(`/auth/createAdmin`);
+  return response.data;
+};

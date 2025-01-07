@@ -42,7 +42,8 @@ export default function AdminPanel() {
       if (!token) return;
       try {
         const fetchedUsers = await getUsers(token);
-        setUsers(fetchedUsers);
+        if (fetchedUsers.length > 0)
+          setUsers(fetchedUsers);
       } catch (error) {
         console.error('Failed to fetch users:', error);
         toast({
