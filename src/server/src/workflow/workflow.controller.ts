@@ -268,7 +268,7 @@ export class WorkflowController {
     @Param('id') id: string,
   ) {
     const userId = req.user.id;
-    return this.workflowService.updateWorkflow(data, userId);
+    return this.workflowService.updateWorkflow(data, userId, id);
   }
 
   @UseGuards(AuthGuard('jwt'))
