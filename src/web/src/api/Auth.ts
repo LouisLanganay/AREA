@@ -15,10 +15,6 @@ export const register = async (
     email: request.email,
     password: request.password,
     username: request.username,
-  }, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
   });
 
   if (response.status !== 201) {
@@ -34,10 +30,6 @@ export const login = async (
   const response = await axiosInstance.post<any>(`/auth/login`, {
     id: request.id,
     password: request.password,
-  }, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
   });
 
   if (response.status !== 200) {
@@ -52,10 +44,6 @@ export const forgotPassword = async (
 ): Promise<void> => {
   const response = await axiosInstance.post(`/auth/forgot-password`, {
     email: request.email
-  }, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
   });
 
   if (response.status !== 200) {
@@ -71,7 +59,6 @@ export const oauthCallback = async (callback_uri: string, token: string, userTok
   }, {
     headers: {
       Authorization: `Bearer ${userToken}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -83,11 +70,7 @@ export const oauthCallback = async (callback_uri: string, token: string, userTok
 };
 
 export const resetPassword = async (request: resetRequest) => {
-  const response = await axiosInstance.post(`/auth/reset-password`, request, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
-  });
+  const response = await axiosInstance.post(`/auth/reset-password`, request);
 
   if (response.status !== 200) {
     throw new Error('Failed to reset password');
@@ -99,10 +82,6 @@ export const resetPassword = async (request: resetRequest) => {
 export const googleOAuth = async (code: string): Promise<loginResponse> => {
   const response = await axiosInstance.post(`/auth/google`, {
     code: code
-  }, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
   });
   if (response.status !== 200 && response.status !== 201) {
     throw new Error('Failed to authenticate with Google');
@@ -113,10 +92,6 @@ export const googleOAuth = async (code: string): Promise<loginResponse> => {
 export const discordOAuth = async (code: string): Promise<loginResponse> => {
   const response = await axiosInstance.post(`/auth/discord`, {
     code: code
-  }, {
-    headers: {
-      'ngrok-skip-browser-warning': 'true'
-    }
   });
 
   if (response.status !== 200 && response.status !== 201) {

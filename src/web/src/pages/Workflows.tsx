@@ -29,7 +29,7 @@ import { Service } from '@/interfaces/Services';
 import { Event, Workflow } from '@/interfaces/Workflows';
 import { getAllFolders, getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
 import { ArrowRightCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
-import { ArrowRightIcon, ChevronRightIcon, EllipsisHorizontalIcon, FolderIcon, FolderPlusIcon, PauseIcon, PencilSquareIcon, PlayIcon, PlusIcon, StarIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ChevronRightIcon, EllipsisHorizontalIcon, FolderIcon, FolderPlusIcon, PauseIcon, PencilSquareIcon, PlayIcon, PlusIcon, StarIcon, TrashIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -633,7 +633,6 @@ export default function Workflows() {
                         className={clsx(
                           'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
                           selectedTrigger?.id_node === action.id_node && 'border-green-500',
-                          !service.enabled && 'pointer-events-none opacity-50'
                         )}
                         onClick={() => handleSelectTrigger(action)}
                       >

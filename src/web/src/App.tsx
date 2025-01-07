@@ -19,6 +19,7 @@ import Login from './pages/Login';
 import ClientAPK from './pages/ClientAPK';
 import Loading from './pages/Loading';
 import Premium from './pages/Premium';
+import AssetLinks from './pages/AssetLinks';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -229,6 +230,13 @@ function App() {
                 path='/client.apk'
                 element={
                   <ClientAPK />
+                }
+              />
+
+              <Route
+                path='/well-known/assetlinks.json'
+                element={
+                  <AssetLinks />
                 }
               />
             </Routes>

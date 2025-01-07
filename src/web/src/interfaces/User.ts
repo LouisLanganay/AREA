@@ -7,6 +7,7 @@ interface User {
   createdAt: number;
   updatedAt: number;
   lastConnection?: number;
+  status: 'active' | 'suspended';
 }
 
 interface UserPreferences {
