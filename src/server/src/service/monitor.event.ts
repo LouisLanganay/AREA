@@ -70,21 +70,35 @@ export class EventMonitor {
       fields: workflowFields,
     };
 
-    if (typeof event.check === 'function') {
-      const result = await event.check([params, nodeFieldGroupWorkflow]);
+    let status_workflow = 'success';
+    try {
+      if (typeof event.check === 'function') {
+        const result = await event.check([params, nodeFieldGroupWorkflow]);
 
-      if (result) {
-        const root_node = workflow.triggers.find(
-          (node) => node.id_node === event.id_node,
-        );
-        if (root_node) {
-          await this.executeDependentNodes(
-            root_node.id,
-            workflowId,
-            serviceList,
+        if (result) {
+          const root_node = workflow.triggers.find(
+            (node) => node.id_node === event.id_node,
           );
+          if (root_node) {
+            await this.executeDependentNodes(
+              root_node.id,
+              workflowId,
+              serviceList,
+            );
+          }
         }
       }
+    } catch (error) {
+      console.error(error);
+      status_workflow = 'failure';
+    } finally {
+      await this.prisma.historyWorkflow.create({
+        data: {
+          workflowId,
+          status: status_workflow,
+          executionDate: new Date(),
+        },
+      });
     }
   }
 
