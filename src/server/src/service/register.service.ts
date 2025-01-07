@@ -54,7 +54,7 @@ export class ServiceRegister {
         });
         return {
           ...service,
-          enable: !!token,
+          enabled: !!token,
         };
       }),
     );

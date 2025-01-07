@@ -180,6 +180,7 @@ export default function EditWorkflow() {
     const updatedNodes = updateNodeFields(updatedWorkflow.triggers);
     const newWorkflow = { ...updatedWorkflow, triggers: updatedNodes };
     setUpdatedWorkflow(newWorkflow);
+    console.log("newWorkflow", newWorkflow);
 
     setNodes(nodes => nodes.map(node => {
       if (node.id === nodeId) {
@@ -228,7 +229,7 @@ export default function EditWorkflow() {
     });
 
     try {
-      console.log(updatedWorkflow);
+      console.log("saving updatedWorkflow", updatedWorkflow);
       await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
       setWorkflow(updatedWorkflow);
       myToast.update({

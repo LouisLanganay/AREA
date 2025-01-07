@@ -15,7 +15,7 @@ export const getWorkflows = async (token: string): Promise<Workflow[]> => {
 export const updateWorkflow = async (id: string, data: Partial<Workflow>, token: string) => {
   const response = await axiosInstance.patch<Workflow>(
     `/workflows/${id}`,
-    { id, data },
+    data,
     {
       headers: {
         Authorization: `Bearer ${token}`,

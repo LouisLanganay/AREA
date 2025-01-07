@@ -120,12 +120,12 @@ export default function Services() {
         </TabsList>
 
         <TabsContent value="enabled" className='flex flex-col gap-2 mt-0'>
-          {services.filter(service => service.enabled || !service.auth?.callback_uri).length === 0 ? (
+          {services.filter(service => service.enabled).length === 0 ? (
             <p className='text-muted-foreground'>
               No enabled services found.
             </p>
           ) : (
-            services.filter(service => service.enabled || !service.auth?.callback_uri).map((service) => (
+            services.filter(service => service.enabled).map((service) => (
               <div className='bg-card p-3 rounded-lg border border-border flex flex-col md:flex-row justify-between md:items-center gap-2'>
                 <div className='flex flex-row items-center gap-2'>
                   <div className='flex bg-muted p-1 rounded-lg border'>
@@ -155,12 +155,12 @@ export default function Services() {
         </TabsContent>
 
         <TabsContent value="disabled" className='flex flex-col gap-2 mt-0'>
-          {services.filter(service => !service.enabled && service.auth?.callback_uri).length === 0 ? (
+          {services.filter(service => !service.enabled).length === 0 ? (
             <p className='text-muted-foreground'>
               No disabled services found.
             </p>
           ) : (
-            services.filter(service => !service.enabled && service.auth?.callback_uri).map((service) => (
+            services.filter(service => !service.enabled).map((service) => (
               <div className='bg-card p-3 rounded-lg border border-border flex flex-col md:flex-row justify-between md:items-center gap-2'>
                 <div className='flex flex-row items-center gap-2'>
                   <div className='flex bg-muted p-1 rounded-lg border'>
