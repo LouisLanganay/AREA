@@ -122,8 +122,6 @@ export const EventDayAndTimeReached: Event = {
     },
 };
 
-
-
 export const TimerService: Service = {
     id: "timer",
     name: "Timer Service",

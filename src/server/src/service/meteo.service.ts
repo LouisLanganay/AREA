@@ -4,7 +4,7 @@ export const EventCheckTemperature: Event = {
     type: "action",
     id_node: "checkTemperature",
     name: "Check Temperature",
-    description: "Check the temperature at a specific location",
+    description: "Check if the temperature at a location is below a certain threshold",
     serviceName: "weather",
     fieldGroups: [
         {

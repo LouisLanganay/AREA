@@ -4,7 +4,7 @@ import {MailerService} from "../mailer/mailer.service";
 export const EventSendMail: Event = {
     type: "reaction",
     id_node: "sendEmail",
-    name: "Send Email",
+    name: "Send Mail",
     description: "Send an email to a list of recipients",
     serviceName: "mailTest",
     fieldGroups: [
@@ -64,7 +64,7 @@ export const EventSendMail: Event = {
         }
 
         try {
-            // mailerService.sendEmail(recipientEmails, subject, body);
+            mailerService.sendEmail(recipientEmails, subject, body);
             console.log("Email sent successfully");
         } catch (error) {
             console.error("Failed to send email:", error);
