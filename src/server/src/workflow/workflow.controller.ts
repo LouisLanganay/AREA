@@ -294,4 +294,16 @@ export class WorkflowController {
     const userId = req.user.id;
     return this.workflowService.deleteWorkflow(id, userId);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('run/:id')
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the workflow to run',
+    required: true,
+    type: String,
+  })
+  async runWorkflow(@Param('id') id: string, @Req() req: any) {
+    await this.workflowService.runWorkflowById(id);
+  }
 }

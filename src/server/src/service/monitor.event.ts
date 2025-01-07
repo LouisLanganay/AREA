@@ -10,6 +10,42 @@ export class EventMonitor {
     this.prisma = new PrismaService();
   }
 
+  async executeWorkflowDirectly(
+    workflowId: string,
+    serviceList: Service[],
+  ): Promise<void> {
+    const workflow = await this.prisma.workflow.findUnique({
+      where: { id: workflowId },
+      include: { triggers: true },
+    });
+
+    if (!workflow) {
+      throw new Error(`Workflow ID ${workflowId} not found or not enabled.`);
+    }
+
+    const rootNode = workflow.triggers.find((node) => !node.parentNodeId);
+
+    if (!rootNode) {
+      throw new Error(`No root node found for workflow ID ${workflowId}.`);
+    }
+
+    let status_workflow = 'success';
+    try {
+      await this.executeDependentNodes(rootNode.id, workflowId, serviceList);
+    } catch (error) {
+      console.error(`Error executing workflow ${workflowId}:`, error);
+      status_workflow = 'failure';
+    } finally {
+      await this.prisma.historyWorkflow.create({
+        data: {
+          workflowId,
+          status: status_workflow,
+          executionDate: new Date(),
+        },
+      });
+    }
+  }
+
   async checkAction(
     event: Event,
     params: FieldGroup,

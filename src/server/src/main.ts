@@ -11,7 +11,9 @@ import {
   EventSendMail,
 } from './service/meteo.service';
 import {
-  discordService, EventBanUserDiscord, EventjoinGuildDiscord,
+  discordService,
+  EventBanUserDiscord,
+  EventjoinGuildDiscord,
   EventlistenMessageDiscord,
   EventsendMessageDiscord,
 } from './service/discord.service';
@@ -23,13 +25,10 @@ import {
 import { FieldGroup } from '../../shared/Workflow';
 import { updateUserDto } from './users/dto/update-user.dto';
 
-async function defineAllService(app: any) {
-  const allService = app.get(ServiceRegister);
-
+export async function defineAllService(allService: any) {
   allService.addService(discordService);
   allService.addService(TestService);
   allService.addService(TimerService);
-
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
@@ -42,8 +41,12 @@ async function defineAllService(app: any) {
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
 
+  return allService;
+}
+
+async function handlleAllServices(allService: ServiceRegister) {
   const monitor = new EventMonitor();
-  monitor.startAutoFetchAndCheck(await allService.getAllServices());
+  monitor.startAutoFetchAndCheck(allService.getAllServices());
 }
 
 async function bootstrap() {
@@ -59,7 +62,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
 
-  await defineAllService(app);
+  const allService = app.get(ServiceRegister);
+  await handlleAllServices(await defineAllService(allService));
 
   // =============== FOR TEST ONLY =============== //
   // console.log('============== DEBUG ================');
