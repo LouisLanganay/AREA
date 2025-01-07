@@ -3,19 +3,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { ServiceRegister, defaultFieldGroup } from './service/register.service';
+import { ServiceRegister } from './service/register.service';
 import { EventMonitor } from './service/monitor.event';
 import {
   WeatherService,
   EventCheckTemperature,
-  EventGetWeatherForecast
+  EventGetWeatherForecast,
 } from './service/meteo.service';
+import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
-  MailTestService,
-  EventSendMail
-} from './service/mailTest.service';
-import {
-  discordService, EventBanUserDiscord, EventjoinGuildDiscord,
+  discordService,
+  EventBanUserDiscord,
+  EventjoinGuildDiscord,
   EventlistenMessageDiscord,
   EventsendMessageDiscord,
 } from './service/discord.service';
@@ -25,8 +24,6 @@ import {
   EventDayAndTimeReached,
 } from './service/timer.service';
 import { MailerService } from './service/mailer.service';
-import { FieldGroup } from '../../shared/Workflow';
-import { updateUserDto } from './users/dto/update-user.dto';
 
 async function defineAllService(app: any) {
   const allService = app.get(ServiceRegister);
