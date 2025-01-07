@@ -38,7 +38,7 @@ async function defineAllService(app: any) {
   allService.addEventToService('timer', EventDayAndTimeReached);
 
   const monitor = new EventMonitor();
-  await monitor.monitoringWorkflows(await allService.getAllServices());
+  monitor.startAutoFetchAndCheck(await allService.getAllServices());
 }
 
 async function bootstrap() {

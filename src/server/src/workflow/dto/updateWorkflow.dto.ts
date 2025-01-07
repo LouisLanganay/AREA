@@ -1,10 +1,17 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsString,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { NodeDto } from './node.dto';
 
-export class updateWorkflowDto {
+export class UpdateWorkflowDto {
   @IsString()
   id: string;
 
-  data: any;
   @IsOptional()
   @IsString()
   name?: string;
@@ -22,12 +29,15 @@ export class updateWorkflowDto {
   enabled?: boolean;
 
   @IsOptional()
-  nodes?: any;
+  @IsBoolean()
+  favorite?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NodeDto)
+  triggers?: NodeDto[];
 
   @IsOptional()
   updatedAt?: Date;
-
-  @IsOptional()
-  @IsBoolean()
-  favorite?: boolean;
 }
