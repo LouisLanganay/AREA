@@ -3,13 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { ServiceRegister, defaultFieldGroup } from './service/register.service';
+import { ServiceRegister } from './service/register.service';
 import { EventMonitor } from './service/monitor.event';
 import {
-  TestService,
-  EventCheckFreezingTemperature,
-  EventSendMail,
+  WeatherService,
+  EventCheckTemperature,
+  EventGetWeatherForecast,
 } from './service/meteo.service';
+import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
   discordService,
   EventBanUserDiscord,
@@ -22,21 +23,24 @@ import {
   EventDateReached,
   EventDayAndTimeReached,
 } from './service/timer.service';
-import { FieldGroup } from '../../shared/Workflow';
-import { updateUserDto } from './users/dto/update-user.dto';
+import { MailerService } from './service/mailer.service';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
-  allService.addService(TestService);
+  allService.addService(WeatherService);
   allService.addService(TimerService);
+  allService.addService(MailTestService);
+  allService.addService(MailerService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
   allService.addEventToService('discord', EventBanUserDiscord);
   allService.addEventToService('discord', EventjoinGuildDiscord);
 
-  allService.addEventToService('testService', EventCheckFreezingTemperature);
-  allService.addEventToService('testService', EventSendMail);
+  allService.addEventToService('weather', EventCheckTemperature);
+  allService.addEventToService('weather', EventGetWeatherForecast);
+
+  allService.addEventToService('mailTest', EventSendMail);
 
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);

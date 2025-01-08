@@ -159,10 +159,11 @@ export class AuthController {
   }
 
   @Get('discord/redirect')
-    async discordAuthRedirect(@Req() req) {
-        const redirectUrl = await this.discordService.getRedirectUrl();
-        return {redirectUrl}
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async discordAuthRedirect(@Req() req) {
+    const redirectUrl = await this.discordService.getRedirectUrl();
+    return { redirectUrl };
+  }
 
   //retourne le dans le body le lien de redirection
   //@Get('discord')
@@ -284,5 +285,10 @@ export class AuthController {
       throw new BadRequestException('Code is missing');
     }
     return await this.authService.discordOauth(code);
+  }
+
+  @Get('createAdmin')
+  async createAdmin() {
+    return await this.authService.createAdmin();
   }
 }

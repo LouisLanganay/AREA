@@ -77,6 +77,7 @@ export class WorkflowService {
       });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId: _, ...rest } = workflow;
     return rest;
   }
@@ -186,6 +187,7 @@ export class WorkflowService {
       updatedAt: new Date(),
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updatedWorkflow = await this.prisma.workflow.update({
       where: { id: workflowId },
       data: updateData,
