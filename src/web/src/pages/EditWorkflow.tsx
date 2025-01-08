@@ -1,11 +1,11 @@
 import { getServices } from '@/api/Services';
 import { getWorkflow, updateWorkflow } from '@/api/Workflows';
-import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/interfaces/Services';
 import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
-import { findField, findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
+import { findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
   applyEdgeChanges,
@@ -52,20 +52,18 @@ export default function EditWorkflow() {
 
   const flattenNodesAndCreateEdges = useCallback((triggers: Event[], services: Service[]) => {
     let allEdges: WorkflowEdge[] = [];
-    const nodeMap = new Map<string, WorkflowNode>();
-    let allNodes: Event[] = [];
+    let allNodes: WorkflowNode[] = [];
 
-    const processNode = (node: Event, depth: number = 0) => {
-      allNodes.push(node);
-      
+    const processNode = (node: Event, parentNode: WorkflowNode | null = null) => {
       const hasInvalidFields = node.fieldGroups.some(group =>
         group.fields.some(field => field.required && !field.value)
       );
 
+      // Create the current node
       const currentNode: WorkflowNode = {
         id: node.id_node,
         type: 'node',
-        position: { x: 100 + (depth * 300), y: 100 },
+        position: { x: 0, y: 0 }, // Position will be set by layout algorithm
         data: {
           label: node.name,
           service: services.find(s => s.id === node.serviceName),
@@ -76,41 +74,45 @@ export default function EditWorkflow() {
           isValid: !hasInvalidFields,
         },
       };
+      allNodes.push(currentNode);
 
-      nodeMap.set(node.id_node, currentNode);
-
-      // Process children and create edges
-      if (node.children) {
-        node.children.forEach(child => {
-          allEdges.push({ 
-            id: `${node.id_node}-${child.id_node}`, 
-            source: node.id_node, 
-            target: child.id_node 
-          });
-          processNode(child, depth + 1);
+      // Create edge from parent if exists
+      if (parentNode) {
+        allEdges.push({
+          id: `${parentNode.id}-${currentNode.id}`,
+          source: parentNode.id,
+          target: currentNode.id
         });
       }
 
-      return currentNode;
+      // Process children
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => {
+          processNode(child, currentNode);
+        });
+      } else {
+        // Add "Add Node" button for leaf nodes
+        const addNode: WorkflowNode = {
+          id: `${currentNode.id}-add`,
+          type: 'custom2',
+          position: { x: 0, y: 0 }, // Position will be set by layout algorithm
+          data: { parentId: currentNode.id, onAdd: handleAddNode },
+        };
+        allNodes.push(addNode);
+        allEdges.push({
+          id: `${currentNode.id}-${addNode.id}`,
+          source: currentNode.id,
+          target: addNode.id
+        });
+      }
     };
 
-    const flattenedNodes = triggers.map(trigger => processNode(trigger));
-
-    // Add "Add Node" buttons for leaf nodes
-    allNodes.forEach(node => {
-      if (!node.children || node.children.length === 0) {
-        const addNode: WorkflowNode = {
-          id: `${node.id_node}-add`,
-          type: 'custom2',
-          position: { x: nodeMap.get(node.id_node)!.position.x, y: nodeMap.get(node.id_node)!.position.y + 250 },
-          data: { parentId: node.id_node, onAdd: handleAddNode },
-        };
-        allEdges.push({ id: `${node.id_node}-${addNode.id}`, source: node.id_node, target: addNode.id });
-        flattenedNodes.push(addNode);
-      }
+    // Process each trigger
+    triggers.forEach(trigger => {
+      processNode(trigger);
     });
 
-    return { nodes: flattenedNodes, edges: allEdges };
+    return { nodes: allNodes, edges: allEdges };
   }, []);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: WorkflowNode) => {
@@ -146,6 +148,8 @@ export default function EditWorkflow() {
 
         const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.triggers, fetchedServices);
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
+        console.log("layoutedNodes", layoutedNodes);
+        console.log("layoutedEdges", layoutedEdges);
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
       } catch (error) {
@@ -184,12 +188,14 @@ export default function EditWorkflow() {
 
     setNodes(nodes => nodes.map(node => {
       if (node.id === nodeId) {
-        const workflowNode = findNode(updatedWorkflow.triggers, nodeId);
+        const workflowNode = findNode(newWorkflow.triggers, nodeId);
         if (!workflowNode) return node;
 
         const hasInvalidFields = workflowNode.fieldGroups.some(group =>
           group.fields.some(field => field.required && !field.value)
         );
+
+        console.log("hasInvalidFields", hasInvalidFields);
 
         return { ...node, data: { ...node.data, isValid: !hasInvalidFields } };
       }

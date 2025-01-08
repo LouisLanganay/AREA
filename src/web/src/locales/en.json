@@ -188,6 +188,8 @@
     "runWorkflowDescriptionSuccess": "Workflow run successfully !",
     "columns": "Columns",
     "create": "Create new workflow",
+    "enable": "Enable",
+    "disable": "Disable",
     "enableSuccess": "Workflow updated",
     "enableSuccessDescription": "The workflow has been updated.",
     "creation": {

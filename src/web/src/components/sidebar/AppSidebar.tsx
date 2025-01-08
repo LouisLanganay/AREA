@@ -138,7 +138,7 @@ export function AppSidebar() {
     Cookies.set('premium-banner-hidden', 'true', { expires: 1 }); // 1 day expiration
   };
 
-  const renderWorkflowItems = (path: string, workflows: Workflow[]) => {
+  const renderWorkflowItems = (_: string, workflows: Workflow[]) => {
     return workflows.map((workflow) => (
       <SidebarMenuSubItem
         key={workflow.id}

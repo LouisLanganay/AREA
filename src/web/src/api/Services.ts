@@ -6,7 +6,6 @@ export const getServices = async (token: string): Promise<Service[]> => {
   const response = await axiosInstance.get<Service[]>(`/services`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -21,7 +20,6 @@ export const getServiceAuth = async (serviceUri: string, userToken: string): Pro
   const response = await axiosInstance.get<ServiceAuth>(`${serviceUri}`, {
     headers: {
       Authorization: `Bearer ${userToken}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
 
