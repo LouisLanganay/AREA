@@ -8,6 +8,8 @@ interface User {
   updatedAt: number;
   lastConnection?: number;
   status: 'active' | 'suspended';
+  role: string;
+  provider: string;
 }
 
 interface UserPreferences {

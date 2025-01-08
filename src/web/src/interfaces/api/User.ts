@@ -6,7 +6,12 @@ interface checkIfUsernameIsAvailableResponse {
   used: boolean;
 }
 
+interface isAdminResponse {
+  isAdmin: boolean;
+}
+
 export type {
   getMeResponse,
-  checkIfUsernameIsAvailableResponse
+  checkIfUsernameIsAvailableResponse,
+  isAdminResponse
 };

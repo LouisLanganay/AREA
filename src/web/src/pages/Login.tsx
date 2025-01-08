@@ -22,7 +22,7 @@ export default function Login() {
   type LoginSchema = z.infer<typeof loginSchema>;
   const loginSchema = z.object({
     email: z.string().email(t('login.emailInvalid')),
-    password: z.string(),
+    password: z.string().min(1, t('login.passwordRequired')),
   });
   const { login } = useAuth();
   const navigate = useNavigate();
