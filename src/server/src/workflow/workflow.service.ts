@@ -3,10 +3,38 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
 import { UpdateWorkflowDto } from './dto/updateWorkflow.dto';
 import { NodeDto } from './dto/node.dto';
+import {
+  discordService,
+  EventBanUserDiscord,
+  EventjoinGuildDiscord,
+  EventlistenMessageDiscord,
+  EventsendMessageDiscord,
+} from '../service/discord.service';
+import {
+  EventCheckFreezingTemperature,
+  EventSendMail,
+  TestService,
+} from '../service/meteo.service';
+import {
+  EventDateReached,
+  EventDayAndTimeReached,
+  TimerService,
+} from '../service/timer.service';
+import { EventMonitor } from '../service/monitor.event';
+import { ServiceRegister } from '../service/register.service';
+import { defineAllService } from '../main';
 
 @Injectable()
 export class WorkflowService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async runWorkflowById(workflowId: string) {
+    const allService = new ServiceRegister(this.prisma);
+    const monitor = new EventMonitor();
+
+    const tmp = await defineAllService(allService);
+    await monitor.executeWorkflowDirectly(workflowId, tmp.getAllServices());
+  }
 
   async getWorkflowById(id: string, userId: string) {
     const workflow = await this.prisma.workflow.findUnique({
