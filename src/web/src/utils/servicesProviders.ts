@@ -1,13 +1,7 @@
-import { isPlatform } from '@ionic/react';
-
-const isMobile = () => isPlatform('capacitor');
-
 const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID;
 
 export const getDiscordOAuthUrl = () => {
-  const redirectUri = isMobile()
-    ? 'myapp://services'
-    : `${window.location.origin}/services`;
+  const redirectUri = `${window.location.origin}/services`;
 
   const url = new URL('https://discord.com/oauth2/authorize');
   url.searchParams.append('client_id', DISCORD_CLIENT_ID);

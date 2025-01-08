@@ -323,4 +323,9 @@ export class AuthService {
       token.expires_in,
     );
   }
+
+  async createAdmin() {
+    const hash = await this.hashPassword('admin');
+    await this.usersService.createAdmin(hash);
+  }
 }

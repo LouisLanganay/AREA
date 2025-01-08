@@ -1,16 +1,11 @@
 import GoogleIcon from '@/assets/google-icon.svg';
 import DiscordIcon from '@/assets/discord-icon.svg';
-import { isPlatform } from '@ionic/react';
-
-const isMobile = () => isPlatform('capacitor');
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID;
 
 export const getGoogleOAuthUrl = () => {
-  const redirectUri = isMobile()
-    ? 'myapp://login-success'
-    : `${window.location.origin}/login-success`;
+  const redirectUri = `${window.location.origin}/login-success`;
 
   const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   url.searchParams.append('client_id', GOOGLE_CLIENT_ID);
@@ -23,9 +18,7 @@ export const getGoogleOAuthUrl = () => {
 };
 
 export const getDiscordOAuthUrl = () => {
-  const redirectUri = isMobile()
-    ? 'myapp://login-success'
-    : `${window.location.origin}/login-success`;
+  const redirectUri = `${window.location.origin}/login-success`;
 
   const url = new URL('https://discord.com/oauth2/authorize');
   url.searchParams.append('client_id', DISCORD_CLIENT_ID);

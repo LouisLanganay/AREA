@@ -80,7 +80,7 @@ const Toast = React.forwardRef<
             initial={{ width: 'auto' }}
             animate={{ width: 'auto' }}
             transition={{ duration: 0.3 }}
-            className="flex flex-row"
+            className="flex flex-row text-nowrap overflow-hidden"
           >
             {children}
           </motion.div>

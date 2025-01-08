@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { Client, GatewayIntentBits, Guild } from 'discord.js';
 
-
 @Injectable()
 export class DiscordService {
   constructor(
@@ -100,7 +99,8 @@ export class DiscordService {
   async sendMessageToChannel(
     channelId: string,
     message: string,
-    user_id: string): Promise<void> {
+    user_id: string,
+  ): Promise<void> {
     const sendMessageUrl = `https://discord.com/api/v10/channels/${channelId}/messages`;
 
     const userBddId = user_id;
@@ -147,6 +147,7 @@ export class DiscordService {
 
   async discordCallback(code: string, req: any): Promise<any> {
     console.log('Discord OAuth callback received:', code);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deletedTokens = await this.prisma.token.deleteMany(); // Supprime toutes les entrées de la table `Token`
     if (!code) {
       throw new BadRequestException('Code or userId is missing');
@@ -194,7 +195,11 @@ export class DiscordService {
     return { message: 'Tokens stored in the database' };
   }
 
-  async banUser(guildId: string, userId: string, reason: string = 'Aucune raison spécifiée'): Promise<string> {
+  async banUser(
+    guildId: string,
+    userId: string,
+    reason: string = 'Aucune raison spécifiée',
+  ): Promise<string> {
     const client = new Client({
       intents: [
         GatewayIntentBits.Guilds, // Pour accéder aux guildes (serveurs)
@@ -203,7 +208,6 @@ export class DiscordService {
     });
 
     const BOT_TOKEN = this.configService.get<string>('DISCORD_BOT_TOKEN');
-
 
     if (!BOT_TOKEN) {
       throw new BadRequestException('Le token du bot Discord est manquant.');
@@ -221,7 +225,9 @@ export class DiscordService {
       const guild: Guild = await client.guilds.fetch(guildId);
 
       if (!guild) {
-        throw new BadRequestException(`Serveur introuvable avec l'ID : ${guildId}`);
+        throw new BadRequestException(
+          `Serveur introuvable avec l'ID : ${guildId}`,
+        );
       }
 
       // Bannir l'utilisateur
@@ -230,8 +236,10 @@ export class DiscordService {
 
       return `L'utilisateur ${userId} a été banni avec succès pour la raison : "${reason}".`;
     } catch (error) {
-      console.error('Erreur lors du bannissement de l\'utilisateur :', error);
-      throw new BadRequestException(`Impossible de bannir l'utilisateur : ${error.message}`);
+      console.error("Erreur lors du bannissement de l'utilisateur :", error);
+      throw new BadRequestException(
+        `Impossible de bannir l'utilisateur : ${error.message}`,
+      );
     } finally {
       // Déconnexion propre du bot après traitement
       console.log('Déconnexion du bot...');
@@ -240,7 +248,11 @@ export class DiscordService {
     }
   }
 
-  async listenToChannel(channelId: string, lookingFor: string, user_id: string): Promise<boolean> {
+  async listenToChannel(
+    channelId: string,
+    lookingFor: string,
+    user_id: string,
+  ): Promise<boolean> {
     const userBddId = user_id;
 
     console.log('User Bdd Id:', userBddId);
@@ -267,17 +279,17 @@ export class DiscordService {
       if (message.channel.id === channelId) {
         // console.log('Message received:', message);
         if (message.content.includes(lookingFor)) {
-            // console.log('Message found:', message);
-            this.messages.push(message.content);
-            return true;
+          // console.log('Message found:', message);
+          this.messages.push(message.content);
+          return true;
         }
       }
     });
 
     if (this.messages.length > 0) {
-        console.log('Messages found:', this.messages);
-        this.messages = [];
-        return true;
+      console.log('Messages found:', this.messages);
+      this.messages = [];
+      return true;
     }
 
     client.login(this.configService.get<string>('DISCORD_BOT_TOKEN'));
@@ -300,10 +312,7 @@ export class DiscordService {
     }
 
     const client = new Client({
-      intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-      ],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     });
 
     client.on('guildMemberAdd', async (member) => {
@@ -334,6 +343,7 @@ export class DiscordService {
     provider: string = 'discord',
   ): Promise<void> {
     const expiresAt = new Date(Date.now() + expiresIn * 1000); // Calculer la date d'expiration du token
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const newToken: Prisma.TokenUncheckedCreateInput = {
       provider,
       userId,
@@ -348,7 +358,7 @@ export class DiscordService {
     console.log('User Bdd Id:', userBddId);
 
     const user = await this.prisma.user.findUnique({
-      where: {id: userBddId},
+      where: { id: userBddId },
     });
 
     if (!user) {
@@ -357,7 +367,7 @@ export class DiscordService {
 
     const token = await this.prisma.token.upsert({
       where: {
-        userId_provider: {userId, provider},
+        userId_provider: { userId, provider },
       },
       update: {
         accessToken,
@@ -373,15 +383,16 @@ export class DiscordService {
       },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const userToken = await this.prisma.user.update({
-      where: {id: userBddId},
+      where: { id: userBddId },
       data: {
         tokens: {
           connect: {
-            id: token.id
-          }
-        }
-      }
+            id: token.id,
+          },
+        },
+      },
     });
 
     const listUser = await this.prisma.user.findMany();

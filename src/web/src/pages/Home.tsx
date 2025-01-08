@@ -487,7 +487,7 @@ export default function Home() {
               {t('home.description')}
             </p>
           </div>
-          <div className='w-[385px] flex h-[calc(100vh-300px)]'>
+          <div className='w-[385px] h-[calc(100vh-300px)] hidden md:flex'>
             <div className='w-[385px] h-full'>
               <ReactFlow
                 nodes={getLayoutedElements(exampleNodes, exampleEdges, 'TB', 80, 100, 50).nodes}

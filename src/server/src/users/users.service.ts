@@ -316,21 +316,26 @@ export class UsersService {
   }
 
   async getAllUsers() {
-    return this.prismaService.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        displayName: true,
-        avatarUrl: true,
-        role: true,
-        status: true,
-        createdAt: true,
-        updatedAt: true,
-        lastConnection: true,
-        provider: true,
-      },
-    });
+    try {
+      return this.prismaService.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          displayName: true,
+          avatarUrl: true,
+          role: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          lastConnection: true,
+          provider: true,
+        },
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      return [];
+    }
   }
 
   async setRole(id: string, role: string) {
@@ -353,6 +358,19 @@ export class UsersService {
       data: {
         status,
         updatedAt: new Date(),
+      },
+    });
+  }
+
+  async createAdmin(hash: string) {
+    return this.prismaService.user.create({
+      data: {
+        email: 'admin@admin.fr',
+        username: 'admin',
+        password: hash,
+        role: 'admin',
+        status: 'active',
+        provider: 'local',
       },
     });
   }

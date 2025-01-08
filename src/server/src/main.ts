@@ -3,13 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { ServiceRegister, defaultFieldGroup } from './service/register.service';
+import { ServiceRegister } from './service/register.service';
 import { EventMonitor } from './service/monitor.event';
 import {
-  TestService,
-  EventCheckFreezingTemperature,
-  EventSendMail,
+  WeatherService,
+  EventCheckTemperature,
+  EventGetWeatherForecast,
 } from './service/meteo.service';
+import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
   discordService, EventBanUserDiscord, EventjoinGuildDiscord,
   EventlistenMessageDiscord,
@@ -21,31 +22,33 @@ import {
   EventDateReached,
   EventDayAndTimeReached,
 } from './service/timer.service';
-import { FieldGroup } from '../../shared/Workflow';
-import { updateUserDto } from './users/dto/update-user.dto';
+import { MailerService } from './service/mailer.service';
 
-async function defineAllService(app: any) {
-  const allService = app.get(ServiceRegister);
-
+export async function defineAllService(allService: any) {
   allService.addService(discordService);
-  allService.addService(TestService);
-  allService.addService(gcalendarService);
   allService.addService(TimerService);
-
+  allService.addService(MailTestService);
+  allService.addService(MailerService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
   allService.addEventToService('discord', EventBanUserDiscord);
   allService.addEventToService('discord', EventjoinGuildDiscord);
 
-  allService.addEventToService('testService', EventCheckFreezingTemperature);
-  allService.addEventToService('testService', EventSendMail);
+  allService.addEventToService('weather', EventCheckTemperature);
+  allService.addEventToService('weather', EventGetWeatherForecast);
+
+  allService.addEventToService('mailTest', EventSendMail);
 
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
 
+  return allService;
+}
+
+async function handlleAllServices(allService: ServiceRegister) {
   const monitor = new EventMonitor();
-  monitor.startAutoFetchAndCheck(await allService.getAllServices());
+  monitor.startAutoFetchAndCheck(allService.getAllServices());
 }
 
 async function bootstrap() {
@@ -61,7 +64,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
 
-  await defineAllService(app);
+  const allService = app.get(ServiceRegister);
+  await handlleAllServices(await defineAllService(allService));
 
   // =============== FOR TEST ONLY =============== //
   // console.log('============== DEBUG ================');
