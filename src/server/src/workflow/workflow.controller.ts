@@ -5,9 +5,7 @@ import {
   Body,
   UseGuards,
   Req,
-  Put,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   Patch,
@@ -265,6 +263,7 @@ export class WorkflowController {
   async updateWorkflow(
     @Body() data: UpdateWorkflowDto,
     @Req() req: any,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Param('id') id: string,
   ) {
     const userId = req.user.id;

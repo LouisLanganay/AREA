@@ -159,6 +159,7 @@ export class AuthController {
   }
 
   @Get('discord/redirect')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async discordAuthRedirect(@Req() req) {
     const redirectUrl = await this.discordService.getRedirectUrl();
     return { redirectUrl };

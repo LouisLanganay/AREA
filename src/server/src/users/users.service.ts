@@ -279,6 +279,7 @@ export class UsersService {
           provider: true,
         },
       });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       return [];
     }
