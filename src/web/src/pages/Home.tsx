@@ -380,14 +380,14 @@ export default function Home() {
                         </a>
                       </NavigationMenuLink>
                     </li>
-                    <ListItem href='/docs' title={t('home.navigation.features.title')}>
+                    <ListItem href='#features' title={t('home.navigation.features.title')}>
                       {t('home.navigation.features.intro')}
                     </ListItem>
-                    <ListItem href='/pricing' title='Pricing'>
-                      {t('home.navigation.features.pricing')}
+                    <ListItem href='#team' title={t('home.navigation.features.team')}>
+                      {t('home.navigation.features.teamDescription')}
                     </ListItem>
-                    <ListItem href='/integrations' title='Integrations'>
-                      {t('home.navigation.features.integrations')}
+                    <ListItem href='#stack' title={t('home.navigation.features.stack')}>
+                      {t('home.navigation.features.stackDescription')}
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -397,31 +397,11 @@ export default function Home() {
                 <NavigationMenuTrigger>{t('home.navigation.documentation.title')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className='grid gap-3 p-4 w-[400px]'>
-                    <ListItem href='/api-docs' title='API Reference'>
-                      {t('home.navigation.documentation.api')}
-                    </ListItem>
                     <ListItem href='https://github.com/LouisLanganay/AREA' title='Source Code'>
                       {t('home.navigation.documentation.source')}
                     </ListItem>
                     <ListItem href='/client.apk' title='Mobile App'>
                       {t('home.navigation.documentation.mobile')}
-                    </ListItem>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>{t('home.navigation.enterprise.title')}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className='grid gap-3 p-4 w-[400px]'>
-                    <ListItem href='/enterprise' title='Enterprise Solutions'>
-                      {t('home.navigation.enterprise.solutions')}
-                    </ListItem>
-                    <ListItem href='/case-studies' title='Case Studies'>
-                      {t('home.navigation.enterprise.cases')}
-                    </ListItem>
-                    <ListItem href='/contact' title='Contact Sales'>
-                      {t('home.navigation.enterprise.contact')}
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -470,7 +450,8 @@ export default function Home() {
 
       <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
         <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50 dark:opacity-20' />
-        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative flex flex-row justify-between'>
+
+        <section id="hero" className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative flex flex-row justify-between'>
           <div className=''>
             <div className='flex flex-col'>
               <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
@@ -506,7 +487,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+
+        <section id="features" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <h2 className='text-center text-base/7 font-semibold text-primary'>
             {t('home.features.title')}
           </h2>
@@ -645,7 +627,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+
+        <section id="team" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='mx-auto grid gap-20 xl:grid-cols-3'>
             <div className='max-w-xl'>
               <h2 className='text-pretty text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground sm:text-4xl'>
@@ -671,7 +654,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+        <section id="stack" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='flex flex-col sm:flex-row justify-between gap-4'>
             <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl max-w-md'>
               <span className='bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground'>{t('home.stack.title1')} </span>{t('home.stack.title2')}
@@ -695,7 +678,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+        <section id="cta" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='flex flex-col justify-center gap-4 items-center text-center'>
             <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-5xl max-w-xl'>
               <span className='bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground'>

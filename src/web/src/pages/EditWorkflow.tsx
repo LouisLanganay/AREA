@@ -61,9 +61,9 @@ export default function EditWorkflow() {
 
       // Create the current node
       const currentNode: WorkflowNode = {
-        id: node.id_node,
+        id: node.id,
         type: 'node',
-        position: { x: 0, y: 0 }, // Position will be set by layout algorithm
+        position: { x: 0, y: 0 },
         data: {
           label: node.name,
           service: services.find(s => s.id === node.serviceName),
@@ -90,21 +90,21 @@ export default function EditWorkflow() {
         node.children.forEach(child => {
           processNode(child, currentNode);
         });
-      } else {
-        // Add "Add Node" button for leaf nodes
-        const addNode: WorkflowNode = {
-          id: `${currentNode.id}-add`,
-          type: 'custom2',
-          position: { x: 0, y: 0 }, // Position will be set by layout algorithm
-          data: { parentId: currentNode.id, onAdd: handleAddNode },
-        };
-        allNodes.push(addNode);
-        allEdges.push({
-          id: `${currentNode.id}-${addNode.id}`,
-          source: currentNode.id,
-          target: addNode.id
-        });
       }
+
+      // Add "Add Node" button after the current node
+      const addNode: WorkflowNode = {
+        id: `${currentNode.id}-add`,
+        type: 'custom2',
+        position: { x: 0, y: 0 },
+        data: { parentId: currentNode.id, onAdd: handleAddNode },
+      };
+      allNodes.push(addNode);
+      allEdges.push({
+        id: `${currentNode.id}-${addNode.id}`,
+        source: currentNode.id,
+        target: addNode.id
+      });
     };
 
     // Process each trigger
@@ -117,10 +117,7 @@ export default function EditWorkflow() {
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: WorkflowNode) => {
     if (node.type === 'node') {
-      console.log("node", node);
-      console.log("updatedWorkflow", updatedWorkflow);
       const areaNode = findNode(updatedWorkflow?.triggers, node.id) || null;
-      console.log("areaNode", areaNode);
       setSelectedNode(areaNode);
 
       setNodes(nodes => nodes.map(n => ({
@@ -148,8 +145,6 @@ export default function EditWorkflow() {
 
         const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.triggers, fetchedServices);
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
-        console.log("layoutedNodes", layoutedNodes);
-        console.log("layoutedEdges", layoutedEdges);
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
       } catch (error) {
@@ -174,7 +169,7 @@ export default function EditWorkflow() {
         fieldGroups: node.fieldGroups.map(group => ({
           ...group,
           fields: group.fields.map(field =>
-            field.id === fieldId && node.id_node === nodeId ? { ...field, value } : field
+            field.id === fieldId && node.id === nodeId ? { ...field, value } : field
           )
         })),
         children: node.children ? updateNodeFields(node.children) : undefined
@@ -184,7 +179,6 @@ export default function EditWorkflow() {
     const updatedNodes = updateNodeFields(updatedWorkflow.triggers);
     const newWorkflow = { ...updatedWorkflow, triggers: updatedNodes };
     setUpdatedWorkflow(newWorkflow);
-    console.log("newWorkflow", newWorkflow);
 
     setNodes(nodes => nodes.map(node => {
       if (node.id === nodeId) {
@@ -195,14 +189,12 @@ export default function EditWorkflow() {
           group.fields.some(field => field.required && !field.value)
         );
 
-        console.log("hasInvalidFields", hasInvalidFields);
-
         return { ...node, data: { ...node.data, isValid: !hasInvalidFields } };
       }
       return node;
     }));
 
-    if (selectedNode && selectedNode.id_node === nodeId) {
+    if (selectedNode && selectedNode.id === nodeId) {
       const updatedSelectedNode = findNode(newWorkflow.triggers, nodeId);
       if (updatedSelectedNode) {
         setSelectedNode(updatedSelectedNode);
@@ -235,7 +227,6 @@ export default function EditWorkflow() {
     });
 
     try {
-      console.log("saving updatedWorkflow", updatedWorkflow);
       await updateWorkflow(updatedWorkflow.id, updatedWorkflow, token);
       setWorkflow(updatedWorkflow);
       myToast.update({
@@ -262,12 +253,14 @@ export default function EditWorkflow() {
       return;
     }
 
+    const idGenerated = `${action.id_node}-${crypto.randomUUID()}`;
+
     const updateNodeChildren = (nodes: Event[]): Event[] => {
       const addChildToNode = (node: Event): Event => {
-        if (node.id_node === selectedParentId) {
+        if (node.id === selectedParentId) {
           return {
             ...node,
-            children: [...(node.children || []), action]
+            children: [...(node.children || []), { ...action, id: idGenerated }]
           };
         }
         if (node.children) {
@@ -292,7 +285,7 @@ export default function EditWorkflow() {
     );
 
     const newNode: WorkflowNode = {
-      id: action.id_node,
+      id: idGenerated,
       type: 'node',
       position: { x: parentNode.position.x, y: parentNode.position.y + 150 },
       data: {
@@ -340,7 +333,7 @@ export default function EditWorkflow() {
     const defaultNode = findNode(workflow.triggers, nodeId);
     if (!defaultNode) return;
 
-    const resetNodeInTree = (nodes: Event[]): Event[] => nodes.map(node => node.id_node === nodeId ? defaultNode : node);
+    const resetNodeInTree = (nodes: Event[]): Event[] => nodes.map(node => node.id === nodeId ? defaultNode : node);
 
     setUpdatedWorkflow(prev => ({ ...prev!, triggers: resetNodeInTree(prev!.triggers) }));
 
@@ -384,7 +377,7 @@ export default function EditWorkflow() {
     // Remove node from the tree structure
     const removeNodeFromTree = (nodes: Event[]): Event[] => {
       const removeFromNode = (node: Event): Event | null => {
-        if (node.id_node === nodeId) {
+        if (node.id === nodeId) {
           return null;
         }
         if (node.children) {

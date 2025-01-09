@@ -462,7 +462,7 @@ export default function Workflows() {
               expandedFolders={expandedFolders}
               setExpandedFolders={setExpandedFolders}
             />
-        ))}
+          ))}
         {Object.entries(workflowGroups).length === 0 && (
           <div className='text-center py-8 text-muted-foreground'>
             {t('workflows.noResults')}
@@ -629,10 +629,10 @@ export default function Workflows() {
                     <span>{service.name}</span>
                     {service.Event?.filter((action: Event) => action.type === 'action')?.map((action: Event) => (
                       <div
-                        key={action.id_node}
+                        key={action.id}
                         className={clsx(
                           'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-                          selectedTrigger?.id_node === action.id_node && 'border-green-500',
+                          selectedTrigger?.id === action.id && 'border-green-500',
                         )}
                         onClick={() => handleSelectTrigger(action)}
                       >

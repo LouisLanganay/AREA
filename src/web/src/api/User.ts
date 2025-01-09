@@ -1,4 +1,4 @@
-import { checkIfUsernameIsAvailableResponse, getMeResponse } from "@/interfaces/api/User";
+import { checkIfUsernameIsAvailableResponse, getMeResponse, isAdminResponse } from "@/interfaces/api/User";
 import { User } from "@/interfaces/User";
 import axiosInstance from "./axiosInstance";
 
@@ -36,7 +36,7 @@ export const checkIfUsernameIsAvailable = async (username: string): Promise<chec
 };
 
 export const getUsers = async (token: string): Promise<User[]> => {
-  const response = await axiosInstance.get<User[]>(`/users/allUsers`, {
+  const response = await axiosInstance.get<User[]>(`/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }
@@ -66,3 +66,13 @@ export const createAdmin = async (): Promise<void> => {
   const response = await axiosInstance.get(`/auth/createAdmin`);
   return response.data;
 };
+
+export const isAdmin = async (token: string): Promise<isAdminResponse> => {
+  const response = await axiosInstance.get<isAdminResponse>(`/users/isAdmin`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+

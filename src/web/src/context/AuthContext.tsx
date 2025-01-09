@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const addAccount = async (newToken: string) => {
-    const [_, payload, __] = newToken.split('.');
+    const [, payload] = newToken.split('.');
     const decodedPayload = JSON.parse(atob(payload)) as AuthPayload;
 
     const existingAccount = accounts.find(acc => acc.user?.id === decodedPayload.id);

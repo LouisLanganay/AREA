@@ -111,8 +111,8 @@ export default function Services() {
 
       <Tabs defaultValue="enabled">
         <TabsList className='mb-4'>
-          <TabsTrigger value={services.filter(service => service.enabled).length > 0 ? 'enabled' : 'disabled'}>Actives</TabsTrigger>
-          <TabsTrigger value={services.filter(service => !service.enabled).length > 0 ? 'disabled' : 'enabled'}>Not connected</TabsTrigger>
+          <TabsTrigger value='enabled'>Actives</TabsTrigger>
+          <TabsTrigger value='disabled'>Not connected</TabsTrigger>
         </TabsList>
 
         <TabsContent value="enabled" className='flex flex-col gap-2 mt-0'>

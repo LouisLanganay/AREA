@@ -5,10 +5,17 @@
     "users": "Users"
   },
   "admin": {
+    "copyToClipboard": "Copied to clipboard",
+    "fetchError": "Failed to fetch users, please try again.",
     "active": "Active",
+    "deleteSuccess": "User deleted successfully.",
+    "deleteError": "Failed to delete user, please try again.",
+    "statusChangeSuccess": "User status changed successfully.",
+    "statusChangeError": "Failed to change user status, please try again.",
     "suspended": "Suspended",
     "title": "User Management",
     "usersTitle": "Registered Users",
+    "viewProfile": "View Profile",
     "users": {
       "id": "ID",
       "name": "Name",
@@ -18,7 +25,13 @@
       "edit": "Edit",
       "delete": "Delete",
       "cancel": "Cancel",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "provider": "Provider",
+      "role": "Role",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "lastConnection": "Last Connection",
+      "close": "Close"
     },
     "openMenu": "Open menu",
     "suspend": "Suspend",
@@ -261,6 +274,7 @@
     "rootFolder": "Root folder"
   },
   "login": {
+    "passwordRequired": "Password is required",
     "title": "Sign in to your account",
     "description": "Enter your credentials below to login",
     "noAccount": "Don't have an account?",
@@ -340,7 +354,11 @@
         "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
         "intro": "Create automated workflows between your favorite applications.",
         "pricing": "Plans adapted to your needs, from free to enterprise.",
-        "integrations": "More than 100 compatible services for your automations."
+        "integrations": "More than 100 compatible services for your automations.",
+        "team": "Meet our team",
+        "stack": "Stack",
+        "teamDescription": "We're a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.",
+        "stackDescription": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations."
       },
       "documentation": {
         "title": "Documentation",
