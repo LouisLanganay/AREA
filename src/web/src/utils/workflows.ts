@@ -1,6 +1,6 @@
 import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Event, Field } from '@/interfaces/Workflows';
 import dagre from '@dagrejs/dagre';
-import { ConnectionLineType, MarkerType } from '@xyflow/react';
+import { ConnectionLineType } from '@xyflow/react';
 
 export function findNode(nodes: Event[] | undefined, nodeId: string): Event | undefined {
   if (!nodes || nodes.length === 0) return undefined;

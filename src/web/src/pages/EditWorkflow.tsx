@@ -214,7 +214,6 @@ export default function EditWorkflow() {
 
   const handleSave = async () => {
     if (!updatedWorkflow || !token) return;
-    console.log("isValid", isValid);
     if (!isValid) {
       toast({
         description: t('workflows.validationErrorDescription'),
