@@ -450,7 +450,7 @@ export default function Home() {
 
       <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
         <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50 dark:opacity-20' />
-        
+
         <section id="hero" className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative flex flex-row justify-between'>
           <div className=''>
             <div className='flex flex-col'>

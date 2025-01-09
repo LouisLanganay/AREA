@@ -5,7 +5,7 @@ import { ConnectionLineType, MarkerType } from '@xyflow/react';
 export function findNode(nodes: Event[] | undefined, nodeId: string): Event | undefined {
   if (!nodes || nodes.length === 0) return undefined;
 
-  const directMatch = nodes.find((node) => node.id_node === nodeId);
+  const directMatch = nodes.find((node) => node.id === nodeId);
   if (directMatch)
     return directMatch;
   for (const node of nodes) {
@@ -39,6 +39,10 @@ export const validateWorkflow = (workflow: Workflow): boolean => {
             return false;
           }
         }
+      }
+      if (node.children) {
+        const isValid = validateFields(node.children);
+        if (!isValid) return false;
       }
     }
     return true;
@@ -87,7 +91,7 @@ export const getLayoutedElements = (
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        y: nodeWithPosition.y / 1.1,
       },
     };
   });
@@ -103,7 +107,7 @@ export const getLayoutedElements = (
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
         x: parentNode.position.x + (nodeWidth - 36) / 2,
-        y: parentNode.position.y + nodeHeight + 50,
+        y: parentNode.position.y + nodeHeight + 35,
       },
     };
   });
@@ -115,10 +119,9 @@ export const getLayoutedElements = (
       type: ConnectionLineType.SmoothStep,
       style: {
         stroke: 'hsl(var(--muted-foreground))',
-        opacity: 0.5,
+        opacity: 1,
       },
       markerEnd: {
-        type: MarkerType.Arrow,
         width: 20,
         height: 20,
         color: 'hsl(var(--muted-foreground))',

@@ -41,7 +41,7 @@ export function EditWorkflowCommand({
             >
               {service.Event?.filter((action) => action.type !== 'action')?.map((action) => (
                 <CommandItem
-                  key={action.id_node}
+                  key={action.id}
                   onSelect={() => onSelectService(service, action)}
                   className='flex items-center gap-2'
                 >
