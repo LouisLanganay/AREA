@@ -3,10 +3,13 @@ import { BadRequestException } from '@nestjs/common';
 // src/services/CalendarService.ts
 import { google } from 'googleapis';
 import { UsersService } from '../users/users.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 export class CalendarService {
   private calendar: any;
-  private readonly userService: UsersService;
+  private readonly userService: UsersService = new UsersService(
+    new PrismaService(),
+  );
   private tokenIsSet: boolean = false;
 
   constructor() {
@@ -19,7 +22,6 @@ export class CalendarService {
       process.env.GOOGLE_CLIENT_SECRET,
       process.env.GOOGLE_REDIRECT_URI,
     );
-
     // Récupérez le token depuis votre base de données ou autre source sécurisée
     // Ici, on suppose que vous avez une méthode pour obtenir le token d'un utilisateur
     const accessToken = await this.getAccessToken(userId); // Implémentez cette méthode
@@ -57,6 +59,31 @@ export class CalendarService {
       throw new BadRequestException('Failed to add event to Google Calendar');
     }
   }
+
+  async startWatch(userId: string, workflowId: string, calendarId: string) {
+    await this.setToken(userId);
+    const ipRedirect = process.env.IP_BACK;
+
+    const createWebHook = await this.userService.createWebhook(userId, {
+      workflowId,
+      channelId: calendarId,
+    });
+    if (!createWebHook) {
+      return false;
+    }
+    const url = `${ipRedirect}/webhooks/${createWebHook.id}`;
+    console.log('Webhook URL:', url);
+    const watchResponse = await this.calendar.events.watch({
+      calendarId: calendarId,
+      requestBody: {
+        id: createWebHook.id, // ID unique pour le channel
+        type: 'webhook',
+        address: url,
+      },
+    });
+
+    console.log('Watch Response:', watchResponse.data);
+  }
 }
 
 export const ListenEventGcalendar: Event = {
@@ -65,7 +92,24 @@ export const ListenEventGcalendar: Event = {
   name: 'Listen Event Google Calendar',
   description: 'Listen Event Google Calendar',
   serviceName: 'gcalendar',
-  fieldGroups: [],
+  fieldGroups: [
+    {
+      id: 'calendar_details',
+      name: 'Calendar Information',
+      description: 'Information about the Calendar',
+      type: 'group',
+      fields: [
+        //set calendar
+        {
+          id: 'calendar',
+          type: 'string',
+          required: true,
+          description: 'Calendar ID',
+          value: 'primary',
+        },
+      ],
+    },
+  ],
   check: async (parameters: FieldGroup[]) => {
     const userId = parameters
       .find((group) => group.id === 'workflow_information')
@@ -74,21 +118,18 @@ export const ListenEventGcalendar: Event = {
       .find((group) => group.id === 'workflow_information')
       ?.fields.find((field) => field.id === 'workflow_id')?.value;
 
-    console.log('Checking Google Calendar event:', userId, workflowId);
-    return false;
-  },
-};
+    const eventGroup = parameters.find(
+      (group) => group.id === 'calendar_details',
+    );
 
-export const gcalendarService: Service = {
-  id: 'gcalendar',
-  name: 'Google Calendar',
-  description: 'Google Calendar service',
-  Event: [ListenEventGcalendar],
-  image: 'https://www.svgrepo.com/show/353803/google-calendar.svg',
-  loginRequired: true,
-  auth: {
-    uri: '/auth/google/redirect/gcalendar',
-    callback_uri: '/auth/google/callback/gcalendar',
+    if (!eventGroup) {
+      console.error('Event details group not found');
+      throw new BadRequestException('Event details are missing');
+    }
+    const calendar = eventGroup.fields.find((field) => field.id === 'calendar');
+    const calendarService = new CalendarService(); // Assurez-vous que ce service est correctement implémenté
+    await calendarService.startWatch(userId, workflowId, calendar.value);
+    return false;
   },
 };
 
@@ -99,7 +140,7 @@ export const EventAddGoogleCalendar: Event = {
   id_node: 'addGoogleCalendarEvent',
   name: 'Add Google Calendar Event',
   description: 'Adds a new event to Google Calendar',
-  serviceName: 'googleCalendar',
+  serviceName: 'gcalendar',
   fieldGroups: [
     {
       id: 'event_details',
@@ -140,22 +181,39 @@ export const EventAddGoogleCalendar: Event = {
           description: 'Start date and time of the event (RFC3339 format)',
         },
         {
-          id: 'startTimeZone',
-          type: 'string',
+          id: 'TimeZone',
+          type: 'select',
           required: true,
-          description: 'Time zone of the start time',
+          description: 'Time zone',
+          value: 'Europe/Paris',
+          options: [
+            { label: 'UTC', value: 'UTC' },
+            { label: 'Europe/London', value: 'Europe/London' },
+            { label: 'Europe/Paris', value: 'Europe/Paris' },
+            { label: 'Europe/Berlin', value: 'Europe/Berlin' },
+            { label: 'Europe/Moscow', value: 'Europe/Moscow' },
+            { label: 'America/New_York', value: 'America/New_York' },
+            { label: 'America/Chicago', value: 'America/Chicago' },
+            { label: 'America/Denver', value: 'America/Denver' },
+            { label: 'America/Los_Angeles', value: 'America/Los_Angeles' },
+            { label: 'America/Toronto', value: 'America/Toronto' },
+            { label: 'America/Sao_Paulo', value: 'America/Sao_Paulo' },
+            { label: 'America/Vancouver', value: 'America/Vancouver' },
+            { label: 'Asia/Tokyo', value: 'Asia/Tokyo' },
+            { label: 'Asia/Shanghai', value: 'Asia/Shanghai' },
+            { label: 'Asia/Kolkata', value: 'Asia/Kolkata' },
+            { label: 'Asia/Dubai', value: 'Asia/Dubai' },
+            { label: 'Asia/Hong_Kong', value: 'Asia/Hong_Kong' },
+            { label: 'Asia/Seoul', value: 'Asia/Seoul' },
+            { label: 'Australia/Sydney', value: 'Australia/Sydney' },
+            { label: 'Australia/Melbourne', value: 'Australia/Melbourne' },
+          ],
         },
         {
           id: 'endDateTime',
           type: 'string',
           required: true,
           description: 'End date and time of the event (RFC3339 format)',
-        },
-        {
-          id: 'endTimeZone',
-          type: 'string',
-          required: true,
-          description: 'Time zone of the end time',
         },
         {
           id: 'attendees',
@@ -201,14 +259,11 @@ export const EventAddGoogleCalendar: Event = {
     const startDateTimeField = eventGroup.fields.find(
       (field) => field.id === 'startDateTime',
     );
-    const startTimeZoneField = eventGroup.fields.find(
+    const TimeZone = eventGroup.fields.find(
       (field) => field.id === 'startTimeZone',
     );
     const endDateTimeField = eventGroup.fields.find(
       (field) => field.id === 'endDateTime',
-    );
-    const endTimeZoneField = eventGroup.fields.find(
-      (field) => field.id === 'endTimeZone',
     );
     const attendeesField = eventGroup.fields.find(
       (field) => field.id === 'attendees',
@@ -220,9 +275,8 @@ export const EventAddGoogleCalendar: Event = {
     if (
       !summaryField ||
       !startDateTimeField ||
-      !startTimeZoneField ||
-      !endDateTimeField ||
-      !endTimeZoneField
+      !TimeZone ||
+      !endDateTimeField
     ) {
       console.error('Missing required event fields');
       throw new BadRequestException('Required event fields are missing');
@@ -233,9 +287,8 @@ export const EventAddGoogleCalendar: Event = {
     const location = locationField?.value;
     const description = descriptionField?.value;
     const startDateTime = startDateTimeField.value;
-    const startTimeZone = startTimeZoneField.value;
+    const timeZone = TimeZone.value;
     const endDateTime = endDateTimeField.value;
-    const endTimeZone = endTimeZoneField.value;
     const attendees = attendeesField?.value
       ? attendeesField.value.split(',').map((email) => email.trim())
       : [];
@@ -255,11 +308,11 @@ export const EventAddGoogleCalendar: Event = {
       description,
       start: {
         dateTime: startDateTime,
-        timeZone: startTimeZone,
+        timeZone: timeZone,
       },
       end: {
         dateTime: endDateTime,
-        timeZone: endTimeZone,
+        timeZone: timeZone,
       },
       attendees: attendees.map((email: string) => ({ email })),
       reminders: reminders
@@ -274,5 +327,18 @@ export const EventAddGoogleCalendar: Event = {
       console.error('Failed to add event:', error);
       throw new BadRequestException('Failed to add event to Google Calendar');
     }
+  },
+};
+
+export const gcalendarService: Service = {
+  id: 'gcalendar',
+  name: 'Google Calendar',
+  description: 'Google Calendar service',
+  Event: [],
+  image: 'https://www.svgrepo.com/show/353803/google-calendar.svg',
+  loginRequired: true,
+  auth: {
+    uri: '/auth/google/redirect/gcalendar',
+    callback_uri: '/auth/google/callback/gcalendar',
   },
 };

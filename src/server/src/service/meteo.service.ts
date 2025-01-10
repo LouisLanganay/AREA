@@ -139,8 +139,6 @@ export const EventGetWeatherForecast: Event = {
         `24-hour forecast for (${latitude}, ${longitude}):`,
         forecast,
       );
-
-      return forecast;
     } catch (error) {
       console.error('Error fetching weather forecast:', error.message);
       throw error;

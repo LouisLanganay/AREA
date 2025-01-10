@@ -3,23 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
 import { UpdateWorkflowDto } from './dto/updateWorkflow.dto';
 import { NodeDto } from './dto/node.dto';
-import {
-  discordService,
-  EventBanUserDiscord,
-  EventjoinGuildDiscord,
-  EventlistenMessageDiscord,
-  EventsendMessageDiscord,
-} from '../service/discord.service';
-import {
-  EventCheckFreezingTemperature,
-  EventSendMail,
-  TestService,
-} from '../service/meteo.service';
-import {
-  EventDateReached,
-  EventDayAndTimeReached,
-  TimerService,
-} from '../service/timer.service';
 import { EventMonitor } from '../service/monitor.event';
 import { ServiceRegister } from '../service/register.service';
 import { defineAllService } from '../main';
@@ -28,6 +11,7 @@ import { defineAllService } from '../main';
 export class WorkflowService {
   constructor(private readonly prisma: PrismaService) {}
 
+  //TOM workflow
   async runWorkflowById(workflowId: string) {
     const allService = new ServiceRegister(this.prisma);
     const monitor = new EventMonitor();
@@ -130,7 +114,7 @@ export class WorkflowService {
         userId,
       },
     });
-
+    console.log(data.triggers);
     await this.createNodeRecursively(data.triggers[0], createdWorkflow.id);
 
     return createdWorkflow;
@@ -141,6 +125,8 @@ export class WorkflowService {
     workflowId: string,
     parentNodeId?: string,
   ) {
+    console.log(node)
+    console.log('--------------------------------------------------------------------------------------------------')
     const createdNode = await this.prisma.node.create({
       data: {
         id_node: node.id_node,
@@ -155,7 +141,10 @@ export class WorkflowService {
       },
     });
 
+    console.log('chlidren', node.children);
+    console.log("lenght", node.children?.length);
     if (node.children?.length) {
+      console.log("test2");
       for (const child of node.children) {
         await this.createNodeRecursively(child, workflowId, createdNode.id);
       }

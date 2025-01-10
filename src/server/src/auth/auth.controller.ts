@@ -150,7 +150,7 @@ export class AuthController {
     const BASE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
     const redirectUrl = `${BASE_AUTH_URL}?response_type=code&client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(
       '[REDIRECT_URI]',
-    )}&scope=${encodeURIComponent('https://www.googleapis.com/auth/calendar')}&access_type=offline`;
+    )}&scope=${encodeURIComponent('https://www.googleapis.com/auth/calendar')}&access_type=offline&prompt=consent`;
 
     return { redirectUrl };
   }

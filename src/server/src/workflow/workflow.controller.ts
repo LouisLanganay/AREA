@@ -303,6 +303,7 @@ export class WorkflowController {
     type: String,
   })
   async runWorkflow(@Param('id') id: string, @Req() req: any) {
+    //TODO mettre secu
     await this.workflowService.runWorkflowById(id);
   }
 }

@@ -8,5 +8,6 @@ export class WebhooksService {
   async handleWebhook(id: string, body: any) {
     // Handle webhook
     console.log('Webhook received:', id, body);
+
   }
 }

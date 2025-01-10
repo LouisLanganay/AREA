@@ -22,7 +22,7 @@ interface Event {
   description: string;
   serviceName: string;
   fieldGroups: FieldGroup[];
-  execute?: (parameters: FieldGroup[]) => void;
+  execute?: (parameters: FieldGroup[]) => void | boolean | Promise<void> | Promise<boolean>;
   check?: (parameters: FieldGroup[]) => Promise<boolean>;
 }
 

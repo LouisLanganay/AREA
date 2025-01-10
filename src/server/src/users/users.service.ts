@@ -374,4 +374,20 @@ export class UsersService {
       },
     });
   }
+
+  async createWebhook(userId: string, data: any) {
+    const workflowId = data.workflowId;
+    const webhook = await this.prismaService.webhook.findFirst({
+      where: {
+        workflowId,
+      },
+    });
+    if (webhook) return null;
+    return this.prismaService.webhook.create({
+      data: {
+        ...data,
+        userId,
+      },
+    });
+  }
 }
