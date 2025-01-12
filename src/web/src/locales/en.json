@@ -164,6 +164,7 @@
     }
   },
   "workflows": {
+    "runWorkflowDescriptionError": "Failed to run workflow, please try again.",
     "fetchErrorDescription": "Failed to fetch data from the server. Please try again.",
     "selectAll": "Select All",
     "selectRow": "Select Row",
@@ -330,7 +331,8 @@
     "USER_FORBIDDEN_EDIT": "You do not have permission to edit this user."
   },
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "back": "Go back"
   },
   "forgotPassword": {
     "title": "Reset your password",
@@ -349,7 +351,17 @@
       "light": "Switch to light mode"
     },
     "navigation": {
+      "menu": "Menu",
+      "theme": {
+        "toggleDark": "Switch to dark mode",
+        "toggleLight": "Switch to light mode"
+      },
       "features": {
+        "scalability": {
+          "sidebar": {
+            "close": "Fermer la barre latérale"
+          }
+        },
         "title": "Features",
         "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
         "intro": "Create automated workflows between your favorite applications.",
@@ -358,7 +370,10 @@
         "team": "Meet our team",
         "stack": "Stack",
         "teamDescription": "We're a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.",
-        "stackDescription": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations."
+        "stackDescription": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations.",
+        "linkLabel": "Learn more about LinkIt features",
+        "teamLinkLabel": "Learn more about our team",
+        "stackLinkLabel": "Learn more about our technology stack"
       },
       "documentation": {
         "title": "Documentation",
@@ -371,7 +386,8 @@
         "solutions": "Advanced features for large organizations.",
         "cases": "Discover how our clients use LinkIt.",
         "contact": "Let's talk about your specific needs."
-      }
+      },
+      "logo": "Return to homepage"
     },
     "auth": {
       "signin": "Sign in",
@@ -490,36 +506,52 @@
     "pleaseWait": "Please wait while we verify your information."
   },
   "premium": {
+    "includes": "Includes everything in {{previous_tier}}, plus:",
+    "include": "Includes:",
+    "contactUs": "Contact us",
     "title": "Choose Your Plan",
     "description": "Unlock the full potential of automation with our premium features",
     "recommended": "Recommended",
     "tiers": {
       "free": {
-        "name": "Free",
-        "price": "$0",
-        "description": "Perfect for getting started with automation",
+        "name": "Starter Plan",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
+        "description": "Perfect for small automations and personal use or for testing.",
         "button": "Get Started",
         "features": {
           "workflows": "Up to 5 active workflows",
           "integrations": "Basic integrations",
-          "storage": "1GB storage",
           "support": "Community support"
         }
       },
       "pro": {
-        "name": "Pro",
-        "price": "$10",
-        "description": "For power users who need more automation",
+        "name": "Pro Plan",
+        "price": {
+          "monthly": "10",
+          "yearly": "8"
+        },
+        "description": "Ideal for growing automations and integrations and professional use.",
         "button": "Upgrade to Pro",
         "features": {
-          "everything": "Everything in Free",
           "ai": "AI-powered workflow suggestions",
           "priority": "Priority execution",
-          "analytics": "Advanced analytics",
-          "storage": "Unlimited storage",
+          "storage": "Unlimited workflows",
           "support": "Priority support"
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise Plan",
+        "price": null,
+        "description": "Perfect for large organizations and enterprise-level automations.",
+        "button": "Contact us",
+        "features": {
+          "commercial": "Commercial use"
         }
       }
     }
   }
 }
+

@@ -64,6 +64,7 @@ export default function Login() {
         size="icon"
         className="absolute top-4 left-4 md:hidden"
         onClick={() => navigate(-1)}
+        aria-label={t('common.back')}
       >
         <ArrowLeftIcon className="h-5 w-5" />
       </Button>
@@ -88,7 +89,7 @@ export default function Login() {
             >
               <img
                 src={provider.icon}
-                alt={provider.name}
+                alt={`${provider.name} icon`}
                 className='h-full max-h-4'
               />
               <span>{provider.name}</span>
@@ -122,12 +123,12 @@ export default function Login() {
 
             <div>
               <div className="flex justify-between items-center">
-                <Label htmlFor='password' className='block text-sm font-medium'>
+                <Label htmlFor='password' className='block text-sm font-medium mb-1'>
                   {t('login.password')}
                 </Label>
                 <Link
                   to='/forgot-password'
-                  className='text-sm text-primary hover:underline'
+                  className='text-sm text-primary hover:underline mb-1'
                 >
                   {t('login.forgotPassword')}
                 </Link>

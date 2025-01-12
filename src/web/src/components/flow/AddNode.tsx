@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { Handle, Position } from '@xyflow/react';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
+import { Handle, Position } from '@xyflow/react';
 
 interface NodeData {
   onAdd?: (nodeId: string) => void;
@@ -10,17 +10,15 @@ interface NodeData {
 export default memo(({ data }: { data: NodeData, isConnectable: boolean }) => {
   return (
     <div
-      className={`
-        text-sm
-        w-fit
-        cursor-pointer
-        transition-colors
-        px-2
-        group
-      `}
+      className='text-sm w-fit cursor-pointer transition-colors px-2 group'
       onClick={() => data.onAdd?.(data.parentId)}
+      role="button"
+      aria-label="Ajouter un nœud"
+      tabIndex={0}
     >
-      <PlusCircleIcon className='size-5 fill-primary group-hover:scale-105 transition-all duration-300' />
+      <PlusCircleIcon className='size-5 fill-primary group-hover:scale-105 transition-all duration-300 bg-background rounded-full'
+        aria-hidden="true"
+      />
 
       <Handle
         type='target'
