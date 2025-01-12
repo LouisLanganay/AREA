@@ -33,6 +33,8 @@ import {
 import {
   ConnectionLineType,
   ReactFlow,
+  Edge,
+  MarkerType
 } from '@xyflow/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -192,9 +194,25 @@ export default function Home() {
     },
   ];
 
-  const exampleEdges = [
-    { id: 'e1-2', source: '1', target: '2', type: 'smoothstep' },
-    { id: 'e2-3', source: '2', target: '3', type: 'smoothstep' },
+  const exampleEdges: Edge[] = [
+    {
+      id: 'e1-2',
+      source: '1',
+      target: '2',
+      type: 'smoothstep',
+      markerEnd: {
+        type: MarkerType.ArrowClosed
+      }
+    },
+    {
+      id: 'e2-3',
+      source: '2',
+      target: '3',
+      type: 'smoothstep',
+      markerEnd: {
+        type: MarkerType.ArrowClosed
+      }
+    }
   ];
 
   const MobileNav = () => {
@@ -523,7 +541,7 @@ export default function Home() {
             <div className='w-[385px] h-full'>
               <ReactFlow
                 nodes={getLayoutedElements(exampleNodes, exampleEdges, 'TB').nodes}
-                edges={getLayoutedElements(exampleNodes, exampleEdges, 'TB').edges}
+                edges={getLayoutedElements(exampleNodes, exampleEdges, 'TB').edges as Edge[]}
                 nodeTypes={{node: Node}}
                 nodesConnectable={false}
                 nodesDraggable={false}
