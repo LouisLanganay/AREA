@@ -287,7 +287,7 @@ export default function EditWorkflow() {
     const newNode: WorkflowNode = {
       id: idGenerated,
       type: 'node',
-      position: { x: parentNode.position.x, y: parentNode.position.y + 150 },
+      position: { x: parentNode.position.x, y: parentNode.position.y },
       data: {
         label: service.name,
         service: service,
@@ -304,7 +304,7 @@ export default function EditWorkflow() {
     const addNode: WorkflowNode = {
       id: `${newNode.id}-add`,
       type: 'custom2',
-      position: { x: newNode.position.x + 130, y: newNode.position.y + 125 },
+      position: { x: newNode.position.x, y: newNode.position.y },
       data: { parentId: newNode.id, onAdd: handleAddNode },
     };
 
@@ -316,7 +316,7 @@ export default function EditWorkflow() {
     const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
       [...updatedNodes, newNode, addNode],
       [...updatedEdges, newEdge, addEdge],
-      'TB', 80, 100, 50
+      'TB'
     );
 
     setNodes(layoutedNodes);
@@ -324,7 +324,7 @@ export default function EditWorkflow() {
 
     updatedWorkflow.triggers = [...updatedWorkflow.triggers, action];
     setIsCommandOpen(false);
-    setSelectedNode(action);
+    setSelectedNode(null);
   }, [nodes, edges, updatedWorkflow, selectedParentId, handleAddNode]);
 
   const handleResetNode = useCallback((nodeId: string) => {
@@ -399,27 +399,17 @@ export default function EditWorkflow() {
       triggers: removeNodeFromTree(prev!.triggers)
     }));
 
-    setNodes(nodes => {
-      const updatedNodes = nodes.filter(n => !n.id.startsWith(nodeId));
+    const updatedNodes = nodes.filter(n => !n.id.startsWith(nodeId));
+    const updatedEdges = edges.filter(e => !e.source.startsWith(nodeId) && !e.target.startsWith(nodeId));
 
-      updatedNodes.forEach(node => {
-        if (!updatedNodes.some(n => n.data.parentId === node.id)) {
-          const addNode: WorkflowNode = {
-            id: `${node.id}-add`,
-            type: 'custom2',
-            position: { x: node.position.x + 130, y: node.position.y + 150 },
-            data: { parentId: node.id, onAdd: handleAddNode },
-          };
-          updatedNodes.push(addNode);
-          setEdges(edges => [...edges, { id: `${node.id}-${addNode.id}`, source: node.id, target: addNode.id }]);
-        }
-      });
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      updatedNodes,
+      updatedEdges,
+      'TB'
+    );
 
-      return updatedNodes;
-    });
-
-    setEdges(edges => edges.filter(e => !e.source.startsWith(nodeId) && !e.target.startsWith(nodeId)));
-
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
     handleClosePanel();
   }, [updatedWorkflow, handleAddNode, handleClosePanel]);
 

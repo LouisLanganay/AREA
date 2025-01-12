@@ -55,9 +55,9 @@ export const getLayoutedElements = (
   nodes: WorkflowNode[],
   edges: WorkflowEdge[],
   direction = 'TB',
-  ranksep = 100,
-  nodesep = 100,
-  edgesep = 50
+  ranksep = 40,
+  nodesep = 40,
+  edgesep = 20
 ) => {
   const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR';
@@ -83,7 +83,7 @@ export const getLayoutedElements = (
 
   dagre.layout(dagreGraph);
 
-  const layoutedNormalNodes = normalNodes.map((node) => {
+  const layoutedNormalNodes = normalNodes.map((node, index) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
@@ -91,12 +91,12 @@ export const getLayoutedElements = (
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y / 1.1,
+        y: nodeWithPosition.y - (index === 0 ? 25 : 0),
       },
     };
   });
 
-  const layoutedAddNodes = addNodes.map((addNode) => {
+  const layoutedAddNodes = addNodes.map((addNode, index) => {
     const parentId = addNode.id.split('-add')[0];
     const parentNode = layoutedNormalNodes.find(node => node.id === parentId);
     if (!parentNode) return addNode;
@@ -107,7 +107,7 @@ export const getLayoutedElements = (
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
         x: parentNode.position.x + (nodeWidth - 36) / 2,
-        y: parentNode.position.y + nodeHeight + 35,
+        y: parentNode.position.y + nodeHeight + (index === addNodes.length - 1 ? 22 : 0),
       },
     };
   });

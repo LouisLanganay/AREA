@@ -98,6 +98,7 @@ export default function Register() {
         size="icon"
         className="absolute top-4 left-4 md:hidden"
         onClick={() => navigate(-1)}
+        aria-label={t('common.back')}
       >
         <ArrowLeftIcon className="h-5 w-5" />
       </Button>
@@ -119,10 +120,11 @@ export default function Register() {
               size='sm'
               key={provider.name}
               onClick={() => openOAuthUrl(provider.redirect, provider.name)}
+              aria-label={`Sign in with ${provider.name}`}
             >
               <img
                 src={provider.icon}
-                alt={provider.name}
+                alt={`${provider.name} icon`}
                 className='h-full max-h-4'
               />
               <span>{provider.name}</span>
@@ -207,7 +209,7 @@ export default function Register() {
 
           <Button
             type='submit'
-            className='w-full'
+            className='w-full py-2'
             disabled={isLoading || isUsernameAvailable === false}
           >
             {t('register.createAccount')}
@@ -216,7 +218,7 @@ export default function Register() {
         </form>
         <p className='text-sm text-muted-foreground'>
           {t('register.alreadyHaveAccount')}{' '}
-          <Link to='/login' className='text-sm font-medium text-primary'>
+          <Link to='/login' className='text-sm font-medium text-primary px-2 py-1 hover:underline'>
             {t('register.signIn')}
           </Link>
         </p>

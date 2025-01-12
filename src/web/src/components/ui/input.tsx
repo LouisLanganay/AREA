@@ -36,7 +36,8 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'> &
             onMouseDown={() => setShowPassword(true)}
             onMouseUp={() => setShowPassword(false)}
             onMouseLeave={() => setShowPassword(false)}
-            className='absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all duration-300'
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className='absolute p-1 right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-all duration-300'
           >
             {showPassword ?
               <EyeSlashIcon className='size-4' />

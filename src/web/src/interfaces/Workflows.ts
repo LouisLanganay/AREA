@@ -75,7 +75,7 @@ interface FieldGroup {
 }
 
 interface Event {
-  type : 'action' | 'reaction'
+  type: 'action' | 'reaction'
   id_node: string;
   id: string;
   name: string;

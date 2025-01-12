@@ -80,9 +80,17 @@ const config = {
   			ringWidth: {
   				'1.5': '1.5px',
   			},
+  			ringOffsetWidth: {
+  				'3': '3px',
+  			},
   			success: {
   				DEFAULT: 'hsl(var(--success))',
   				foreground: 'hsl(var(--success-foreground))'
+  			},
+  			premium: {
+  				DEFAULT: 'hsl(var(--premium))',
+  				foreground: 'hsl(var(--premium-foreground))',
+  				bis: 'hsl(var(--premium-bis))',
   			},
   		},
   		backgroundImage: {
@@ -109,14 +117,42 @@ const config = {
   					transform: "translate(0px, 0px) scale(1)",
   				},
   			},
+  			blob2: {
+  				"0%": {
+  					transform: "translate(0px, 0px) scale(1)",
+  				},
+  				"20%": {
+  					transform: "translate(-30px, 20px) scale(1.1)",
+  				},
+  				"40%": {
+  					transform: "translate(15px, -25px) scale(0.95)",
+  				},
+  				"60%": {
+  					transform: "translate(-20px, -15px) scale(1.05)",
+  				},
+  				"80%": {
+  					transform: "translate(25px, 30px) scale(0.9)",
+  				},
+  				"100%": {
+  					transform: "translate(0px, 0px) scale(1)",
+  				},
+  			},
   		},
   		animation: {
   			blob: "blob 7s infinite",
+  			blob2: "blob2 14s infinite",
   		},
   		utilities: {
   			".animation-delay-2000": {
   				"animation-delay": "2s",
   			},
+  		},
+  		blur: {
+  			'4xl': '64px',
+  			'5xl': '80px',
+  			'6xl': '96px',
+  			'7xl': '128px',
+  			'8xl': '160px',
   		},
   	}
   },

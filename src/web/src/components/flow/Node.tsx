@@ -85,7 +85,10 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
         <Handle
           type='target'
           position={Position.Top}
-          style={{ visibility: 'hidden' }}
+          className={clsx(
+            '!bg-card !size-3 !border-primary !ring-1 !ring-card',
+            data.isTrigger && 'hidden'
+          )}
         />
         <Handle
           type='source'

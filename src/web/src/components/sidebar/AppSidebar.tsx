@@ -273,7 +273,8 @@ export function AppSidebar() {
               <div className="relative z-10">
                 <button
                   onClick={hidePremiumBanner}
-                  className='absolute right-0 top-0 p-1 rounded-md hover:bg-second-bis/20 transition-all duration-200 group-hover/premium-banner:opacity-100 opacity-0'
+                  aria-label={t('common.close')}
+                  className='absolute right-0 top-0 p-1 rounded-md hover:bg-second-bis/20 transition-all duration-200 group-hover/premium-banner:opacity-100 md:opacity-0'
                 >
                   <XMarkIcon className='size-3 text-primary' />
                 </button>
@@ -299,14 +300,16 @@ export function AppSidebar() {
             </div>
           )}
         </div>
-        <SidebarMenuItem className='list-none'>
-          <SidebarMenuButton asChild>
-            <a href='https://github.com/LouisLanganay/AREA'>
-              <LifebuoyIcon className='w-5 h-5' />
-              <span>{t('sidebar.items.documentation')}</span>
-            </a>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        <ul className='list-none'>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <a href='https://github.com/LouisLanganay/AREA'>
+                <LifebuoyIcon className='w-5 h-5' />
+                <span>{t('sidebar.items.documentation')}</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </ul>
         <UserInfo
           user={user}
         />

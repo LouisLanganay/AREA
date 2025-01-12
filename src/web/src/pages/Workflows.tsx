@@ -327,7 +327,7 @@ export default function Workflows() {
 
   function extractServices(triggers: Event[], services: string[] = []) {
     for (const trigger of triggers) {
-      if (trigger.serviceName)
+      if (trigger.serviceName && !services.includes(trigger.serviceName))
         services.push(trigger.serviceName);
       if (trigger.children)
         extractServices(trigger.children, services);
@@ -624,35 +624,40 @@ export default function Workflows() {
                 <DialogDescription>{t('workflows.creation.trigger.description')}</DialogDescription>
               </DialogHeader>
               <div className='flex flex-col gap-2 items-start w-full'>
-                {services.map((service: Service) =>
-                  <div key={service.id} className='w-full overflow-hidden gap-1 flex flex-col p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground'>
-                    <span>{service.name}</span>
-                    {service.Event?.filter((action: Event) => action.type === 'action')?.map((action: Event) => (
-                      <div
-                        key={action.id}
-                        className={clsx(
-                          'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-                          selectedTrigger?.id === action.id && 'border-green-500',
-                        )}
-                        onClick={() => handleSelectTrigger(action)}
-                      >
-                        <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
-                          {service.image ? (
-                            <img src={service.image} alt={service.name} className='size-4 object-contain' />
-                          ) : (
-                            <div className='flex items-center justify-center size-4'>
-                              <span>{service.name.charAt(0)}</span>
-                            </div>
+                {services.map((service: Service) => {
+                  const hasActions = service.Event?.some((action: Event) => action.type === 'action');
+                  if (!hasActions) return null;
+
+                  return (
+                    <div key={service.id} className='w-full overflow-hidden gap-1 flex flex-col p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground'>
+                      <span>{service.name}</span>
+                      {service.Event?.filter((action: Event) => action.type === 'action')?.map((action: Event) => (
+                        <div
+                          key={action.id}
+                          className={clsx(
+                            'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+                            selectedTrigger?.id_node === action.id_node && 'border-green-500',
                           )}
+                          onClick={() => handleSelectTrigger(action)}
+                        >
+                          <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
+                            {service.image ? (
+                              <img src={service.image} alt={service.name} className='size-4 object-contain' />
+                            ) : (
+                              <div className='flex items-center justify-center size-4'>
+                                <span>{service.name.charAt(0)}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className='flex flex-col min-w-0'>
+                            <span className='truncate'>{action.name}</span>
+                            <span className='text-muted-foreground text-xs truncate'>{action.description}</span>
+                          </div>
                         </div>
-                        <div className='flex flex-col min-w-0'>
-                          <span className='truncate'>{action.name}</span>
-                          <span className='text-muted-foreground text-xs truncate'>{action.description}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
               <DialogFooter>
                 <Button

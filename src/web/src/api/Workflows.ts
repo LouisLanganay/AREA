@@ -65,3 +65,11 @@ export const createWorkflow = async (data: createWorkflowRequest, token: string)
   return response.data;
 };
 
+export const runWorkflow = async (id: string, token: string) => {
+  const response = await axiosInstance.get(`/workflows/run/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};

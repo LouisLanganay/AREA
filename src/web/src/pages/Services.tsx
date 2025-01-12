@@ -109,7 +109,7 @@ export default function Services() {
         </p>
       </div>
 
-      <Tabs defaultValue="enabled">
+      <Tabs defaultValue={services.some(service => service.enabled) ? 'enabled' : 'disabled'}>
         <TabsList className='mb-4'>
           <TabsTrigger value='enabled'>Actives</TabsTrigger>
           <TabsTrigger value='disabled'>Not connected</TabsTrigger>

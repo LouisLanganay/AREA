@@ -40,6 +40,9 @@
     --second-bis: 354 56.6% 83.9%;
     --success: 142 76% 36%;
     --success-foreground: 142 76% 15%;
+    --premium: 37 98% 73%;
+    --premium-bis: 24 98% 85%;
+    --premium-foreground: 0 0% 9%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -78,6 +81,9 @@
     --second-bis: 354 56.6% 83.9%;
     --success: 142 70% 45%;
     --success-foreground: 0 0% 98%;
+    --premium: 37 98% 73%;
+    --premium-bis: 24 98% 85%;
+    --premium-foreground: 0 0% 9%;
   }
 }
 

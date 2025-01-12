@@ -56,7 +56,7 @@ const Toast = React.forwardRef<
   ) : variant === 'success' ? (
     <CheckCircleIcon className="size-5 text-green-500" />
   ) : variant === 'loading' ? (
-    <Loader2Icon className="size-5 text-background animate-spin" />
+    <Loader2Icon className="size-5 text-foreground animate-spin" />
   ) : variant === 'info' ? (
     <InformationCircleIcon className="size-5 text-blue-500" />
   ) : null;
