@@ -577,8 +577,14 @@ export default function Home() {
                   </p>
                 </div>
                 <div className='relative min-h-[30rem] w-full grow [container-type:inline-size] max-lg:mx-auto max-lg:max-w-sm'>
-                  <div className='absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-for shadow-2xl'>
-                    <img className='size-full object-cover object-top' src='https://tailwindui.com/plus/img/component-images/bento-03-mobile-friendly.png' alt=''/>
+                  <div className='absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-muted-foreground/20 shadow-2xl'>
+                    <img
+                      className='size-full object-cover object-top'
+                      src='/assets/phone.png'
+                      alt={t('home.features.mobile.imageAlt')}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
                 </div>
               </div>

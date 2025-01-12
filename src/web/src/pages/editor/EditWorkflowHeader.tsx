@@ -31,7 +31,7 @@ import {
   StarIcon as StarIconOutline
 } from '@heroicons/react/24/outline';
 import '@xyflow/react/dist/style.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
@@ -55,6 +55,10 @@ export function WorkflowHeader({
   const { token } = useAuth();
   const [workflowName, setWorkflowName] = useState(getWorkflowName(workflow.name));
   const workflowPath = getWorkflowPath(workflow.name);
+
+  useEffect(() => {
+    setWorkflowName(getWorkflowName(workflow.name));
+  }, [workflow.name]);
 
   const handleFavorite = async (value: boolean) => {
     if (!workflow || !token) return;
