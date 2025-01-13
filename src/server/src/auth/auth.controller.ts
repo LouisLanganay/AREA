@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -142,9 +143,33 @@ export class AuthController {
     await this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
-  private async redirectFrontend(res, token) {
-    const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
-    return res.redirect(frontendRedirectUrl);
+  @Get('google/redirect/:service')
+  async googleAuthRedirect(@Param('service') service: string) {
+    if (service !== 'gcalendar') {
+      return;
+    }
+    const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    const BASE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const redirectUrl = `${BASE_AUTH_URL}?response_type=code&client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(
+      '[REDIRECT_URI]',
+    )}&scope=${encodeURIComponent('https://www.googleapis.com/auth/calendar')}&access_type=offline&prompt=consent`;
+
+    return { redirectUrl };
+  }
+
+  @Post('google/callback/:service')
+  @UseGuards(AuthGuard('jwt'))
+  async googleAuthCallback(
+    @Param('service') service: string,
+    @Body('code') code: string,
+    @Req() req: any,
+  ) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    if (service === 'gcalendar') {
+      return await this.authService.gCalendarRedirect(code, req.user.id);
+    }
   }
 
   @Get('outlook/redirect')
@@ -177,7 +202,6 @@ export class AuthController {
   }
 
   @Get('discord/redirect')
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async discordAuthRedirect(@Req() req) {
     const redirectUrl = await this.discordService.getRedirectUrl();
     return { redirectUrl };

@@ -249,6 +249,59 @@ export class UsersService {
     await this.prismaService.user.delete({ where: { id } });
   }
 
+  async addTokenService(
+    userId: string,
+    provider: string,
+    accessToken: string,
+    refreshToken?: string,
+    expiresIn?: number,
+  ) {
+    const exists = await this.prismaService.token.findFirst({
+      where: {
+        userId: userId,
+        provider: provider,
+      },
+    });
+
+    if (exists) {
+      return this.prismaService.token.update({
+        where: {
+          userId_provider: {
+            userId,
+            provider,
+          },
+        },
+        data: {
+          accessToken,
+          refreshToken,
+          expiresAt: new Date(Date.now() + expiresIn * 1000),
+        },
+      });
+    }
+
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+    return this.prismaService.token.create({
+      data: {
+        userId,
+        provider,
+        accessToken,
+        refreshToken,
+        expiresAt,
+      },
+    });
+  }
+
+  async getTokenService(userId: string, provider: string) {
+    const token = await this.prismaService.token.findFirst({
+      where: {
+        userId,
+        provider,
+      },
+    });
+    if (!token) return null;
+    return token;
+  }
+
   async checkRole(id: string, role: string) {
     const user = await this.prismaService.user.findUnique({
       where: {
@@ -318,6 +371,40 @@ export class UsersService {
         role: 'admin',
         status: 'active',
         provider: 'local',
+      },
+    });
+  }
+
+  async createWebhook(userId: string, data: any) {
+    const workflowId = data.workflowId;
+    const webhook = await this.prismaService.webhook.findFirst({
+      where: {
+        workflowId,
+      },
+    });
+    if (webhook) return null;
+    return this.prismaService.webhook.create({
+      data: {
+        ...data,
+        userId,
+      },
+    });
+  }
+
+  async updateWebhook(userId: string, id: string, data: any) {
+    const webhook = await this.prismaService.webhook.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!webhook) return null;
+    return this.prismaService.webhook.update({
+      where: {
+        id,
+      },
+      data: {
+        ...data,
+        userId,
       },
     });
   }

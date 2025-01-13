@@ -7,18 +7,19 @@ export class GoogleAuthService {
   constructor(private httpService: HttpService) {}
 
   // Méthode pour échanger le code d'autorisation contre des tokens
-  async exchangeCodeForTokensGoogle(code: string): Promise<any> {
+  async exchangeCodeForTokensGoogle(
+    code: string,
+    redirect_uri: string = process.env.GOOGLE_REDIRECT_URI,
+  ): Promise<any> {
     const tokenUrl = 'https://oauth2.googleapis.com/token';
-
     // Données nécessaires pour échanger le code contre les tokens
     const tokenData = {
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      redirect_uri: redirect_uri,
       grant_type: 'authorization_code',
     };
-
     try {
       // Effectuer une requête POST pour obtenir les tokens
       const tokenResponse = await this.httpService.axiosRef.post(
@@ -28,6 +29,7 @@ export class GoogleAuthService {
           headers: { 'Content-Type': 'application/json' },
         },
       );
+
       // Retourne les tokens obtenus depuis Google
       return tokenResponse.data; // access_token, refresh_token, id_token, expires_in, etc.
     } catch (error) {

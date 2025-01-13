@@ -13,6 +13,7 @@ export class EventMonitor {
   async executeWorkflowDirectly(
     workflowId: string,
     serviceList: Service[],
+    data_supply?: any,
   ): Promise<void> {
     const workflow = await this.prisma.workflow.findUnique({
       where: { id: workflowId },
@@ -31,7 +32,12 @@ export class EventMonitor {
 
     let status_workflow = 'success';
     try {
-      await this.executeDependentNodes(rootNode.id, workflowId, serviceList);
+      await this.executeDependentNodes(
+        rootNode.id,
+        workflowId,
+        serviceList,
+        data_supply,
+      );
     } catch (error) {
       console.error(`Error executing workflow ${workflowId}:`, error);
       status_workflow = 'failure';
@@ -55,12 +61,10 @@ export class EventMonitor {
     if (!event) {
       throw new Error(`Event with ID "${event?.id_node}" not found.`);
     }
-
     const workflows = await this.prisma.workflow.findMany({
       where: { enabled: true },
       include: { triggers: true },
     });
-
     const workflow = workflows.find((wf) => wf.id === workflowId);
     if (!workflow) {
       console.error(`Workflow ID ${workflowId} not found or not enabled.`);
@@ -110,7 +114,6 @@ export class EventMonitor {
     try {
       if (typeof event.check === 'function') {
         const result = await event.check([params, nodeFieldGroupWorkflow]);
-
         if (result) {
           const root_node = workflow.triggers.find(
             (node) => node.id_node === event.id_node,
@@ -142,6 +145,7 @@ export class EventMonitor {
     nodeId: string,
     workflowId: string,
     serviceList: Service[],
+    data_supply?: any,
   ): Promise<void> {
     const workflows = await this.prisma.workflow.findMany({
       where: { enabled: true },
@@ -156,9 +160,9 @@ export class EventMonitor {
     const dependentNodes = workflow.triggers.filter(
       (node) => node.parentNodeId === nodeId,
     );
-
     for (const node of dependentNodes) {
       const service = serviceList.find((s) => s.id === node.serviceName);
+
       if (!service) {
         console.error(`Service not found for node: ${node.name}`);
         continue;
@@ -232,6 +236,24 @@ export class EventMonitor {
         },
       ];
 
+      const data_supply_fields: Field[] = [
+        {
+          id: 'data',
+          type: 'string',
+          description: 'Workflow ID',
+          value: data_supply,
+          required: true,
+        },
+      ];
+
+      const dataFieldGroup: FieldGroup = {
+        id: 'data_supply',
+        name: 'Data Supply',
+        description: 'Data Supply',
+        type: 'data_supply',
+        fields: data_supply_fields,
+      };
+
       const nodeFieldGroupWorkflow: FieldGroup = {
         id: 'workflow_information',
         name: 'Workflow Information',
@@ -241,7 +263,14 @@ export class EventMonitor {
       };
 
       if (typeof event.execute === 'function') {
-        await event.execute([nodeFieldGroup, nodeFieldGroupWorkflow]);
+        const value = await event.execute([
+          nodeFieldGroup,
+          nodeFieldGroupWorkflow,
+          dataFieldGroup,
+        ]);
+        if (typeof value === 'boolean' && !value) {
+          return;
+        }
       }
 
       await this.executeDependentNodes(node.id, workflowId, serviceList);
@@ -329,6 +358,6 @@ export class EventMonitor {
     console.log('start fetch');
     setInterval(() => {
       this.fetchAndCheckWorkflows(serviceList).catch(console.error);
-    }, 10000); // 10 000 ms = 10 secondes
+    }, 5000); // 10 000 ms = 10 secondes
   }
 }
