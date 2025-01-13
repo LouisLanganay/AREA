@@ -12,12 +12,16 @@ import {
 } from './service/meteo.service';
 import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
-  discordService,
-  EventBanUserDiscord,
-  EventjoinGuildDiscord,
+  discordService, EventBanUserDiscord, EventjoinGuildDiscord,
   EventlistenMessageDiscord,
   EventsendMessageDiscord,
 } from './service/discord.service';
+import {
+  EventAddGoogleCalendar,
+  EventIsNewEvent,
+  gcalendarService,
+  ListenEventGcalendar,
+} from './service/gcalendar.service';
 import {
   TimerService,
   EventDateReached,
@@ -27,10 +31,11 @@ import { MailerService } from './service/mailer.service';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
-  allService.addService(WeatherService);
   allService.addService(TimerService);
   allService.addService(MailTestService);
   allService.addService(MailerService);
+  allService.addService(WeatherService);
+  allService.addService(gcalendarService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
@@ -44,6 +49,10 @@ export async function defineAllService(allService: any) {
 
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
+
+  allService.addEventToService('gcalendar', ListenEventGcalendar);
+  allService.addEventToService('gcalendar', EventAddGoogleCalendar);
+  // allService.addEventToService('gcalendar', EventIsNewEvent);
 
   return allService;
 }

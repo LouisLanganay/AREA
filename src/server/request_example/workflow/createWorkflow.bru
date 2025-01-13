@@ -11,7 +11,7 @@ post {
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQzNDBiMWFiLTNjMmYtNDcwZi1iNTMyLWRlMzJkYTQ2ODVhZSIsImlhdCI6MTczNjE1Nzk5OSwiZXhwIjoxNzM2MTYxNTk5fQ.ZUXD4cA_n-7Gzr0ju27L8UKWmVFMjhVCp-futFQHRqY
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRlMjg5YjFlLWRlZDQtNDM3OC05YWYyLTk5MmQyNzI2MTk3NCIsImlhdCI6MTczMzg2MTMzNCwiZXhwIjoxNzMzODY0OTM0fQ.zcCMOVs9ZdOrR_KCqqBkdIJqbnB5-RlKNQsTLEvbUAQ
 }
 
 body:json {
@@ -20,7 +20,7 @@ body:json {
     "description": "Notify by email when temp is lower than 10°C at Rennes",
     "image": "https://example.com/workflow.png",
     "enabled": true,
-    "triggers": [
+    "nodes": [
       {
         "id_node": "checkFreezingTemperature",
         "type": "action",
@@ -30,7 +30,7 @@ body:json {
           {
             "id": "locationDetails",
             "name": "GPS Position",
-            "description": "GPS position with latitude and longitude",
+            "description": "GPS position with latitude dans longitude",
             "type": "position",
             "fields": [
               {
@@ -50,85 +50,45 @@ body:json {
             ]
           }
         ],
-        "children": [
+        "dependsOn": null
+      },
+      {
+        "id_node": "sendEmail",
+        "type": "reaction",
+        "name": "Send Email",
+        "serviceName": "testService",
+        "fieldGroups": [
           {
-            "id_node": "sendEmail",
-            "type": "reaction",
-            "name": "Send Email",
-            "serviceName": "testService",
-            "fieldGroups": [
+            "id": "email_info",
+            "name": "Email Information",
+            "description": "Details for sending the email",
+            "type": "group",
+            "fields": [
               {
-                "id": "email_info",
-                "name": "Email Information",
-                "description": "Details for sending the email",
-                "type": "group",
-                "fields": [
-                  {
-                    "id": "recipient_emails",
-                    "type": "string",
-                    "required": true,
-                    "description": "Comma-separated list of recipient emails",
-                    "value": "sebastien.bertil-souchet@epitech.eu"
-                  },
-                  {
-                    "id": "email_subject",
-                    "type": "string",
-                    "required": true,
-                    "description": "Subject of the email",
-                    "value": "Temperature Alert For Gugus"
-                  },
-                  {
-                    "id": "email_body",
-                    "type": "string",
-                    "required": true,
-                    "description": "Body content of the email",
-                    "value": "The temperature at Rennes is below 10°C."
-                  }
-                ]
+                "id": "recipient_emails",
+                "type": "string",
+                "required": true,
+                "description": "Comma-separated list of recipient emails",
+                "value": "sebastien.bertilsouchet@protonmail.com"
+              },
+              {
+                "id": "email_subject",
+                "type": "string",
+                "required": true,
+                "description": "Subject of the email",
+                "value": "Temperature Alert"
+              },
+              {
+                "id": "email_body",
+                "type": "string",
+                "required": true,
+                "description": "Body content of the email",
+                "value": "The temperature at Rennes is below 10°C."
               }
-            ],
-            "children": [
-              {
-            "id_node": "sendEmail",
-            "type": "reaction",
-            "name": "Send Email",
-            "serviceName": "testService",
-            "fieldGroups": [
-              {
-                "id": "email_info",
-                "name": "Email Information",
-                "description": "Details for sending the email",
-                "type": "group",
-                "fields": [
-                  {
-                    "id": "recipient_emails",
-                    "type": "string",
-                    "required": true,
-                    "description": "Comma-separated list of recipient emails",
-                    "value": "sebastien.bertil-souchet@epitech.eu"
-                  },
-                  {
-                    "id": "email_subject",
-                    "type": "string",
-                    "required": true,
-                    "description": "Subject of the email",
-                    "value": "Temperature Alert For Gugus"
-                  },
-                  {
-                    "id": "email_body",
-                    "type": "string",
-                    "required": true,
-                    "description": "Body content of the email",
-                    "value": "The temperature at Rennes is below 10°C."
-                  }
-                ]
-              }
-            ],
-            "children": []
-          }
             ]
           }
-        ]
+        ],
+        "dependsOn": "checkFreezingTemperature"
       }
     ]
   }

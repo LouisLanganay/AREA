@@ -29,6 +29,7 @@ model User {
   tokens         Token[]
   role           String          @default("user") // Indique si l'utilisateur est un administrateur
   PasswordReset  PasswordReset[]
+  Webhook        Webhook[]
   status         String          @default("active") // Statut de l'utilisateur (ex: "active", "banned")²
 
   @@map("users") // Nom personnalisé pour la table dans la base de données (facultatif)
@@ -48,35 +49,36 @@ model Node {
   conditions  Json? // Conditions associées (facultatif)
   variables   Json? // Variables associées (facultatif)
 
-  parentNodeId  String?  // Clé étrangère vers le parent
-  parentNode    Node?    @relation("NodeToNode", fields: [parentNodeId], references: [id])
-  children      Node[]   @relation("NodeToNode")
+  parentNodeId String? // Clé étrangère vers le parent
+  parentNode   Node?   @relation("NodeToNode", fields: [parentNodeId], references: [id])
+  children     Node[]  @relation("NodeToNode")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Token       Token[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Token     Token[]
 }
 
 model Workflow {
-  id          String   @id @default(uuid())
-  userId      String // Clé étrangère vers la table User
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  name        String
-  description String
-  image       String
-  enabled     Boolean  @default(true) // Indique si le workflow est actif ou non
-  triggers    Node[] // Relation avec les nodes
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String            @id @default(uuid())
+  userId          String // Clé étrangère vers la table User
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  description     String
+  image           String
+  enabled         Boolean           @default(true) // Indique si le workflow est actif ou non
+  triggers        Node[] // Relation avec les nodes
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
   historyWorkflow historyWorkflow[]
-  favorite    Boolean  @default(false) // Indique si le workflow est favori
+  favorite        Boolean           @default(false) // Indique si le workflow est favori
+  Webhook         Webhook[]
 }
 
 model Token {
   id           Int       @id @default(autoincrement())
   provider     String // Nom du fournisseur, par exemple "google", "github"
-  accessToken  String // Token d'accès pour l'API du fournisseur
-  refreshToken String? // Token de rafraîchissement (peut être null si non fourni par le fournisseur)
+  accessToken  String    @db.Text // Token d'accès pour l'API du fournisseur
+  refreshToken String?   @db.Text // Token de rafraîchissement (peut être null si non fourni par le fournisseur)
   expiresAt    DateTime? // Date d'expiration du token d'accès
   userId       String // Relation avec le modèle User
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -103,4 +105,19 @@ model historyWorkflow {
   workflow      Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   executionDate DateTime @default(now())
   status        String   @default("success")
+}
+
+model Webhook {
+  id         String    @id @default(uuid()) // Identifiant interne pour Prisma
+  channelId  String // "id" utilisé lors de l'appel à l'API watch
+  expiration DateTime? // Date/heure d'expiration du canal, si vous la gérez
+  token      String? // Le "token" personnalisé que vous pouvez définir (optionnel)
+  params     Json? // Pour stocker éventuellement "ttl" ou d'autres paramètres liés au webhook
+  createdAt  DateTime  @default(now()) // Date de création du record
+  updatedAt  DateTime  @updatedAt // Mis à jour automatiquement à chaque modification
+  userId     String? // Pour lier ce webhook à un utilisateur (si besoin)
+  workflowId String? // Pour lier ce webhook à un workflow (si besoin)
+  workflow   Workflow? @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service    String // Nom du service (ex: "email", "sms")
 }

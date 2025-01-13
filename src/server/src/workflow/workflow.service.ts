@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
 import { UpdateWorkflowDto } from './dto/updateWorkflow.dto';
@@ -11,12 +15,34 @@ import { defineAllService } from '../main';
 export class WorkflowService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async runWorkflowById(workflowId: string) {
+  async runWorkflowById(workflowId: string, data?: any) {
     const allService = new ServiceRegister(this.prisma);
     const monitor = new EventMonitor();
-
     const tmp = await defineAllService(allService);
-    await monitor.executeWorkflowDirectly(workflowId, tmp.getAllServices());
+    await monitor.executeWorkflowDirectly(
+      workflowId,
+      tmp.getAllServices(),
+      data,
+    );
+  }
+
+  async runWorkflowByIdSecure(workflowId: string, userId: string, data?: any) {
+    const workflow = await this.prisma.workflow.findUnique({
+      where: { id: workflowId },
+      select: { userId: true },
+    });
+
+    if (!workflow) {
+      throw new NotFoundException({
+        err_code: 'WORKFLOW_NOT_FOUND',
+      });
+    }
+    if (workflow.userId !== userId) {
+      throw new ForbiddenException({
+        err_code: 'WORKFLOW_INVALID_PERM',
+      });
+    }
+    await this.runWorkflowById(workflowId, data);
   }
 
   async getWorkflowById(id: string, userId: string) {
@@ -60,7 +86,6 @@ export class WorkflowService {
       });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId: _, ...rest } = workflow;
     return rest;
   }
@@ -113,7 +138,6 @@ export class WorkflowService {
         userId,
       },
     });
-
     await this.createNodeRecursively(data.triggers[0], createdWorkflow.id);
 
     return createdWorkflow;
