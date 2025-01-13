@@ -9,9 +9,6 @@ import { Type } from 'class-transformer';
 import { NodeDto } from './node.dto';
 
 export class UpdateWorkflowDto {
-  @IsString()
-  id: string;
-
   @IsOptional()
   @IsString()
   name?: string;

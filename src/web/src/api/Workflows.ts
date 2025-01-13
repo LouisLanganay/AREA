@@ -1,25 +1,24 @@
 import { createWorkflowRequest, getWorkflowResponse } from '@/interfaces/api/Workflows';
-import { Workflow } from '@/interfaces/Workflows';
+import { Workflow, ensureChildrenArrays } from '@/interfaces/Workflows';
 import axiosInstance from './axiosInstance';
 
 export const getWorkflows = async (token: string): Promise<Workflow[]> => {
   const response = await axiosInstance.get<Workflow[]>(`/workflows`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
     },
   });
   return response.data;
 };
 
 export const updateWorkflow = async (id: string, data: Partial<Workflow>, token: string) => {
+  const sanitizedData = ensureChildrenArrays(data);
   const response = await axiosInstance.patch<Workflow>(
     `/workflows/${id}`,
-    data,
+    sanitizedData,
     {
       headers: {
         Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true'
       }
     }
   );
@@ -30,7 +29,6 @@ export const deleteWorkflow = async (id: string, token: string) => {
   const response = await axiosInstance.delete(`/workflows/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
   return response.data;
@@ -40,7 +38,6 @@ export const getWorkflow = async (id: string, token: string): Promise<getWorkflo
   const response = await axiosInstance.get<getWorkflowResponse>(`/workflows/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -62,10 +59,17 @@ export const createWorkflow = async (data: createWorkflowRequest, token: string)
     {
       headers: {
         Authorization: `Bearer ${token}`,
-        'ngrok-skip-browser-warning': 'true'
       },
     }
   );
   return response.data;
 };
 
+export const runWorkflow = async (id: string, token: string) => {
+  const response = await axiosInstance.get(`/workflows/run/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};

@@ -22,7 +22,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
   type LoginSchema = z.infer<typeof loginSchema>;
   const loginSchema = z.object({
     email: z.string().email(t('login.emailInvalid')),
-    password: z.string().min(8, t('login.passwordMinLength')),
+    password: z.string().min(1, t('login.passwordRequired')),
   });
   const { login } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({

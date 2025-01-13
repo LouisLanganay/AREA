@@ -37,7 +37,24 @@ const flowStyles = `
   }
 `;
 
-export { nodeWidth, nodeHeight, flowStyles };
+const ensureChildrenArrays = (data: Partial<Workflow>): Partial<Workflow> => {
+  const checkChildren = (children: Event[]): Event[] => {
+    if (children.length > 0) {
+      return children.map(child => ({
+        ...child,
+        children: checkChildren(child.children || [])
+      }));
+    }
+    return children;
+  };
+
+  return {
+    ...data,
+    triggers: checkChildren(data.triggers || [])
+  };
+};
+
+export { nodeWidth, nodeHeight, flowStyles, ensureChildrenArrays };
 export type { WorkflowNodeData, WorkflowNode, WorkflowEdge };
 
 interface Field {
@@ -58,7 +75,7 @@ interface FieldGroup {
 }
 
 interface Event {
-  type : 'action' | 'reaction'
+  type: 'action' | 'reaction'
   id_node: string;
   id: string;
   name: string;

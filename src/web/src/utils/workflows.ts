@@ -1,11 +1,11 @@
 import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Event, Field } from '@/interfaces/Workflows';
 import dagre from '@dagrejs/dagre';
-import { ConnectionLineType, MarkerType } from '@xyflow/react';
+import { ConnectionLineType } from '@xyflow/react';
 
 export function findNode(nodes: Event[] | undefined, nodeId: string): Event | undefined {
   if (!nodes || nodes.length === 0) return undefined;
 
-  const directMatch = nodes.find((node) => node.id_node === nodeId);
+  const directMatch = nodes.find((node) => node.id === nodeId);
   if (directMatch)
     return directMatch;
   for (const node of nodes) {
@@ -40,6 +40,10 @@ export const validateWorkflow = (workflow: Workflow): boolean => {
           }
         }
       }
+      if (node.children) {
+        const isValid = validateFields(node.children);
+        if (!isValid) return false;
+      }
     }
     return true;
   };
@@ -51,9 +55,9 @@ export const getLayoutedElements = (
   nodes: WorkflowNode[],
   edges: WorkflowEdge[],
   direction = 'TB',
-  ranksep = 100,
-  nodesep = 100,
-  edgesep = 50
+  ranksep = 40,
+  nodesep = 40,
+  edgesep = 20
 ) => {
   const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   const isHorizontal = direction === 'LR';
@@ -79,7 +83,7 @@ export const getLayoutedElements = (
 
   dagre.layout(dagreGraph);
 
-  const layoutedNormalNodes = normalNodes.map((node) => {
+  const layoutedNormalNodes = normalNodes.map((node, index) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
@@ -87,12 +91,12 @@ export const getLayoutedElements = (
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
         x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        y: nodeWithPosition.y - (index === 0 ? 25 : 0),
       },
     };
   });
 
-  const layoutedAddNodes = addNodes.map((addNode) => {
+  const layoutedAddNodes = addNodes.map((addNode, index) => {
     const parentId = addNode.id.split('-add')[0];
     const parentNode = layoutedNormalNodes.find(node => node.id === parentId);
     if (!parentNode) return addNode;
@@ -103,7 +107,7 @@ export const getLayoutedElements = (
       sourcePosition: isHorizontal ? 'right' : 'bottom',
       position: {
         x: parentNode.position.x + (nodeWidth - 36) / 2,
-        y: parentNode.position.y + nodeHeight + 50,
+        y: parentNode.position.y + nodeHeight + (index === addNodes.length - 1 ? 22 : 0),
       },
     };
   });
@@ -115,10 +119,9 @@ export const getLayoutedElements = (
       type: ConnectionLineType.SmoothStep,
       style: {
         stroke: 'hsl(var(--muted-foreground))',
-        opacity: 0.5,
+        opacity: 1,
       },
       markerEnd: {
-        type: MarkerType.Arrow,
         width: 20,
         height: 20,
         color: 'hsl(var(--muted-foreground))',

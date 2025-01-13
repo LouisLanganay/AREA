@@ -174,7 +174,7 @@ export function EditWorkflowSidebar({
                           <span className='text-sm text-destructive'>*</span>
                         )}
                       </Label>
-                      {renderField(field, selectedNode.id_node)}
+                      {renderField(field, selectedNode.id)}
                     </div>
                   ))}
                 </div>
@@ -188,7 +188,7 @@ export function EditWorkflowSidebar({
             <Button
               variant='destructiveOutline'
               size='sm'
-              onClick={() => onRemoveNode(selectedNode.id_node)}
+              onClick={() => onRemoveNode(selectedNode.id)}
             >
               <ArchiveBoxArrowDownIcon className='w-4 h-4' />
               {t('workflows.remove')}
@@ -197,8 +197,8 @@ export function EditWorkflowSidebar({
           <Button
             variant='ghost'
             size='sm'
-            onClick={() => onResetNode(selectedNode.id_node)}
-            disabled={!hasChangesOnNode(selectedNode.id_node)}
+            onClick={() => onResetNode(selectedNode.id)}
+            disabled={!hasChangesOnNode(selectedNode.id)}
           >
             <ArrowUturnLeftIcon className='w-4 h-4' />
             {t('workflows.resetNode')}

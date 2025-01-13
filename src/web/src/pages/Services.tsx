@@ -11,9 +11,8 @@ import { ArrowRightIcon, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '@/api/axiosInstance';
 import { useOAuth } from '@/hooks/useOAuth';
-import { isPlatform } from '@ionic/react';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -22,7 +21,6 @@ export default function Services() {
   const token = searchParams.get('code');
   const { token: userToken } = useAuth();
   const navigate = useNavigate();
-  const isMobile = () => isPlatform('capacitor');
   const { openServiceOAuthUrl } = useOAuth();
   useEffect(() => {
     if (!token && Cookies.get('service_oauth_provider'))
@@ -46,10 +44,8 @@ export default function Services() {
     const service = services.find(s => s.id === serviceId);
     if (!service?.auth?.uri) return;
     try {
-      const url = await axios.get(`${import.meta.env.VITE_API_URL}${service?.auth?.uri}`).then(res => res.data.redirectUrl);
-      const redirectUri = isMobile()
-        ? 'myapp://services'
-        : `${window.location.origin}/services`;
+      const url = await axiosInstance.get(`${import.meta.env.VITE_API_URL}${service?.auth?.uri}`).then(res => res.data.redirectUrl);
+      const redirectUri = `${window.location.origin}/services`;
       const finalUrl = url.replace('%5BREDIRECT_URI%5D', encodeURIComponent(redirectUri));
       openServiceOAuthUrl(finalUrl, service.id);
     } catch (error) {
@@ -113,10 +109,10 @@ export default function Services() {
         </p>
       </div>
 
-      <Tabs defaultValue="enabled">
+      <Tabs defaultValue={services.some(service => service.enabled) ? 'enabled' : 'disabled'}>
         <TabsList className='mb-4'>
-          <TabsTrigger value="disabled">Not connected</TabsTrigger>
-          <TabsTrigger value="enabled">Actives</TabsTrigger>
+          <TabsTrigger value='enabled'>Actives</TabsTrigger>
+          <TabsTrigger value='disabled'>Not connected</TabsTrigger>
         </TabsList>
 
         <TabsContent value="enabled" className='flex flex-col gap-2 mt-0'>

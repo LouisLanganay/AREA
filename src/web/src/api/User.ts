@@ -1,4 +1,4 @@
-import { checkIfUsernameIsAvailableResponse, getMeResponse } from "@/interfaces/api/User";
+import { checkIfUsernameIsAvailableResponse, getMeResponse, isAdminResponse } from "@/interfaces/api/User";
 import { User } from "@/interfaces/User";
 import axiosInstance from "./axiosInstance";
 
@@ -6,7 +6,6 @@ export const getMe = async (token: string): Promise<getMeResponse> => {
   const response = await axiosInstance.get<getMeResponse>(`/users/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -21,7 +20,6 @@ export const updateUser = async (token: string, user: User): Promise<void> => {
   const response = await axiosInstance.put(`/users/update`, user, {
     headers: {
       Authorization: `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true'
     }
   });
 
@@ -36,3 +34,45 @@ export const checkIfUsernameIsAvailable = async (username: string): Promise<chec
   const response = await axiosInstance.get<checkIfUsernameIsAvailableResponse>(`/users/use/${username}`);
   return response.data;
 };
+
+export const getUsers = async (token: string): Promise<User[]> => {
+  const response = await axiosInstance.get<User[]>(`/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+export const deleteUser = async (token: string, userId: string): Promise<void> => {
+  const response = await axiosInstance.delete(`/users/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+export const setStatus = async (token: string, userId: string, status: string): Promise<void> => {
+  const response = await axiosInstance.get(`/users/setStatus/${userId}/${status}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+export const createAdmin = async (): Promise<void> => {
+  const response = await axiosInstance.get(`/auth/createAdmin`);
+  return response.data;
+};
+
+export const isAdmin = async (token: string): Promise<isAdminResponse> => {
+  const response = await axiosInstance.get<isAdminResponse>(`/users/isAdmin`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
