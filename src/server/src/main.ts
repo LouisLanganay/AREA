@@ -24,6 +24,7 @@ import {
   EventDayAndTimeReached,
 } from './service/timer.service';
 import { MailerService } from './service/mailer.service';
+import { SpotifyService } from './service/spotify.service';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
@@ -31,6 +32,7 @@ export async function defineAllService(allService: any) {
   allService.addService(TimerService);
   allService.addService(MailTestService);
   allService.addService(MailerService);
+  allService.addService(SpotifyService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
