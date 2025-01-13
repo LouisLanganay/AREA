@@ -15,6 +15,7 @@ import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
+import { OutlookAuthService } from './external-services/outlook.auth.service';
 import { DiscordService } from '../app-discord/discord-app.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -24,6 +25,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
+    private readonly outlookAuthService: OutlookAuthService,
   ) {}
 
   @Post('register')
@@ -140,22 +142,36 @@ export class AuthController {
     await this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // Cette méthode redirige vers Google pour l'authentification
-  }
-
-  @Get('google/redirect')
-  @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req) {
-    const token = await this.authService.UserGoogle(req.user);
-    return this.redirectFrontend(req.res, token);
-  }
-
   private async redirectFrontend(res, token) {
     const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
     return res.redirect(frontendRedirectUrl);
+  }
+
+  @Get('outlook/redirect')
+  outlookAuthRedirect(): { redirectUrl: string } {
+    const redirectUrl = this.outlookAuthService.generateAuthUrl();
+    return { redirectUrl };
+  }
+
+  @Post('outlook/callback')
+  async getOutlookCallback(@Body('code') code: string, @Req() req: any) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+    try {
+      console.log('AUTH: Exchanging code for tokens');
+      await this.outlookAuthService.getAccessToken(code, userId);
+      return { message: 'Tokens stored in the database' };
+    } catch (error) {
+      throw new BadRequestException({
+        err_code: 'OUTLOOK_TOKEN_EXCHANGE_FAILED',
+        details: error.message,
+      });
+    }
   }
 
   @Get('discord/redirect')

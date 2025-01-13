@@ -23,14 +23,14 @@ import {
   EventDateReached,
   EventDayAndTimeReached,
 } from './service/timer.service';
-import { MailerService } from './service/mailer.service';
+import { OutlookService } from './service/mailer.service';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
   allService.addService(WeatherService);
   allService.addService(TimerService);
   allService.addService(MailTestService);
-  allService.addService(MailerService);
+  allService.addService(OutlookService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
