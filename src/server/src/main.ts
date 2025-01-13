@@ -16,7 +16,12 @@ import {
   EventlistenMessageDiscord,
   EventsendMessageDiscord,
 } from './service/discord.service';
-import { EventAddGoogleCalendar, gcalendarService, ListenEventGcalendar } from './service/gcalendar.service';
+import {
+  EventAddGoogleCalendar,
+  EventIsNewEvent,
+  gcalendarService,
+  ListenEventGcalendar,
+} from './service/gcalendar.service';
 import {
   TimerService,
   EventDateReached,
@@ -47,6 +52,7 @@ export async function defineAllService(allService: any) {
 
   allService.addEventToService('gcalendar', ListenEventGcalendar);
   allService.addEventToService('gcalendar', EventAddGoogleCalendar);
+  // allService.addEventToService('gcalendar', EventIsNewEvent);
 
   return allService;
 }

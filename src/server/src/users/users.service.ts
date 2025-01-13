@@ -390,4 +390,22 @@ export class UsersService {
       },
     });
   }
+
+  async updateWebhook(userId: string, id: string, data: any) {
+    const webhook = await this.prismaService.webhook.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!webhook) return null;
+    return this.prismaService.webhook.update({
+      where: {
+        id,
+      },
+      data: {
+        ...data,
+        userId,
+      },
+    });
+  }
 }

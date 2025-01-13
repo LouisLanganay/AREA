@@ -4,11 +4,14 @@ import { BadRequestException } from '@nestjs/common';
 import { google } from 'googleapis';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../prisma/prisma.service';
+import * as process from 'node:process';
+import { Cron } from '@nestjs/schedule';
 
 export class CalendarService {
   private calendar: any;
+  private readonly prismaService: PrismaService = new PrismaService();
   private readonly userService: UsersService = new UsersService(
-    new PrismaService(),
+    this.prismaService,
   );
   private tokenIsSet: boolean = false;
 
@@ -22,9 +25,7 @@ export class CalendarService {
       process.env.GOOGLE_CLIENT_SECRET,
       process.env.GOOGLE_REDIRECT_URI,
     );
-    // Récupérez le token depuis votre base de données ou autre source sécurisée
-    // Ici, on suppose que vous avez une méthode pour obtenir le token d'un utilisateur
-    const accessToken = await this.getAccessToken(userId); // Implémentez cette méthode
+    const accessToken = await this.getAccessToken(userId);
 
     if (!accessToken) {
       throw new BadRequestException('Access token not found');
@@ -67,22 +68,97 @@ export class CalendarService {
     const createWebHook = await this.userService.createWebhook(userId, {
       workflowId,
       channelId: calendarId,
+      service: 'gcalendar',
     });
     if (!createWebHook) {
       return false;
     }
     const url = `${ipRedirect}/webhooks/${createWebHook.id}`;
-    console.log('Webhook URL:', url);
     const watchResponse = await this.calendar.events.watch({
       calendarId: calendarId,
       requestBody: {
         id: createWebHook.id, // ID unique pour le channel
         type: 'webhook',
         address: url,
+        token: process.env.SECRET_WEBHOOK,
       },
     });
+    console.log('Watch response:');
+    const expiration = new Date(watchResponse.data.expiration / 1000);
+    await this.userService.updateWebhook(userId, createWebHook.id, {
+      expiration,
+    });
+  }
 
-    console.log('Watch Response:', watchResponse.data);
+  @Cron('0 0 * * *')
+  async dayliWebhookCheck() {
+    const now = new Date();
+    const dateToOneDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    try {
+      const webhooks = await this.prismaService.webhook.findMany({
+        where: {
+          expiration: {
+            lte: dateToOneDay,
+          },
+          service: 'gcalendar',
+        },
+      });
+
+      for (const webhook of webhooks) {
+        await this.startWatch(
+          webhook.id,
+          webhook.workflowId,
+          webhook.channelId,
+        );
+        await this.prismaService.webhook.delete({
+          where: {
+            id: webhook.id,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error checking webhooks:', error);
+    }
+  }
+
+  async getEvents(eventId: string, calendarId: string, userId: string) {
+    await this.setToken(userId);
+    //     const {google} = require('googleapis');
+    //
+    // // ... (Code pour initialiser l'authentification et le client de l'API Google Agenda) ...
+    //
+    // // Supposons que vous ayez extrait resourceId et resourceUri de la notification push
+    //     const resourceId = '...';
+    //     const resourceUri = '...';
+    //
+    // // Effectuez une requête GET pour récupérer l'événement
+    this.calendar.events.instances(
+      {
+        calendarId: 'primary', // Remplacez par l'ID de l'agenda approprié
+        eventId: eventId, // Ou utilisez une autre méthode pour identifier l'événement à partir du resourceUri
+        showDeleted: true,
+      },
+      (err, res) => {
+        if (err) {
+          return;
+        }
+        console.log('instance :', res.data);
+      },
+    );
+    this.calendar.events.get(
+      {
+        calendarId: 'primary',
+        eventId: eventId,
+      },
+      (err, res) => {
+        if (err) {
+          console.error('Error getting event:', err);
+          return;
+        }
+        console.log('Event:', res.data);
+      },
+    );
   }
 }
 
@@ -327,6 +403,32 @@ export const EventAddGoogleCalendar: Event = {
       console.error('Failed to add event:', error);
       throw new BadRequestException('Failed to add event to Google Calendar');
     }
+  },
+};
+
+export const EventIsNewEvent: Event = {
+  type: 'reaction',
+  id_node: 'eventIsNewEventGcalendar',
+  name: 'Is New Calendar Event',
+  description: 'Check if the event is new in Google Calendar',
+  serviceName: 'gcalendar',
+  fieldGroups: [],
+  execute: async (parameters: FieldGroup[]) => {
+    const calendarService = new CalendarService(); // Assurez-vous que ce service est correctement implémenté
+    const userId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'user_id')?.value;
+
+    const data_supply = parameters
+      .find((group) => group.id === 'data_supply')
+      ?.fields.find((field) => field.id === 'data')?.value;
+    const eventId = data_supply['x-goog-resource-id'];
+    const calendarId = data_supply['x-goog-resource-uri'];
+    if (!eventId || !calendarId) {
+      console.error('Missing required data for event');
+      return false;
+    }
+    await calendarService.getEvents(eventId, calendarId, userId);
   },
 };
 

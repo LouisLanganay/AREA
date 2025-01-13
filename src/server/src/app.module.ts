@@ -14,6 +14,7 @@ import { DiscordModule } from './app-discord/discord-app.module';
 import { ServiceController } from './service/route/service.controller';
 import { ServiceModule } from './service/route/service.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     }),
     WebhooksModule,
     DiscordModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController, AboutController, ServiceController],
   providers: [
