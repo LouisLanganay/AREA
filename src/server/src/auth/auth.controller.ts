@@ -154,7 +154,9 @@ export class AuthController {
   }
 
   @Post('outlook/callback')
+  @UseGuards(AuthGuard('jwt'))
   async getOutlookCallback(@Body('code') code: string, @Req() req: any) {
+    console.log('Outlook OAuth callback received:', code);
     if (!code) {
       throw new BadRequestException('Code is missing');
     }
