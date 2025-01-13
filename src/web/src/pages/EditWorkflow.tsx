@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/interfaces/Services';
 import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
-import { findField, findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
+import { findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
   applyEdgeChanges,
@@ -57,7 +57,7 @@ export default function EditWorkflow() {
 
     const processNode = (node: Event, depth: number = 0) => {
       allNodes.push(node);
-      
+
       const hasInvalidFields = node.fieldGroups.some(group =>
         group.fields.some(field => field.required && !field.value)
       );
@@ -82,10 +82,10 @@ export default function EditWorkflow() {
       // Process children and create edges
       if (node.children) {
         node.children.forEach(child => {
-          allEdges.push({ 
-            id: `${node.id_node}-${child.id_node}`, 
-            source: node.id_node, 
-            target: child.id_node 
+          allEdges.push({
+            id: `${node.id_node}-${child.id_node}`,
+            source: node.id_node,
+            target: child.id_node
           });
           processNode(child, depth + 1);
         });

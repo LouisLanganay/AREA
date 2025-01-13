@@ -138,7 +138,7 @@ export function AppSidebar() {
     Cookies.set('premium-banner-hidden', 'true', { expires: 1 }); // 1 day expiration
   };
 
-  const renderWorkflowItems = (path: string, workflows: Workflow[]) => {
+  const renderWorkflowItems = (workflows: Workflow[]) => {
     return workflows.map((workflow) => (
       <SidebarMenuSubItem
         key={workflow.id}
@@ -160,7 +160,7 @@ export function AppSidebar() {
         // Root workflows
         return (
           <SidebarMenuSub key="root">
-            {renderWorkflowItems('', workflows)}
+            {renderWorkflowItems(workflows)}
           </SidebarMenuSub>
         );
       }
@@ -185,7 +185,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent className='ml-3.5 mt-1'>
-              {renderWorkflowItems(path, workflows)}
+              {renderWorkflowItems(workflows)}
             </CollapsibleContent>
           </Collapsible>
         </SidebarMenuSub>

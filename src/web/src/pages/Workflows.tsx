@@ -29,7 +29,7 @@ import { Service } from '@/interfaces/Services';
 import { Event, Workflow } from '@/interfaces/Workflows';
 import { getAllFolders, getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
 import { ArrowRightCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
-import { ArrowRightIcon, ChevronRightIcon, EllipsisHorizontalIcon, FolderIcon, FolderPlusIcon, PauseIcon, PencilSquareIcon, PlayIcon, PlusIcon, StarIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { ChevronRightIcon, EllipsisHorizontalIcon, FolderIcon, FolderPlusIcon, PauseIcon, PencilSquareIcon, PlayIcon, PlusIcon, StarIcon, TrashIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
