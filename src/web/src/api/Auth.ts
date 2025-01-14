@@ -8,6 +8,12 @@ import {
 } from '../interfaces/api/Auth';
 import axiosInstance from './axiosInstance';
 
+/**
+ * Registers a new user
+ * @param request - User registration data
+ * @returns Promise with registration response
+ * @throws Error if registration fails
+ */
 export const register = async (
   request: registerRequest
 ): Promise<registerResponse> => {
@@ -24,6 +30,12 @@ export const register = async (
   return response.data;
 };
 
+/**
+ * Authenticates a user
+ * @param request - Login credentials
+ * @returns Promise with login response
+ * @throws Error if login fails
+ */
 export const login = async (
   request: loginRequest
 ): Promise<loginResponse> => {
@@ -39,6 +51,11 @@ export const login = async (
   return response.data;
 };
 
+/**
+ * Initiates password recovery process
+ * @param request - Email for password recovery
+ * @throws Error if request fails
+ */
 export const forgotPassword = async (
   request: forgotRequest
 ): Promise<void> => {
@@ -53,6 +70,14 @@ export const forgotPassword = async (
   return response.data;
 };
 
+/**
+ * Handles OAuth callback processing
+ * @param callback_uri - OAuth callback URL
+ * @param token - OAuth token
+ * @param userToken - User's authentication token
+ * @returns Promise with OAuth response
+ * @throws Error if authentication fails
+ */
 export const oauthCallback = async (callback_uri: string, token: string, userToken: string) => {
   const response = await axiosInstance.post(`${callback_uri}`, {
     code: token
@@ -69,6 +94,12 @@ export const oauthCallback = async (callback_uri: string, token: string, userTok
   return response.data;
 };
 
+/**
+ * Resets user password
+ * @param request - New password and reset token
+ * @returns Promise with reset response
+ * @throws Error if reset fails
+ */
 export const resetPassword = async (request: resetRequest) => {
   const response = await axiosInstance.post(`/auth/reset-password`, request);
 
@@ -79,6 +110,12 @@ export const resetPassword = async (request: resetRequest) => {
   return response.data;
 };
 
+/**
+ * Handles Google OAuth authentication
+ * @param code - Google OAuth code
+ * @returns Promise with login response
+ * @throws Error if authentication fails
+ */
 export const googleOAuth = async (code: string): Promise<loginResponse> => {
   const response = await axiosInstance.post(`/auth/google`, {
     code: code
@@ -89,6 +126,12 @@ export const googleOAuth = async (code: string): Promise<loginResponse> => {
   return response.data;
 };
 
+/**
+ * Handles Discord OAuth authentication
+ * @param code - Discord OAuth code
+ * @returns Promise with login response
+ * @throws Error if authentication fails
+ */
 export const discordOAuth = async (code: string): Promise<loginResponse> => {
   const response = await axiosInstance.post(`/auth/discord`, {
     code: code

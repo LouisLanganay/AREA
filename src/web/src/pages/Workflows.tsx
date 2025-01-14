@@ -433,6 +433,7 @@ export default function Workflows() {
         </div>
         <div className='flex items-center gap-2 w-full sm:w-auto'>
           <Button
+            data-onboarding="create-workflow"
             variant='default'
             size='sm'
             className='flex-1 sm:flex-none'

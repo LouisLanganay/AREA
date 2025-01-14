@@ -2,9 +2,9 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowUpRightIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 
 interface PricingTier {
   name: string;
@@ -20,8 +20,8 @@ interface PricingTier {
 
 export default function Premium() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('monthly');
+  const [isLaunching, setIsLaunching] = useState(false);
 
   const pricingTiers: PricingTier[] = [
     {
@@ -65,16 +65,36 @@ export default function Premium() {
     }
   ];
 
+  const handleClick = () => {
+    setIsLaunching(true);
+    setTimeout(() => setIsLaunching(false), 2000);
+  };
+
   return (
     <div className='py-8 px-4 flex flex-col items-center justify-center relative'>
       <div className='absolute inset-0 z-0 pointer-events-none'>
-        <div className='absolute bg-premium/10 size-96 rounded-full blur-7xl animate-blob2' />
-        <div className='absolute right-0 bottom-0 bg-premium-bis/10 size-96 rounded-full blur-7xl animate-blob animation-delay-2000' />
+        <div className='absolute bg-premium/10 size-64 md:size-96 rounded-full blur-7xl animate-blob2' />
+        <div className='absolute right-10 bottom-0 bg-premium-bis/10 size-64 md:size-96 rounded-full blur-7xl animate-blob animation-delay-2000' />
       </div>
       <div className='text-center mb-12'>
         <div className='flex items-center justify-center gap-2 mb-4'>
           <h1 className='text-xl md:text-2xl font-bold'>{t('premium.title')}</h1>
-          <RocketLaunchIcon className='size-4 md:size-6 text-premium' />
+          <motion.div
+            animate={isLaunching ? {
+              y: -100,
+              x: 100,
+              rotate: 10,
+              opacity: 0,
+            } : {
+              y: 0,
+              x: 0,
+              rotate: 0,
+              opacity: 1,
+            }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          >
+            <RocketLaunchIcon className='size-4 md:size-6 text-premium' />
+          </motion.div>
         </div>
         <p className='text-sm md:text-base text-muted-foreground mx-auto italic'>
           {t('premium.description')}
@@ -130,7 +150,7 @@ export default function Premium() {
             <Button
               className='w-full group'
               variant={tier.highlighted ? 'premium' : 'outline'}
-              onClick={() => navigate('/workflows')}
+              onClick={() => handleClick()}
             >
               {tier.buttonText} {tier.highlighted ? <RocketLaunchIcon className='size-4 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:rotate-12 transition-all duration-300' /> : null}
             </Button>
