@@ -119,7 +119,7 @@ export const EventCreateEmailDraft: Event = {
     if (!userId) {
       throw new Error("Missing 'user_id' in parameters.");
     }
-    
+
     const emailDetails = parameters.find((p) => p.id === 'emailDetails');
 
     const recipientEmail = emailDetails?.fields.find(
@@ -144,6 +144,35 @@ export const EventCreateEmailDraft: Event = {
       throw error;
     }
   },
+};
+
+export const EventMonitorEmails: Event = {
+  type: 'action',
+  id_node: 'monitorEmails',
+  name: 'Monitor Emails',
+  description: 'Monitor incoming emails',
+  serviceName: 'outlook',
+  fieldGroups: [],
+  check: async (parameters: FieldGroup[]) => {
+    const userId = parameters
+        .find((group) => group.id === 'workflow_information')
+        ?.fields.find((field) => field.id === 'user_id')?.value;
+
+    const workflowId = parameters
+        .find((group) => group.id === 'workflow_information')
+        ?.fields.find((field) => field.id === 'workflow_id')?.value;
+
+    if (!userId || !workflowId) {
+      throw new Error("Missing 'user_id' or 'workflowId' in parameters.");
+    }
+    try {
+      const res = await outlookTools.createWebhook(userId, workflowId);
+      return res;
+    } catch (error) {
+      console.error('Error creating webhook in EventMonitorEmails:', error.message);
+      throw error;
+    }
+  }
 };
 
 export const OutlookService: Service = {
