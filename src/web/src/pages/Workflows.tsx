@@ -28,7 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/interfaces/Services';
 import { Event, Workflow } from '@/interfaces/Workflows';
 import { getAllFolders, getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
-import { ArrowRightCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightCircleIcon, ArrowRightIcon, LightBulbIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon, EllipsisHorizontalIcon, FolderIcon, FolderPlusIcon, PauseIcon, PencilSquareIcon, PlayIcon, PlusIcon, StarIcon, TrashIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AIWorkflowAssistant } from '@/components/AIWorkflowAssistant';
 import Cookies from 'js-cookie';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface FolderProps {
   path: string;
@@ -124,7 +125,7 @@ export default function Workflows() {
     setSelectedTrigger(action);
   };
 
-  const openaiToken = Cookies.get('openaiToken');
+  const openaiToken = Cookies.get('openaiToken') ?? null;
 
   function WorkflowItem({ workflow, onClick }: { workflow: Workflow, onClick: (workflow: Workflow) => void }) {
     return (
@@ -437,7 +438,7 @@ export default function Workflows() {
         </div>
         <div className='flex items-center gap-2 w-full sm:w-auto'>
           <Button
-            data-onboarding="create-workflow"
+            data-onboarding='create-workflow'
             variant='default'
             size='sm'
             className='flex-1 sm:flex-none'
@@ -628,42 +629,63 @@ export default function Workflows() {
                 <DialogTitle>{t('workflows.creation.trigger.title')}</DialogTitle>
                 <DialogDescription>{t('workflows.creation.trigger.description')}</DialogDescription>
               </DialogHeader>
-              <div className='flex flex-col gap-2 items-start w-full'>
-                {services.map((service: Service) => {
-                  const hasActions = service.Event?.some((action: Event) => action.type === 'action');
-                  if (!hasActions) return null;
+              <ScrollArea className="flex-1 max-h-[400px] w-full">
+                <div className='flex flex-col gap-2 items-start w-full px-1'>
+                  {services.filter(s => s.enabled).map((service: Service) => {
+                    const hasActions = service.Event?.some((action: Event) => action.type === 'action');
+                    if (!hasActions) return null;
 
-                  return (
-                    <div key={service.id} className='w-full overflow-hidden gap-1 flex flex-col p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground'>
-                      <span>{service.name}</span>
-                      {service.Event?.filter((action: Event) => action.type === 'action')?.map((action: Event) => (
-                        <div
-                          key={action.id}
-                          className={clsx(
-                            'transition-all duration-300 relative flex cursor-pointer gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
-                            selectedTrigger?.id_node === action.id_node && 'border-green-500',
-                          )}
-                          onClick={() => handleSelectTrigger(action)}
-                        >
-                          <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
-                            {service.image ? (
-                              <img src={service.image} alt={service.name} className='size-4 object-contain' />
-                            ) : (
-                              <div className='flex items-center justify-center size-4'>
-                                <span>{service.name.charAt(0)}</span>
-                              </div>
+                    return (
+                      <div key={service.id} className='w-full overflow-hidden gap-1 flex flex-col p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground'>
+                        <span>{service.name}</span>
+                        {service.Event?.filter((action: Event) => action.type === 'action')?.map((action: Event) => (
+                          <div
+                            key={action.id}
+                            className={clsx(
+                              'transition-all duration-300 relative flex gap-2 select-none items-center rounded-sm bg-muted border w-full px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+                              selectedTrigger?.id_node === action.id_node && 'border-green-500',
+                              service.enabled ? 'cursor-pointer' : 'opacity-50 pointer-event-none'
                             )}
+                            onClick={() => {
+                              if (service.enabled)
+                                handleSelectTrigger(action)
+                            }}
+                          >
+                            <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
+                              {service.image ? (
+                                <img src={service.image} alt={service.name} className='size-4 rounded-sm object-contain' />
+                              ) : (
+                                <div className='flex items-center justify-center size-4'>
+                                  <span>{service.name.charAt(0)}</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className='flex flex-col min-w-0'>
+                              <span className='truncate'>{action.name}</span>
+                              <span className='text-muted-foreground text-xs truncate'>{action.description}</span>
+                            </div>
                           </div>
-                          <div className='flex flex-col min-w-0'>
-                            <span className='truncate'>{action.name}</span>
-                            <span className='text-muted-foreground text-xs truncate'>{action.description}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+              {services.filter(s => s.enabled).length < 5 && (
+                <div className='flex items-center gap-2 p-3 mx-2 text-sm rounded-lg border border-blue-500 bg-blue-500/10'>
+                  <p className='flex flex-row gap-1 items-start'>
+                    {t('workflows.creation.trigger.connectMoreServices')}
+                  </p>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => navigate('/services')}
+                  >
+                    {t('workflows.creation.trigger.goToServices')}
+                    <ArrowRightIcon className='size-2' />
+                  </Button>
+                </div>
+              )}
               <DialogFooter>
                 <Button
                   variant='outline'

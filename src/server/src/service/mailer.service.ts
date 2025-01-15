@@ -5,6 +5,7 @@ export const MailerService: Service = {
   name: 'Mailer Service',
   description: 'Service to send emails',
   loginRequired: false,
-  image: 'https://www.svgrepo.com/show/533194/mail-alt.svg',
+  image: 'https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_(2020).svg',
   Event: [],
+  enabled: true,
 };

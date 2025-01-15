@@ -245,7 +245,9 @@
         "title": "Select Trigger",
         "description": "Choose an event that will trigger your workflow",
         "back": "Back",
-        "create": "Create Workflow"
+        "create": "Create Workflow",
+        "connectMoreServices": "Connect more services to unlock more automation possibilities to create workflows.",
+        "goToServices": "Manage"
       },
       "folder": {
         "title": "Choose a folder",
@@ -357,7 +359,8 @@
   },
   "common": {
     "loading": "Loading...",
-    "back": "Go back"
+    "back": "Go back",
+    "tip": "Tip"
   },
   "forgotPassword": {
     "title": "Reset your password",

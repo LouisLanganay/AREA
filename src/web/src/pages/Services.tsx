@@ -137,9 +137,9 @@ export default function Services() {
                 <div className='flex flex-row items-center gap-2'>
                   <div className='flex bg-muted p-1 rounded-lg border'>
                     {service.image ? (
-                      <img src={service.image} alt={service.name} className='size-6 rounded-lg aspect-square object-cover' />
+                      <img src={service.image} alt={service.name} className='size-6 rounded' />
                     ) : (
-                      <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                      <div className='size-6 rounded aspect-square bg-muted flex items-center justify-center'>
                         <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
                       </div>
                     )}
