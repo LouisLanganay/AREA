@@ -125,6 +125,7 @@ const defaultItemAnimationVariants: Record<
     container: defaultContainerVariants,
     item: {
       hidden: { opacity: 0, filter: "blur(10px)" },
+
       show: (i: number) => ({
         opacity: 1,
         filter: "blur(0px)",
@@ -144,7 +145,7 @@ const defaultItemAnimationVariants: Record<
     container: defaultContainerVariants,
     item: {
       hidden: { opacity: 0, filter: "blur(10px)", y: 20 },
-      show: (delay: number) => ({
+      show: () => ({
         opacity: 1,
         filter: "blur(0px)",
         y: 0,
@@ -170,7 +171,7 @@ const defaultItemAnimationVariants: Record<
     container: defaultContainerVariants,
     item: {
       hidden: { opacity: 0, filter: "blur(10px)", y: -20 },
-      show: (delay: number) => ({
+      show: () => ({
         opacity: 1,
         filter: "blur(0px)",
         y: 0,
@@ -302,14 +303,19 @@ const defaultItemAnimationVariants: Record<
 
 export function TextAnimate({
   children,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   delay = 0,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   duration = 0.3,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   variants,
   className,
   segmentClassName,
   as: Component = "p",
   startOnView = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   once = false,
+
   by = "word",
   animation = "fadeIn",
   ...props
@@ -319,41 +325,41 @@ export function TextAnimate({
   // Use provided variants or default variants based on animation type
   const finalVariants = animation
     ? {
-        container: {
-          ...defaultItemAnimationVariants[animation].container,
-          show: {
-            ...defaultItemAnimationVariants[animation].container.show,
-            transition: {
-              staggerChildren: staggerTimings[by],
-            },
-          },
-          exit: {
-            ...defaultItemAnimationVariants[animation].container.exit,
-            transition: {
-              staggerChildren: staggerTimings[by],
-              staggerDirection: -1,
-            },
+      container: {
+        ...defaultItemAnimationVariants[animation].container,
+        show: {
+          ...defaultItemAnimationVariants[animation].container.show,
+          transition: {
+            staggerChildren: staggerTimings[by],
           },
         },
-        item: defaultItemAnimationVariants[animation].item,
-      }
+        exit: {
+          ...defaultItemAnimationVariants[animation].container.exit,
+          transition: {
+            staggerChildren: staggerTimings[by],
+            staggerDirection: -1,
+          },
+        },
+      },
+      item: defaultItemAnimationVariants[animation].item,
+    }
     : { container: defaultContainerVariants, item: defaultItemVariants };
 
   let segments: string[] = [];
   switch (by) {
-    case "word":
-      segments = children.split(/(\s+)/);
-      break;
-    case "character":
-      segments = children.split("");
-      break;
-    case "line":
-      segments = children.split("\n");
-      break;
-    case "text":
-    default:
-      segments = [children];
-      break;
+  case "word":
+    segments = children.split(/(\s+)/);
+    break;
+  case "character":
+    segments = children.split("");
+    break;
+  case "line":
+    segments = children.split("\n");
+    break;
+  case "text":
+  default:
+    segments = [children];
+    break;
   }
 
   return (

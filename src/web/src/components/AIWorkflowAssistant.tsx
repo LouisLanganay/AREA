@@ -1,18 +1,18 @@
 import { generateWorkflow, modifyWorkflow } from '@/api/Ai';
+import { createWorkflow } from '@/api/Workflows';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { ChevronDownIcon, MagnifyingGlassIcon, QuestionMarkCircleIcon, SparklesIcon, Square2StackIcon, Square3Stack3DIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
-import { TrashIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { Workflow } from '@/interfaces/Workflows';
+import { ChevronDownIcon, QuestionMarkCircleIcon, SparklesIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/solid';
 import { AxiosError } from 'axios';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { Wand2Icon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { createWorkflow, updateWorkflow } from '@/api/Workflows';
-import { Workflow } from '@/interfaces/Workflows';
-import { Wand2Icon } from 'lucide-react';
 
 interface AIWorkflowAssistantProps {
   token: string | null;
@@ -70,7 +70,6 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
 
       let result = null;
 
-      console.log(workflow);
       if (mode === 'create')
         result = await generateWorkflow(token, aiPrompt);
       else

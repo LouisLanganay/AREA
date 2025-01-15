@@ -1,5 +1,6 @@
 import { getServices } from '@/api/Services';
 import { createWorkflow, deleteWorkflow, getWorkflows, updateWorkflow } from '@/api/Workflows';
+import { AIWorkflowAssistant } from '@/components/AIWorkflowAssistant';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +21,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ToastAction } from '@/components/ui/toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -28,15 +30,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/interfaces/Services';
 import { Event, Workflow } from '@/interfaces/Workflows';
 import { getAllFolders, getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
-import { ArrowRightCircleIcon, ArrowRightIcon, LightBulbIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowRightCircleIcon, ArrowRightIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon, EllipsisHorizontalIcon, FolderIcon, FolderPlusIcon, PauseIcon, PencilSquareIcon, PlayIcon, PlusIcon, StarIcon, TrashIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
+import Cookies from 'js-cookie';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { AIWorkflowAssistant } from '@/components/AIWorkflowAssistant';
-import Cookies from 'js-cookie';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface FolderProps {
   path: string;
@@ -648,7 +648,7 @@ export default function Workflows() {
                             )}
                             onClick={() => {
                               if (service.enabled)
-                                handleSelectTrigger(action)
+                                handleSelectTrigger(action);
                             }}
                           >
                             <div className='flex-shrink-0 p-1 rounded-md bg-muted border overflow-hidden'>
