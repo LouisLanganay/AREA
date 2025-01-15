@@ -1,6 +1,6 @@
 interface Field {
   id: string;
-  type: 'string' | 'number' | 'boolean' | 'select' | 'date' | 'checkbox' | 'color';
+  type: 'string' | 'number' | 'boolean' | 'select' | 'date' | 'checkbox' | 'color' | 'dateTime';
   description: string;                    // ex: "Server"
   value?: any;                      // ex: "167628734852438"
   required: boolean;                // ex: true

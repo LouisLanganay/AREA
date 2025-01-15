@@ -23,14 +23,27 @@ export class WebhooksService {
         return;
       }
       if (webhook.service === 'gcalendar') {
-        const tokenG = body['x-goog-channel-token'];
-        if (!tokenG || tokenG != process.env.SECRET_WEBHOOK) return;
+        await this.gCalendarManager(webhook, body);
+        return;
       }
       body['webhook'] = webhook;
-      console.log('webhook', body);
       this.workflowService.runWorkflowById(webhook.workflowId, body);
     } catch (error) {
       console.error('Error finding workflow:', error);
+    }
+  }
+
+  private async gCalendarManager(webhook: any, body: string) {
+    const type = body['x-goog-resource-state'];
+    if (type === 'sync') return;
+    const tokenG = body['x-goog-channel-token'];
+    if (!tokenG || tokenG != process.env.SECRET_WEBHOOK) return;
+    const calendarService = new CalendarService();
+    const execute = await calendarService.getEventsTypeWithSyncToken(webhook);
+    //executer le nombre de fois que l'on veut
+    console.log('execute', execute);
+    for (let i = 0; i < execute; i++) {
+      this.workflowService.runWorkflowById(webhook.workflowId, body);
     }
   }
 }
