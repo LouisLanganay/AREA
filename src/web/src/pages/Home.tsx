@@ -42,6 +42,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import LinkitLogoFull from '../assets/linkitLogoFull';
 import Node from '../components/flow/Node';
 import { Helmet } from 'react-helmet';
+import { BoldIcon } from '@heroicons/react/24/outline';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -669,7 +670,7 @@ export default function Home() {
                           <div className='space-y-4 bg-card border rounded-lg p-4 shadow-sm'>
                             <div className='flex items-center gap-2'>
                               <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
-                                <ServerStackIcon className='size-5 object-contain' />
+                                <BoldIcon className='size-5 object-contain' />
                               </div>
                               <p className='text-sm font-semibold'>{t('home.features.scalability.sidebar.titleGroup')}</p>
                             </div>

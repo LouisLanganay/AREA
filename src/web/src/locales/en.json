@@ -175,9 +175,18 @@
     "selectAll": "Select All",
     "selectRow": "Select Row",
     "name": "Name",
+    "creatingWorkflow": "Creating workflow...",
     "updateItem": "Update Workflow",
     "live": "Live",
     "workflow": "workflow",
+    "history": "History",
+    "refresh": "Refresh",
+    "lastRefresh": "Last refresh at {{time}}",
+    "workflowDisabled": "The workflow is disabled, it will not be executed.",
+    "noHistory": "No history available",
+    "executionSuccess": "Execution successful",
+    "executionHistory": "Execution History",
+    "executionError": "Execution failed",
     "workflows": "workflows",
     "ai": {
       "assistant": "AI Workflow Assistant",
@@ -300,7 +309,8 @@
     "createSuccessDescription": "The workflow has been created.",
     "createError": "Error creating workflow",
     "createErrorDescription": "An error occurred while creating the workflow. Please try again.",
-    "rootFolder": "Root folder"
+    "rootFolder": "Root folder",
+    "lastTenExecutions": "Displaying last 10 executions of this workflow."
   },
   "login": {
     "passwordRequired": "Password is required",

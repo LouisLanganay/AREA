@@ -26,6 +26,7 @@ import {
   FolderOpenIcon,
   SparklesIcon,
   XMarkIcon,
+  BoltIcon,
 } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import LinkitLogoFull from '../../assets/linkitLogoFull';
@@ -80,7 +81,7 @@ const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[])
       },
       {
         title: t('sidebar.items.workflows'),
-        icon: Squares2X2Icon,
+        icon: BoltIcon,
         url: '/workflows',
         subItems: workflowItems
       },

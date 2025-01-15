@@ -129,6 +129,8 @@ const flowStyles = `
  * Ensures children arrays exist in workflow data
  */
 const ensureChildrenArrays = (data: Partial<Workflow>): Partial<Workflow> => {
+  if (!data.triggers)
+    return data;
   const checkChildren = (children: Event[]): Event[] => {
     if (children.length > 0) {
       return children.map(child => ({
@@ -145,6 +147,14 @@ const ensureChildrenArrays = (data: Partial<Workflow>): Partial<Workflow> => {
   };
 };
 
+/**
+ * Interface for workflow history
+ */
+interface WorkflowHistory {
+  executionDate: string;
+  status: 'success' | 'error';
+}
+
 export { nodeWidth, nodeHeight, flowStyles, ensureChildrenArrays };
 export type {
   WorkflowNodeData,
@@ -155,5 +165,6 @@ export type {
   Event,
   Condition,
   Variable,
-  Workflow
+  Workflow,
+  WorkflowHistory
 };

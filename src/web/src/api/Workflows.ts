@@ -1,4 +1,4 @@
-import { createWorkflowRequest, getWorkflowResponse } from '@/interfaces/api/Workflows';
+import { createWorkflowRequest, getWorkflowHistoryResponse, getWorkflowResponse } from '@/interfaces/api/Workflows';
 import { Workflow, ensureChildrenArrays } from '@/interfaces/Workflows';
 import axiosInstance from './axiosInstance';
 
@@ -104,6 +104,21 @@ export const createWorkflow = async (data: createWorkflowRequest, token: string)
  */
 export const runWorkflow = async (id: string, token: string) => {
   const response = await axiosInstance.get(`/workflows/run/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+/**
+ * Gets the execution history of a workflow
+ * @param id - Workflow ID
+ * @param token - User's authentication token
+ * @returns Promise with workflow history
+ */
+export const getWorkflowHistory = async (id: string, token: string): Promise<getWorkflowHistoryResponse> => {
+  const response = await axiosInstance.get(`/workflows/${id}/history`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }

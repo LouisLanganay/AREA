@@ -56,7 +56,7 @@ export default memo(({ data }: { data: WorkflowNodeData, isConnectable: boolean 
             <div className='flex items-center gap-2'>
               <div className='p-0.5 rounded-md bg-muted border overflow-hidden'>
                 {data.service?.image ? (
-                  <img src={data.service.image} alt={data.service.name} className='size-4 object-contain' />
+                  <img src={data.service.image} alt={data.service.name} className='size-4 object-contain rounded' />
                 ) : (
                   <div className='size-4 bg-muted rounded-md flex items-center justify-center'>
                     <p className='text-xs text-muted-foreground'>

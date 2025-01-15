@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { Workflow } from '@/interfaces/Workflows';
-import { ChevronDownIcon, QuestionMarkCircleIcon, SparklesIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { BoltIcon, ChevronDownIcon, QuestionMarkCircleIcon, SparklesIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { AxiosError } from 'axios';
 import clsx from 'clsx';
@@ -234,7 +234,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
                         variant='premiumClasic'
                       >
                         {t('workflows.ai.openWorkflow')}
-                        <Squares2X2Icon className='size-4' />
+                        <BoltIcon className='size-4' />
                       </Button>
                     </div>
                   </motion.div>
