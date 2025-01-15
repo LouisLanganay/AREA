@@ -51,7 +51,7 @@ export class AboutController {
         })),
       });
     });
-    json['services'] = jsonServices;
+    json['server']['services'] = jsonServices;
     return json;
   }
 }
