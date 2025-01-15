@@ -1,4 +1,4 @@
-import { deleteWorkflow, updateWorkflow } from '@/api/Workflows';
+import { deleteWorkflow, runWorkflow, updateWorkflow } from '@/api/Workflows';
 import { useAuth } from '@/context/AuthContext';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,7 @@ import {
   StarIcon as StarIconOutline
 } from '@heroicons/react/24/outline';
 import '@xyflow/react/dist/style.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
@@ -55,6 +55,10 @@ export function WorkflowHeader({
   const { token } = useAuth();
   const [workflowName, setWorkflowName] = useState(getWorkflowName(workflow.name));
   const workflowPath = getWorkflowPath(workflow.name);
+
+  useEffect(() => {
+    setWorkflowName(getWorkflowName(workflow.name));
+  }, [workflow.name]);
 
   const handleFavorite = async (value: boolean) => {
     if (!workflow || !token) return;
@@ -150,20 +154,32 @@ export function WorkflowHeader({
     return workflowName.toUpperCase().replace(/\s+/g, '-');
   };
 
-  const handleRunWorkflow = () => {
+  const handleRunWorkflow = async () => {
+    if (!workflow || !token) return;
     const myToast = toast({
       description: t('workflows.runWorkflowDescription'),
       variant: 'loading',
     });
     setIsLoading(true);
-    setTimeout(() => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      await runWorkflow(workflow.id, token);
       myToast.update({
         id: myToast.id,
         description: t('workflows.runWorkflowDescriptionSuccess'),
         variant: 'success',
       });
       setIsLoading(false);
-    }, 3000);
+    } catch (error) {
+      console.error('Failed to run workflow', error);
+      myToast.update({
+        id: myToast.id,
+        description: t('workflows.runWorkflowDescriptionError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNameUpdate = async () => {
@@ -220,7 +236,11 @@ export function WorkflowHeader({
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>
+              <Label htmlFor="workflowNameInput" className="sr-only">
+                {t('workflows.name')}
+              </Label>
               <input
+                id="workflowNameInput"
                 value={workflowName}
                 onChange={(e) => {
                   setWorkflowName(e.target.value);
@@ -232,6 +252,7 @@ export function WorkflowHeader({
                   }
                 }}
                 className='font-medium h-auto px-1 rounded-sm bg-transparent focus-visible:ring-0 transition-all duration-100 outline-none'
+                aria-label={t('workflows.name')}
               />
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -243,6 +264,7 @@ export function WorkflowHeader({
           size='sm'
           onClick={() => navigate('/workflows')}
           className='shrink-0'
+          aria-label={t('workflows.back')}
         >
           <ArrowLeftIcon className='w-4 h-4' />
           <span className='hidden lg:block'>{t('workflows.back')}</span>
@@ -256,7 +278,7 @@ export function WorkflowHeader({
       <div className='flex shrink-0 items-center gap-1 lg:gap-2 ml-auto'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='outline' size='iconSm' className='flex lg:hidden'>
+            <Button variant='outline' size='iconSm' className='flex lg:hidden' aria-label={t('workflows.openMenu')}>
               <EllipsisHorizontalIcon className='size-4' />
             </Button>
           </DropdownMenuTrigger>
@@ -299,6 +321,7 @@ export function WorkflowHeader({
             size='sm'
             className='p-2'
             onClick={() => handleFavorite(!workflow.favorite)}
+            aria-label={workflow.favorite ? t('workflows.removeFromFavorites') : t('workflows.addToFavorites')}
           >
             {workflow.favorite ?
               <StarIconSolid className='w-4 h-4 fill-yellow-400' /> :
@@ -325,6 +348,7 @@ export function WorkflowHeader({
                 checked={workflow.enabled}
                 size='sm'
                 disabled={isLoading}
+                aria-label={workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
               />
               {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
             </div>
@@ -336,6 +360,7 @@ export function WorkflowHeader({
             className='p-2'
             onClick={() => setIsDeleteDialogOpen(true)}
             disabled={isLoading}
+            aria-label={t('workflows.delete')}
           >
             <TrashIcon className='w-4 h-4' />
           </Button>

@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Service } from '@/interfaces/Services';
 import { Field, FieldGroup, Event } from '@/interfaces/Workflows';
+import { DateTimePicker } from '@/components/ui/dateTimePicker';
 
 interface EditWorkflowSidebarProps {
   selectedNode: Event | null;
@@ -100,6 +101,13 @@ export function EditWorkflowSidebar({
           onSelect={(date) => onFieldChange(field.id, date, nodeId)}
         />
       );
+    case 'dateTime':
+      return (
+        <DateTimePicker
+          value={currentValue ? new Date(currentValue) : undefined}
+          onChange={(date) => onFieldChange(field.id, date, nodeId)}
+        />
+      );
     case 'checkbox':
       return (
         <Checkbox
@@ -174,7 +182,7 @@ export function EditWorkflowSidebar({
                           <span className='text-sm text-destructive'>*</span>
                         )}
                       </Label>
-                      {renderField(field, selectedNode.id_node)}
+                      {renderField(field, selectedNode.id)}
                     </div>
                   ))}
                 </div>
@@ -188,7 +196,7 @@ export function EditWorkflowSidebar({
             <Button
               variant='destructiveOutline'
               size='sm'
-              onClick={() => onRemoveNode(selectedNode.id_node)}
+              onClick={() => onRemoveNode(selectedNode.id)}
             >
               <ArchiveBoxArrowDownIcon className='w-4 h-4' />
               {t('workflows.remove')}
@@ -197,8 +205,8 @@ export function EditWorkflowSidebar({
           <Button
             variant='ghost'
             size='sm'
-            onClick={() => onResetNode(selectedNode.id_node)}
-            disabled={!hasChangesOnNode(selectedNode.id_node)}
+            onClick={() => onResetNode(selectedNode.id)}
+            disabled={!hasChangesOnNode(selectedNode.id)}
           >
             <ArrowUturnLeftIcon className='w-4 h-4' />
             {t('workflows.resetNode')}

@@ -25,7 +25,7 @@ import {
   PlusIcon,
   FolderOpenIcon,
   SparklesIcon,
-  XMarkIcon
+  XMarkIcon,
 } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
 import LinkitLogoFull from '../../assets/linkitLogoFull';
@@ -39,7 +39,8 @@ import { getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
 import clsx from 'clsx';
 import Cookies from 'js-cookie';
 import { Button } from '../ui/button';
-import { RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { QuestionMarkCircleIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { isAdmin } from '@/api/User';
 
 interface SubItem {
   title: string;
@@ -110,6 +111,7 @@ export function AppSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isPremiumBannerVisible, setIsPremiumBannerVisible] = useState(true);
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetchWorkflows = async () => {
@@ -123,7 +125,18 @@ export function AppSidebar() {
       }
     };
 
+    const fetchIsAdmin = async () => {
+      if (!token) return;
+      try {
+        const result = await isAdmin(token);
+        setUserIsAdmin(result.isAdmin);
+      } catch (error) {
+        console.error('Failed to fetch isAdmin:', error);
+      }
+    };
+
     fetchWorkflows();
+    fetchIsAdmin();
   }, [token]);
 
   useEffect(() => {
@@ -152,6 +165,11 @@ export function AppSidebar() {
         {getWorkflowName(workflow.name)}
       </SidebarMenuSubItem>
     ));
+  };
+
+  const handleOnboarding = () => {
+    Cookies.remove('onboarding-completed');
+    window.location.reload();
   };
 
   const renderFolderStructure = () => {
@@ -202,9 +220,11 @@ export function AppSidebar() {
           <LinkitLogoFull className='w-24 h-fit object-contain fill-foreground' />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent data-onboarding="sidebar">
         {groups.map((group) => (
-          <SidebarGroup key={group.title}>
+          <SidebarGroup key={group.title} className={clsx(
+            group.isAdmin === true && userIsAdmin !== true && 'hidden'
+          )}>
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -248,7 +268,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <div className='flex flex-col'>
+        <div className='flex flex-col' data-onboarding="sidebar-footer">
           {isPremiumBannerVisible && (
             <div className='p-3 rounded-lg border border-primary/20 bg-primary/10 relative group/premium-banner overflow-hidden'>
               <div className="absolute inset-0 z-0">
@@ -258,7 +278,8 @@ export function AppSidebar() {
               <div className="relative z-10">
                 <button
                   onClick={hidePremiumBanner}
-                  className='absolute right-0 top-0 p-1 rounded-md hover:bg-second-bis/20 transition-all duration-200 group-hover/premium-banner:opacity-100 opacity-0'
+                  aria-label={t('common.close')}
+                  className='absolute right-0 top-0 p-1 rounded-md hover:bg-second-bis/20 transition-all duration-200 group-hover/premium-banner:opacity-100 md:opacity-0'
                 >
                   <XMarkIcon className='size-3 text-primary' />
                 </button>
@@ -284,14 +305,24 @@ export function AppSidebar() {
             </div>
           )}
         </div>
-        <SidebarMenuItem className='list-none'>
-          <SidebarMenuButton asChild>
-            <a href='https://github.com/LouisLanganay/AREA'>
-              <LifebuoyIcon className='w-5 h-5' />
-              <span>{t('sidebar.items.documentation')}</span>
-            </a>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        <ul className='list-none'>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <a href='https://github.com/LouisLanganay/AREA'>
+                <LifebuoyIcon className='w-5 h-5' />
+                <span>{t('sidebar.items.documentation')}</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <button onClick={() => handleOnboarding()}>
+                <QuestionMarkCircleIcon className='size-4' />
+                <span>{t('sidebar.items.onboarding')}</span>
+              </button>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </ul>
         <UserInfo
           user={user}
         />

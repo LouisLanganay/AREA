@@ -74,12 +74,23 @@ export default function Services() {
       if (!service?.auth?.callback_uri || !userToken)
         return;
 
+      toast({
+        description: t('services.connecting'),
+        variant: 'loading',
+      });
+
       try {
         await oauthCallback(service.auth.callback_uri, token, userToken);
         // TODO: Handle response
         Cookies.remove('service_oauth_provider');
-        const updatedServices = await getServices(userToken);
-        setServices(updatedServices);
+        setTimeout(async () => {
+          const updatedServices = await getServices(userToken);
+          setServices(updatedServices);
+          toast({
+            description: t('services.connected'),
+            variant: 'success',
+          });
+        }, 2000);
       } catch (error: any) {
         Cookies.remove('service_oauth_provider');
         console.error('OAuth callback error:', error);
@@ -105,20 +116,20 @@ export default function Services() {
       <div className='mb-8'>
         <h1 className='text-2xl font-bold'>{t('sidebar.items.services')}</h1>
         <p className='text-muted-foreground mt-2'>
-          Connect and manage your service integrations
+          {t('services.description')}
         </p>
       </div>
 
-      <Tabs defaultValue="enabled">
+      <Tabs defaultValue={services.some(service => service.enabled) ? 'enabled' : 'disabled'} data-onboarding="services">
         <TabsList className='mb-4'>
-          <TabsTrigger value={services.filter(service => service.enabled).length > 0 ? 'enabled' : 'disabled'}>Actives</TabsTrigger>
-          <TabsTrigger value={services.filter(service => !service.enabled).length > 0 ? 'disabled' : 'enabled'}>Not connected</TabsTrigger>
+          <TabsTrigger value='enabled'>{t('services.enabled')}</TabsTrigger>
+          <TabsTrigger value='disabled'>{t('services.disabled')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="enabled" className='flex flex-col gap-2 mt-0'>
           {services.filter(service => service.enabled).length === 0 ? (
             <p className='text-muted-foreground'>
-              No enabled services found.
+              {t('services.noEnabledServices')}
             </p>
           ) : (
             services.filter(service => service.enabled).map((service) => (
