@@ -141,6 +141,11 @@
       "delete": {
         "label": "Delete Account",
         "description": "Permanently delete your account and remove your data from our servers."
+      },
+      "openai": {
+        "label": "OpenAI API Token",
+        "description": "Enter your OpenAI API token to enable AI features",
+        "saveSuccess": "OpenAI token saved successfully"
       }
     },
     "automation": {
@@ -174,6 +179,22 @@
     "live": "Live",
     "workflow": "workflow",
     "workflows": "workflows",
+    "ai": {
+      "generating": "Generating workflow...",
+      "error": "An error occurred while generating the workflow. Please try again.",
+      "setupToken": "Setup your OpenAI API token to generate workflows.",
+      "settings": "Open Settings",
+      "prompt": "Enter your prompt",
+      "success": "Workflow generated successfully",
+      "workflowCreated": "Workflow created successfully",
+      "resultDescription": "Your workflow named {{name}} and with the goal of {{description}} has been created. You can view it by clicking on the button below.",
+      "result": "Result:",
+      "clear": "Clear result",
+      "openWorkflow": "Open Workflow",
+      "generate": "Generate",
+      "description": "Beta version, it may not always work.",
+      "tooltip": "To generate a workflow, write a description of what you want to do. Please note that you can view list of available services in the services section."
+    },
     "paused": "Paused",
     "copyLink": "Copy Link",
     "quickActions": "Quick Actions",
@@ -329,7 +350,10 @@
     "TOKEN_EXPIRED": "The reset token has expired.",
     "WORKFLOW_INVALID_PERM": "Insufficient permissions to delete or update the workflow.",
     "WORKFLOW_UNKNOWN": "The workflow does not exist.",
-    "USER_FORBIDDEN_EDIT": "You do not have permission to edit this user."
+    "USER_FORBIDDEN_EDIT": "You do not have permission to edit this user.",
+    "AI_WORKFLOW_GENERATION_ERROR": "An error occurred while generating the workflow. Please try again.",
+    "AI_WORKFLOW_GENERATION_SUCCESS": "Workflow generated successfully",
+    "AI_WORKFLOW_SYNTAX_ERROR_GENERATION": "The generated workflow is not valid. Please try again."
   },
   "common": {
     "loading": "Loading...",

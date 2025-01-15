@@ -34,7 +34,7 @@ export default function Layout({ children, headerContent, padding = true, header
           </div>
         </SidebarInset>
       </SidebarProvider>
-      <Toaster duration={10000} />
+      <Toaster duration={3500} />
     </>
   );
 }

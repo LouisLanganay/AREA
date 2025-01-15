@@ -42,6 +42,7 @@
     "googleapis": "^144.0.0",
     "handlebars": "^4.7.8",
     "nodemailer": "^6.9.16",
+    "openai": "^4.78.1",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
     "passport-google-oauth20": "^2.0.0",

@@ -34,6 +34,8 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { AIWorkflowAssistant } from '@/components/AIWorkflowAssistant';
+import Cookies from 'js-cookie';
 
 interface FolderProps {
   path: string;
@@ -122,6 +124,8 @@ export default function Workflows() {
     setSelectedTrigger(action);
   };
 
+  const openaiToken = Cookies.get('openaiToken');
+
   function WorkflowItem({ workflow, onClick }: { workflow: Workflow, onClick: (workflow: Workflow) => void }) {
     return (
       <div
@@ -131,7 +135,7 @@ export default function Workflows() {
         onClick={() => onClick(workflow)}
       >
         <div className='flex flex-row justify-between w-full'>
-          <div className='flex items-center gap-2'>
+          <div className='flex items-center gap-2 mr-1'>
             {workflow.favorite && <StarIcon className='size-4 text-yellow-400' />}
             <span>{getWorkflowName(workflow.name)}</span>
             <Separator orientation='vertical' className='h-4' />
@@ -143,7 +147,7 @@ export default function Workflows() {
                   <TooltipProvider key={service} delayDuration={100}>
                     <Tooltip>
                       <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <Badge variant='outline' className='p-1'>
+                        <Badge variant='outline' className='p-1 flex-shrink-0'>
                           <img src={icon} alt={service} className='size-5 aspect-square object-contain' />
                           <span className='sr-only'>{services.find((s) => s.id === service)?.name}</span>
                         </Badge>
@@ -420,7 +424,7 @@ export default function Workflows() {
   };
 
   return (
-    <div className='w-full'>
+    <div className='w-full relative'>
       <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4'>
         <div className='flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:flex-1'>
           <Input
@@ -682,6 +686,8 @@ export default function Workflows() {
           )}
         </DialogContent>
       </Dialog>
+
+      <AIWorkflowAssistant token={openaiToken} />
     </div>
   );
 }

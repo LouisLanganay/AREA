@@ -79,10 +79,11 @@ export const getWorkflow = async (id: string, token: string): Promise<getWorkflo
  * @returns Promise with created workflow
  */
 export const createWorkflow = async (data: createWorkflowRequest, token: string) => {
+  const sanitizedData = ensureChildrenArrays(data);
   const response = await axiosInstance.post<Workflow>(
     `/workflows`,
     {
-      ...data,
+      ...sanitizedData,
       image: "https://example.com/workflow.png",
       enabled: true // Default to enabled
     },

@@ -600,7 +600,11 @@ export default function Home() {
                   </p>
                 </div>
                 <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2 overflow-hidden mt-20'>
-                  <div className='border border-primary/20 bg-primary/10 rounded-lg absolute -bottom-1 -right-7 max-w-[350px]'>
+                  <div className='rounded-lg border border-primary/20 bg-primary/10 group/premium-banner overflow-hidden absolute -bottom-1 -right-7 max-w-[350px]'>
+                    <div className="absolute inset-0 z-0">
+                      <div className="absolute bg-second/70 size-16 rounded-full blur-2xl animate-blob" />
+                      <div className="absolute inset-[90%] bg-primary size-14 rounded-full blur-2xl animate-blob animation-delay-2000" />
+                    </div>
                     <div className='relative h-full w-full'>
                       <div className="absolute bottom-full left-16 -mb-px flex h-8 items-end overflow-hidden">
                         <div className="flex -mb-px h-[2px] w-56">

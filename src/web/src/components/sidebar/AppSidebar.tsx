@@ -220,7 +220,7 @@ export function AppSidebar() {
           <LinkitLogoFull className='w-24 h-fit object-contain fill-foreground' />
         </div>
       </SidebarHeader>
-      <SidebarContent data-onboarding="sidebar">
+      <SidebarContent data-onboarding="sidebar" className='[&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:rounded-lg [&::-webkit-scrollbar-thumb]:rounded-lg [&::-webkit-scrollbar-track]:my-1 [&::-webkit-scrollbar-track]:rounded-lg [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20'>
         {groups.map((group) => (
           <SidebarGroup key={group.title} className={clsx(
             group.isAdmin === true && userIsAdmin !== true && 'hidden'
