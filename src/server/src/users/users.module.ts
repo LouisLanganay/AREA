@@ -10,7 +10,7 @@ import * as process from 'node:process';
     UsersModule,
     JwtModule.register({
       secret: process.env.JWT_TOKEN, // Remplacez par une clé plus sécurisée
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '4h' },
     }),
   ],
   providers: [UsersService, PrismaService],
