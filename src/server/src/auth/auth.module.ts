@@ -19,7 +19,7 @@ import { DiscordAuthService } from './external-services/discord.auth.service';
   imports: [
     JwtModule.register({
       secret: process.env.JWT_SECRET, // Remplacez par une clé plus sécurisée
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '4h' },
       global: true,
     }),
     UsersModule, // Module pour la gestion des utilisateurs
