@@ -35,7 +35,6 @@ export class CalendarService {
       access_token: accessToken.accessToken,
       refresh_token: accessToken.refreshToken,
     });
-
     this.calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
   }
 
@@ -74,10 +73,10 @@ export class CalendarService {
       return false;
     }
     const url = `${ipRedirect}/webhooks/${createWebHook.id}`;
-    const watchResponse = await this.calendar.events.watch({
+    await this.calendar.events.watch({
       calendarId: calendarId,
       requestBody: {
-        id: createWebHook.id, // ID unique pour le channel
+        id: createWebHook.id,
         type: 'webhook',
         address: url,
         token: process.env.SECRET_WEBHOOK,
@@ -163,46 +162,48 @@ export class CalendarService {
         },
       },
     });
-    console.log('Events:', listResponse.data.items[0]);
     const actionNode = await this.prismaService.node.findFirst({
       where: {
         workflowId: webhook.workflowId,
         type: 'action',
       },
     });
-    console.log(listResponse.data);
-    const status = listResponse.data.items[0].status;
-    let finalStatus = '';
-    if (status === 'cancelled') {
-      finalStatus = 'cancelled';
-    }
-    if (status === 'confirmed') {
-      const updated = new Date(listResponse.data.items[0].updated);
-      const created = new Date(listResponse.data.items[0].created);
-      const diff = Math.abs(updated.getTime() - created.getTime());
-      console.log(diff);
-      if (diff < 1000) {
-        finalStatus = 'created';
-      } else {
-        finalStatus = 'updated';
+    //verifier combien de fois il faut executer en fonction du workflow et renvoyer le nombre
+    let nbExec = 0;
+    for (const event of listResponse.data.items) {
+      const status = event.status;
+      let finalStatus = '';
+      if (status === 'cancelled') {
+        finalStatus = 'cancelled';
       }
+      if (status === 'confirmed') {
+        const updated = new Date(event.updated);
+        const created = new Date(event.created);
+        const diff = Math.abs(updated.getTime() - created.getTime());
+        if (diff < 1000) {
+          finalStatus = 'created';
+        } else {
+          finalStatus = 'updated';
+        }
+      }
+      if (finalStatus === '') return 0;
+      if (
+        finalStatus === 'cancelled' &&
+        actionNode.id_node === 'listenDeleteEventGcalendar'
+      )
+        nbExec++;
+      if (
+        finalStatus === 'created' &&
+        actionNode.id_node === 'listenCreateEventGcalendar'
+      )
+        nbExec++;
+      if (
+        finalStatus === 'updated' &&
+        actionNode.id_node === 'listenUpdateEventGcalendar'
+      )
+        nbExec++;
     }
-    console.log('Status:', finalStatus);
-    if (finalStatus === '') return false;
-    if (
-      finalStatus === 'cancelled' &&
-      actionNode.id_node === 'listenDeleteEventGcalendar'
-    )
-      return true;
-    if (
-      finalStatus === 'created' &&
-      actionNode.id_node === 'listenCreateEventGcalendar'
-    )
-      return true;
-    return (
-      finalStatus === 'updated' &&
-      actionNode.id_node === 'listenUpdateEventGcalendar'
-    );
+    return nbExec;
   }
 }
 
@@ -390,9 +391,9 @@ export const EventAddGoogleCalendar: Event = {
         },
         {
           id: 'startDateTime',
-          type: 'string',
+          type: 'dateTime',
           required: true,
-          description: 'Start date and time of the event (RFC3339 format)',
+          description: 'Start date and time of the event',
         },
         {
           id: 'TimeZone',
@@ -425,9 +426,9 @@ export const EventAddGoogleCalendar: Event = {
         },
         {
           id: 'endDateTime',
-          type: 'string',
+          type: 'dateTime',
           required: true,
-          description: 'End date and time of the event (RFC3339 format)',
+          description: 'End date and time of the event',
         },
         {
           id: 'attendees',
@@ -473,9 +474,7 @@ export const EventAddGoogleCalendar: Event = {
     const startDateTimeField = eventGroup.fields.find(
       (field) => field.id === 'startDateTime',
     );
-    const TimeZone = eventGroup.fields.find(
-      (field) => field.id === 'startTimeZone',
-    );
+    const TimeZone = eventGroup.fields.find((field) => field.id === 'TimeZone');
     const endDateTimeField = eventGroup.fields.find(
       (field) => field.id === 'endDateTime',
     );
@@ -536,7 +535,6 @@ export const EventAddGoogleCalendar: Event = {
 
     try {
       await calendarService.addEvent(calendarId, event, userId);
-      console.log('Event added successfully');
     } catch (error) {
       console.error('Failed to add event:', error);
       throw new BadRequestException('Failed to add event to Google Calendar');
