@@ -1,4 +1,4 @@
-import { generateWorkflow } from '@/api/Ai';
+import { generateWorkflow, modifyWorkflow } from '@/api/Ai';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ChevronDownIcon, MagnifyingGlassIcon, QuestionMarkCircleIcon, SparklesIcon, Square2StackIcon, Square3Stack3DIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
@@ -10,15 +10,18 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { createWorkflow } from '@/api/Workflows';
+import { createWorkflow, updateWorkflow } from '@/api/Workflows';
 import { Workflow } from '@/interfaces/Workflows';
 import { Wand2Icon } from 'lucide-react';
 
 interface AIWorkflowAssistantProps {
   token: string | null;
+  mode: 'create' | 'edit';
+  workflow?: Workflow;
+  onSuccess?: (result: Workflow) => void;
 }
 
-export function AIWorkflowAssistant({ token }: AIWorkflowAssistantProps) {
+export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWorkflowAssistantProps) {
   const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -65,20 +68,31 @@ export function AIWorkflowAssistant({ token }: AIWorkflowAssistantProps) {
         duration: Infinity,
       });
 
-      const result = await generateWorkflow(token, aiPrompt);
+      let result = null;
+
+      console.log(workflow);
+      if (mode === 'create')
+        result = await generateWorkflow(token, aiPrompt);
+      else
+        result = await modifyWorkflow(token, workflow!, aiPrompt);
 
       if (result.success) {
-        const newWorkflow = await createWorkflow(result.data.workflow, token);
+        let newWorkflow;
+
+        if (mode === 'create')
+          newWorkflow = await createWorkflow(result.data.workflow, token);
+        else
+          newWorkflow = result.data.workflow;
 
         toast({
           title: t('workflows.ai.success'),
-          description: t('workflows.ai.workflowCreated'),
+          description: mode === 'create' ? t('workflows.ai.workflowCreated') : t('workflows.ai.workflowUpdated'),
           variant: 'success',
         });
 
         await new Promise(resolve => setTimeout(resolve, 1000));
-
         setResult(newWorkflow);
+        if (onSuccess) onSuccess(newWorkflow);
       } else {
         throw new Error(result.message);
       }
@@ -108,7 +122,7 @@ export function AIWorkflowAssistant({ token }: AIWorkflowAssistantProps) {
     <div className="fixed bottom-4 right-4 z-50">
       <div className="relative overflow-hidden rounded-xl p-[1px]">
         <div
-          className={clsx("absolute inset-[-300px] bg-gradient-conic from-transparent from-50%",
+          className={clsx("absolute inset-[-300px] bg-gradient-conic from-transparent from-70%",
             "via-premium to-premium animate-border-spin [transform-origin:50%_50%]",
             isAIAssistantOpen && isGenerating ? 'opacity-100' : 'opacity-0'
           )}
@@ -134,7 +148,9 @@ export function AIWorkflowAssistant({ token }: AIWorkflowAssistantProps) {
           <div className="absolute -bottom-8 -left-8 size-24 bg-premium-bis/10 rounded-full blur-2xl pointer-events-none" />
           <div className='flex items-center relative z-10 w-fit'>
             <SparklesIcon className='size-5 text-premium mr-2' />
-            <p className='text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-premium to-premium-bis'>AI Workflow Assistant</p>
+            <p className='text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-premium to-premium-bis'>
+              {mode === 'create' ? t('workflows.ai.assistant') : t('workflows.ai.editor')}
+            </p>
             <TooltipProvider>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
@@ -179,14 +195,14 @@ export function AIWorkflowAssistant({ token }: AIWorkflowAssistantProps) {
                     variant='premiumClasic'
                     disabled={!aiPrompt.trim() || isGenerating}
                   >
-                    {t('workflows.ai.generate')}
+                    {mode === 'create' ? t('workflows.ai.generate') : t('workflows.ai.modify')}
                     <Wand2Icon className='size-4' />
                   </Button>
                 </div>
                 <p className='text-xs text-muted-foreground mt-1'>
                   {t('workflows.ai.description')}
                 </p>
-                {result && (
+                {result && mode === 'create' && (
                   <motion.div
                     className='flex flex-col gap-1 w-full mt-4'
                     initial={{ opacity: 0, height: 0 }}

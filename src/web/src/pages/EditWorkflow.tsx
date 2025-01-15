@@ -27,6 +27,8 @@ import Node from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
+import { AIWorkflowAssistant } from '@/components/AIWorkflowAssistant';
+import Cookies from 'js-cookie';
 
 const nodeTypes = {
   node: Node,
@@ -49,6 +51,7 @@ export default function EditWorkflow() {
   const { token } = useAuth();
   const hasChanges = !isEqual(workflow, updatedWorkflow);
   const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
+  const openaiToken = Cookies.get('openaiToken') ?? null;
 
   const flattenNodesAndCreateEdges = useCallback((triggers: Event[], services: Service[]) => {
     let allEdges: WorkflowEdge[] = [];
@@ -513,6 +516,21 @@ export default function EditWorkflow() {
         onOpenChange={setIsCommandOpen}
         services={services}
         onSelectService={handleSelectService}
+      />
+
+      <AIWorkflowAssistant
+        token={openaiToken}
+        mode='edit'
+        workflow={updatedWorkflow ?? workflow}
+        onSuccess={(newWorkflow) => {
+          setUpdatedWorkflow(newWorkflow);
+          const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(newWorkflow.triggers, services);
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+          setSelectedNode(null);
+          setIsCommandOpen(false);
+        }}
       />
     </div>
   );

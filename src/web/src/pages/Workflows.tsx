@@ -709,7 +709,7 @@ export default function Workflows() {
         </DialogContent>
       </Dialog>
 
-      <AIWorkflowAssistant token={openaiToken} />
+      <AIWorkflowAssistant token={openaiToken} mode='create' />
     </div>
   );
 }

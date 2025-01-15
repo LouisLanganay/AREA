@@ -180,6 +180,10 @@
     "workflow": "workflow",
     "workflows": "workflows",
     "ai": {
+      "assistant": "AI Workflow Assistant",
+      "editor": "AI Workflow Editor",
+      "modify": "Modify",
+      "workflowUpdated": "Workflow updated successfully",
       "generating": "Generating workflow...",
       "error": "An error occurred while generating the workflow. Please try again.",
       "setupToken": "Setup your OpenAI API token to generate workflows.",
