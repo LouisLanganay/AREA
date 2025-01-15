@@ -16,6 +16,7 @@ import { ServiceModule } from './service/route/service.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AiModule } from './ai/ai.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AiModule } from './ai/ai.module';
     DiscordModule,
     ScheduleModule.forRoot(),
     AiModule,
+    HistoryModule,
   ],
   controllers: [AppController, AboutController, ServiceController],
   providers: [

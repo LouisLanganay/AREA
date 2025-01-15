@@ -321,4 +321,40 @@ export class WorkflowController {
     const userId = req.user.id;
     await this.workflowService.runWorkflowByIdSecure(id, userId);
   }
+
+  @Get(':id/history')
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the workflow to get history',
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The history of the workflow has been successfully retrieved.',
+    schema: {
+      example: {
+        workflowId: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'Workflow 1',
+        history: [
+          { executionDate: '2025-01-15T10:41:35.665Z', status: 'sucess' },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'The workflow does not exist.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @ApiOperation({ summary: 'Get the history of a workflow by ID' })
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  async getWorkflowHistory(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.id;
+    return this.workflowService.getWorkflowHistory(userId, id);
+  }
 }
