@@ -7,4 +7,5 @@ export const MailerService: Service = {
   loginRequired: false,
   image: 'https://www.svgrepo.com/show/533194/mail-alt.svg',
   Event: [],
+  enabled: false,
 };

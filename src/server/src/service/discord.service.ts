@@ -167,6 +167,7 @@ export const EventsendMessageDiscord: Event = {
     },
   ],
   execute: (parameters: FieldGroup[]) => {
+
     console.log("Executing 'Send Message' reaction for Discord");
     const channelDetails = parameters.find(
       (param) => param.id === 'channelDetails',

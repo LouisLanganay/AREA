@@ -9,18 +9,36 @@ export class SpotifyAuthService {
     generateAuthUrl(): string {
         const baseUrl = process.env.SPOTIFY_AUTH_URL || 'https://accounts.spotify.com/authorize';
         const clientId = process.env.SPOTIFY_CLIENT_ID;
-        const scopes = ['user-read-email', 'playlist-read-private', 'user-read-private'].join(' ');
+        const scopes = [
+            'ugc-image-upload',
+            'user-read-playback-state',
+            'user-modify-playback-state',
+            'user-read-currently-playing',
+            'app-remote-control',
+            'streaming',
+            'playlist-read-private',
+            'playlist-modify-public',
+            'playlist-modify-private',
+            'playlist-read-collaborative',
+            'user-follow-modify',
+            'user-follow-read',
+            'user-library-modify',
+            'user-library-read',
+            'user-read-email',
+            'user-read-private',
+            'user-top-read',
+            'user-read-recently-played',
+            'user-read-playback-position'
+        ].join(' ');
 
         const url = `${baseUrl}?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
             '[REDIRECT_URI]'
         )}&scope=${encodeURIComponent(scopes)}&show_dialog=true`;
 
-        console.log('Spotify auth URL generated:', url);
         return url;
     }
 
     async getAccessToken(authCode: string, userId: string): Promise<void> {
-        console.log('SPOTIFY: Exchanging code for tokens');
         const tokenUrl = process.env.SPOTIFY_TOKEN_URL || 'https://accounts.spotify.com/api/token';
 
         const body = new URLSearchParams({
@@ -50,7 +68,6 @@ export class SpotifyAuthService {
 
             const data = JSON.parse(responseBody);
 
-            console.log('Tokens received:', data);
 
             await this.prisma.token.create({
                 data: {

@@ -302,7 +302,23 @@ export class WorkflowController {
     required: true,
     type: String,
   })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Run a workflow by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workflow has been successfully run.',
+  })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Forbidden you do not have the permission to run this workflow.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'The workflow does not exist.',
+  })
   async runWorkflow(@Param('id') id: string, @Req() req: any) {
-    await this.workflowService.runWorkflowById(id);
+    const userId = req.user.id;
+    await this.workflowService.runWorkflowByIdSecure(id, userId);
   }
 }

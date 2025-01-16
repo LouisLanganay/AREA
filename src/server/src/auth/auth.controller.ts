@@ -1,12 +1,13 @@
 import {
-    BadRequestException,
-    Body,
-    Controller,
-    Get,
-    HttpCode,
-    Post,
-    Req,
-    UseGuards,
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {LoginUserDto} from '../users/dto/login-user.dto';
@@ -148,25 +149,40 @@ export class AuthController {
     async googleAuth() {
         // Cette méthode redirige vers Google pour l'authentification
     }
-
-    @Get('google/redirect')
-    @UseGuards(AuthGuard('google'))
-    async googleAuthRedirect(@Req() req) {
-        const token = await this.authService.UserGoogle(req.user);
-        return this.redirectFrontend(req.res, token);
+  @Get('google/redirect/:service')
+  async googleAuthRedirect(@Param('service') service: string) {
+    if (service !== 'gcalendar') {
+      return;
     }
+    const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    const BASE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+    const redirectUrl = `${BASE_AUTH_URL}?response_type=code&client_id=${encodeURIComponent(CLIENT_ID)}&redirect_uri=${encodeURIComponent(
+      '[REDIRECT_URI]',
+    )}&scope=${encodeURIComponent('https://www.googleapis.com/auth/calendar')}&access_type=offline&prompt=consent`;
 
-    private async redirectFrontend(res, token) {
-        const frontendRedirectUrl = `${process.env.IP_FRONT}login-success?token=${token.access_token}`;
-        return res.redirect(frontendRedirectUrl);
-    }
+    return { redirectUrl };
+  }
 
-    @Get('discord/redirect')
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async discordAuthRedirect(@Req() req) {
-        const redirectUrl = await this.discordService.getRedirectUrl();
-        return {redirectUrl};
+  @Post('google/callback/:service')
+  @UseGuards(AuthGuard('jwt'))
+  async googleAuthCallback(
+    @Param('service') service: string,
+    @Body('code') code: string,
+    @Req() req: any,
+  ) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
     }
+    if (service === 'gcalendar') {
+      return await this.authService.gCalendarRedirect(code, req.user.id);
+    }
+  }
+
+  @Get('discord/redirect')
+  async discordAuthRedirect(@Req() req) {
+    const redirectUrl = await this.discordService.getRedirectUrl();
+    return { redirectUrl };
+  }
 
     //retourne le dans le body le lien de redirection
     //@Get('discord')
@@ -305,7 +321,6 @@ export class AuthController {
     @Post('spotify/callback')
     @UseGuards(AuthGuard('jwt'))
     async getSpotifyCallback(@Body('code') code: string, @Req() req: any) {
-        console.log('Spotify OAuth callback received:', code);
         if (!code) {
             throw new BadRequestException('Code is missing');
         }

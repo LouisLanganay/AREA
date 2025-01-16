@@ -5,6 +5,7 @@ import * as os from 'node:os';
 @Controller()
 export class AboutController {
   constructor(private serviceRegister: ServiceRegister) {}
+
   getServerIP() {
     const interfaces = os.networkInterfaces();
 
@@ -30,9 +31,10 @@ export class AboutController {
       },
     };
     const services = this.serviceRegister.getAllServices();
+    const jsonServices = [];
 
     services.map((service) => {
-      json[service.name] = {
+      jsonServices.push({
         name: service.name,
         description: service.description,
         actions: service.Event.filter((event) => event.type === 'action').map(
@@ -47,8 +49,9 @@ export class AboutController {
           name: event.name,
           description: event.description,
         })),
-      };
+      });
     });
+    json['services'] = jsonServices;
     return json;
   }
 }

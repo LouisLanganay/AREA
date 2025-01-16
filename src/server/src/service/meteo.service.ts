@@ -139,8 +139,6 @@ export const EventGetWeatherForecast: Event = {
         `24-hour forecast for (${latitude}, ${longitude}):`,
         forecast,
       );
-
-      return forecast;
     } catch (error) {
       console.error('Error fetching weather forecast:', error.message);
       throw error;
@@ -155,4 +153,5 @@ export const WeatherService: Service = {
   loginRequired: false,
   image: 'https://www.svgrepo.com/show/479349/weather-symbol-1.svg',
   Event: [],
+  enabled: true,
 };
