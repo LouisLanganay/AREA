@@ -66,6 +66,7 @@
       "currentAccount": "Current",
       "switchTheme": "Switch Theme",
       "documentation": "Documentation",
+      "onboarding": "Onboarding",
       "newWorkflow": "New Workflow"
     }
   },
@@ -470,6 +471,14 @@
         "twitch": {
           "title": "Twitch",
           "description": "Connect your Twitch account to automate your workflows and engage with your audience in real-time."
+        },
+        "outlook": {
+          "title": "Outlook",
+          "description": "Connect your Outlook account to automate your workflows and manage your email more efficiently."
+        },
+        "spotify": {
+          "title": "Spotify",
+          "description": "Connect your Spotify account to automate your workflows and manage your music more efficiently."
         }
       }
     },
@@ -552,6 +561,42 @@
         }
       }
     }
+  },
+  "services": {
+    "description": "Connect your favorite services to create powerful automated workflows",
+    "enabled": "Enabled Services",
+    "disabled": "Available Services",
+    "noEnabledServices": "No enabled services found. Connect a service to get started.",
+    "connecting": "Connecting service...",
+    "connected": "Service connected successfully"
+  },
+  "onboarding": {
+    "sidebar": {
+      "title": "Sidebar Menu",
+      "description": "Sidebar allows you to navigate through your workflows and services. You can also access your settings and preferences here."
+    },
+    "createWorkflow": {
+      "title": "Create a Workflow",
+      "description": "Click here to create your first automated workflow."
+    },
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "skip": "Skip",
+    "of": "of",
+    "services": {
+      "title": "Connect Services",
+      "description": "Connect your favorite services like Discord, Google, or GitHub to start creating automated workflows between them."
+    },
+    "sidebarFooter": {
+      "title": "User Profile",
+      "description": "Access your profile settings, manage your account, and customize your preferences from here."
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home"
   }
 }
 

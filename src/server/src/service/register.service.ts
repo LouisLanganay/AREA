@@ -49,7 +49,7 @@ export class ServiceRegister {
         if (service.loginRequired === false) {
           return {
             ...service,
-            enable: true,
+            enabled: true,
           };
         }
         const token = await this.prismaService.token.findFirst({

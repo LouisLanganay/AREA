@@ -221,4 +221,37 @@ export class UsersController {
     }
     return this.userService.getUserInfo(id);
   }
+  @Get(':id/workflows-history')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get the history of all workflows for a user for admin',
+  })
+  @ApiResponse({
+    status: 200,
+    description:
+      'The history of all workflows has been successfully retrieved.',
+    schema: {
+      example: [
+        {
+          workflowId: '123e4567-e89b-12d3-a456-426614174000',
+          name: 'Workflow 1',
+          history: [
+            { executionDate: '2025-01-15T10:41:35.665Z', status: 'sucess' },
+          ],
+        },
+      ],
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getUserWorkflowHistory(@Param('id') id: string, @Req() req: any) {
+    const isAdmin = await this.userService.checkRole(req.user.id, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+    }
+    return this.userService.getUserWorkflowsHistory(id);
+  }
 }

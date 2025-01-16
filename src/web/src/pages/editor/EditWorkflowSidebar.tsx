@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Service } from '@/interfaces/Services';
 import { Field, FieldGroup, Event } from '@/interfaces/Workflows';
+import { DateTimePicker } from '@/components/ui/dateTimePicker';
 
 interface EditWorkflowSidebarProps {
   selectedNode: Event | null;
@@ -98,6 +99,13 @@ export function EditWorkflowSidebar({
           mode='single'
           selected={currentValue ? new Date(currentValue) : undefined}
           onSelect={(date) => onFieldChange(field.id, date, nodeId)}
+        />
+      );
+    case 'dateTime':
+      return (
+        <DateTimePicker
+          value={currentValue ? new Date(currentValue) : undefined}
+          onChange={(date) => onFieldChange(field.id, date, nodeId)}
         />
       );
     case 'checkbox':

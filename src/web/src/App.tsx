@@ -20,6 +20,8 @@ import ClientAPK from './pages/ClientAPK';
 import Loading from './pages/Loading';
 import Premium from './pages/Premium';
 import AssetLinks from './pages/AssetLinks';
+import { Onboarding } from '@/components/Onboarding';
+import NotFound from './pages/NotFound';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -92,6 +94,8 @@ function LoginSuccess() {
 }
 
 function App() {
+  const isFirstVisit = Cookies.get('onboarding-completed') !== 'true';
+
   return (
     <AuthProvider>
       <ThemeProvider>
@@ -239,7 +243,16 @@ function App() {
                   <AssetLinks />
                 }
               />
+
+              <Route
+                path='*'
+                element={
+                  <NotFound />
+                }
+              />
+
             </Routes>
+            {isFirstVisit && <Onboarding />}
           </BrowserRouter>
         </FontScaleProvider>
       </ThemeProvider>

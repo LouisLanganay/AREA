@@ -17,30 +17,28 @@ import {DiscordAuthService} from './external-services/discord.auth.service';
 import {SpotifyAuthService} from "./external-services/spotify.auth.service";
 
 @Module({
-    imports: [
-        JwtModule.register({
-            secret: process.env.JWT_SECRET, // Remplacez par une clé plus sécurisée
-            signOptions: {expiresIn: '1h'},
-            global: true,
-        }),
-        UsersModule, // Module pour la gestion des utilisateurs
-        PassportModule,
-        PrismaModule,
-        HttpModule,
-    ],
-    controllers: [AuthController],
-    providers: [
-        AuthService,
-        JwtStrategy,
-        MailerService,
-        GoogleStrategy,
-        DiscordStrategy,
-        DiscordService,
-        GoogleAuthService,
-        DiscordAuthService,
-        SpotifyAuthService,
-    ],
-    exports: [AuthService],
+  imports: [
+    JwtModule.register({
+      secret: process.env.JWT_SECRET, // Remplacez par une clé plus sécurisée
+      signOptions: { expiresIn: '4h' },
+      global: true,
+    }),
+    UsersModule, // Module pour la gestion des utilisateurs
+    PassportModule,
+    PrismaModule,
+    HttpModule,
+  ],
+  controllers: [AuthController],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    MailerService,
+    GoogleStrategy,
+    DiscordStrategy,
+    DiscordService,
+    GoogleAuthService,
+    DiscordAuthService,
+  ],
+  exports: [AuthService],
 })
-export class AuthModule {
-}
+export class AuthModule {}
