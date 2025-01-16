@@ -146,7 +146,7 @@ export class OutlookTools {
         return false;
       }
 
-      const url = `${redirect}/webhooks/${createWebHook.id}`;
+      const url = `${redirect}/webhooks/outlook/${createWebHook.id}`;
       try {
         const subscription = await this.createEmailSubscription(userId, url);
         console.log('Subscription created successfully:', subscription);
@@ -171,10 +171,10 @@ export class OutlookTools {
     console.log('Using access token for subscription:', token.accessToken);
 
     const body = {
-      changeType: 'created,updated',
+      changeType: 'created',
       notificationUrl: notificationUrl,
       resource: "/me/mailFolders('inbox')/messages",
-      expirationDateTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 heure d'expiration
+      expirationDateTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       clientState: 'secureClientState',
     };
 
