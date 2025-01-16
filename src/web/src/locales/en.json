@@ -8,14 +8,33 @@
     "copyToClipboard": "Copied to clipboard",
     "fetchError": "Failed to fetch users, please try again.",
     "active": "Active",
+    "fetchHistoryError": "Failed to fetch history, please try again.",
     "deleteSuccess": "User deleted successfully.",
     "deleteError": "Failed to delete user, please try again.",
     "statusChangeSuccess": "User status changed successfully.",
     "statusChangeError": "Failed to change user status, please try again.",
     "suspended": "Suspended",
     "title": "User Management",
+    "workflowStats": "Workflow executions",
+    "statsDescription": "View statistics about the number of executions for each workflow.",
     "usersTitle": "Registered Users",
     "viewProfile": "View Profile",
+    "recentFailed": "Recent failed executions",
+    "recentSuccess": "Recent successful executions",
+    "live": "Live enabled",
+    "pause": "Live disabled",
+    "viewMode": {
+      "daily": "Daily executions",
+      "hourly": "Hourly executions",
+      "minute": "Minute executions"
+    },
+    "stats": {
+      "title": "Workflow Stats",
+      "success": "Success",
+      "error": "Error",
+      "registrations": "Registrations",
+      "newUsers": "new users"
+    },
     "users": {
       "id": "ID",
       "name": "Name",
@@ -41,7 +60,8 @@
     "confirmStatusTitle": "Confirm status change",
     "confirmStatus": "Are you sure you want to {{status}} the user {{userName}}?",
     "editTitle": "Edit user",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "registrationStats": "User Registrations"
   },
   "sidebar": {
     "groups": {
@@ -67,7 +87,8 @@
       "switchTheme": "Switch Theme",
       "documentation": "Documentation",
       "onboarding": "Onboarding",
-      "newWorkflow": "New Workflow"
+      "newWorkflow": "New Workflow",
+      "adminWorkflows": "Workflows"
     }
   },
   "settings": {

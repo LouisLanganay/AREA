@@ -17,7 +17,20 @@ interface createWorkflowRequest {
 }
 
 /**
+ * Interface for workflow history entry with workflow details
+ */
+interface WorkflowHistoryEntry {
+  executionDate: string;
+  status: 'success' | 'failure';
+  workflow: {
+    id: string;
+    name: string;
+  };
+}
+
+/**
  * Interface for the response when fetching the workflow history
+ * Updated to match actual API response structure
  */
 interface getWorkflowHistoryResponse {
   workflowId: string;
@@ -28,5 +41,6 @@ interface getWorkflowHistoryResponse {
 export type {
   getWorkflowResponse,
   createWorkflowRequest,
-  getWorkflowHistoryResponse
+  getWorkflowHistoryResponse,
+  WorkflowHistoryEntry
 };

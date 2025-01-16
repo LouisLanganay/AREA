@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { BoltIcon, CalendarIcon, ChevronRightIcon, DocumentIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { BoltIcon, CalendarIcon, ChevronRightIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
+import { isPlatform } from '@ionic/react';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Cookies from 'js-cookie';
@@ -172,9 +173,19 @@ export function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(Cookies.get('onboarding-completed') !== 'true');
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
   const currentHref = useLocation().pathname;
+
+  useEffect(() => {
+    const shouldShow = !isPlatform('capacitor') && Cookies.get('onboarding-completed') !== 'true';
+    if (shouldShow) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     const updatePosition = () => {

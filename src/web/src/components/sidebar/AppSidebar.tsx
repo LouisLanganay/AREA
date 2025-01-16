@@ -98,7 +98,12 @@ const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[])
       {
         title: t('sidebar.items.users'),
         icon: UsersIcon,
-        url: '/users'
+        url: '/admin/users'
+      },
+      {
+        title: t('sidebar.items.adminWorkflows'),
+        icon: BoltIcon,
+        url: '/admin/workflows'
       }
     ],
     isAdmin: true

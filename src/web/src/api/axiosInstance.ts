@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 /**
  * Custom Axios instance for API requests
@@ -20,7 +21,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // Get token from localStorage
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
 
     // Add token to Authorization header if present
     if (token) {

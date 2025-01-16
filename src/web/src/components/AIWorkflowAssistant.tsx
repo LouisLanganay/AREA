@@ -118,7 +118,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50 w-full md:min-w-[400px] max-w-[250px] md:max-w-[400px]">
       <div className="relative overflow-hidden rounded-xl p-[1px]">
         <div
           className={clsx("absolute inset-[-300px] bg-gradient-conic from-transparent from-70%",
@@ -128,7 +128,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
         />
         <div
           className={clsx(
-            'bg-card p-3 border border-border rounded-xl opacity-100 relative overflow-hidden md:min-w-[400px] max-w-[400px]',
+            'bg-card p-3 border border-border rounded-xl opacity-100 relative overflow-hidden',
             !isAIAssistantOpen && 'cursor-pointer'
           )}
           onClick={() => !isAIAssistantOpen && handleOpenAIAssistant()}

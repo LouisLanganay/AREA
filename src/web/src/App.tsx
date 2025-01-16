@@ -22,6 +22,7 @@ import Premium from './pages/Premium';
 import AssetLinks from './pages/AssetLinks';
 import { Onboarding } from '@/components/Onboarding';
 import NotFound from './pages/NotFound';
+import AdminWorkflows from './pages/AdminWorkflows';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -132,10 +133,10 @@ function App() {
                 element={
                   <Home />
                 }
-              ></Route>
+              />
 
               <Route
-                path="/users"
+                path="/admin/users"
                 element={
                   <ProtectedRoute>
                     <Layout>
@@ -143,7 +144,18 @@ function App() {
                     </Layout>
                   </ProtectedRoute>
                 }
-              ></Route>
+              />
+
+              <Route
+                path="/admin/workflows"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <AdminWorkflows />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/services"

@@ -77,11 +77,13 @@ export default function Services() {
       toast({
         description: t('services.connecting'),
         variant: 'loading',
+        duration: Infinity,
       });
 
       try {
-        await oauthCallback(service.auth.callback_uri, token, userToken);
-        // TODO: Handle response
+        const response = await oauthCallback(service.auth.callback_uri, token, userToken);
+        if (response.status !== 201)
+          throw new Error('Failed to connect service');
         Cookies.remove('service_oauth_provider');
         setTimeout(async () => {
           const updatedServices = await getServices(userToken);

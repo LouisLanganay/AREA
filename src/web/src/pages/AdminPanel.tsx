@@ -32,6 +32,9 @@ import { PlayIcon, StopIcon, TrashIcon, EyeIcon, ShieldCheckIcon } from '@heroic
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { ChartContainer, ChartLegendContent, ChartLegend, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
@@ -39,14 +42,18 @@ export default function AdminPanel() {
   const { t } = useTranslation();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [registrationStats, setRegistrationStats] = useState<{ date: string; count: number }[]>([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       if (!token) return;
       try {
         const fetchedUsers = await getUsers(token);
-        if (fetchedUsers.length > 0)
+        if (fetchedUsers.length > 0) {
           setUsers(fetchedUsers);
+          const stats = processRegistrationStats(fetchedUsers);
+          setRegistrationStats(stats);
+        }
       } catch (error) {
         console.error('Failed to fetch users:', error);
         toast({
@@ -58,6 +65,20 @@ export default function AdminPanel() {
 
     fetchUsers();
   }, [token]);
+
+  const processRegistrationStats = (users: User[]) => {
+    const statsMap = new Map<string, number>();
+
+    users.forEach(user => {
+      const date = new Date(user.createdAt).toLocaleDateString();
+      statsMap.set(date, (statsMap.get(date) || 0) + 1);
+    });
+
+    return Array.from(statsMap.entries())
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(-30);
+  };
 
   const handleDeleteUser = async (userId: string) => {
     if (!token) return;
@@ -106,12 +127,63 @@ export default function AdminPanel() {
     });
   };
 
+  const chartConfig = {
+    registrations: {
+      label: t('admin.stats.registrations'),
+      color: 'hsl(var(--primary))',
+    },
+  };
+
   return (
     <div className='space-y-4'>
       <div>
         <h1 className='text-2xl font-bold'>{t('admin.title')}</h1>
         <p className='text-muted-foreground'>{t('admin.usersTitle')}</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('admin.registrationStats')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig} className='h-[200px] w-full'>
+            <AreaChart
+              data={registrationStats}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray='3 3' />
+              <XAxis
+                dataKey='date'
+                stroke='hsl(var(--muted-foreground))'
+                fontSize={12}
+                tickLine={false}
+              />
+              <YAxis
+                stroke='hsl(var(--muted-foreground))'
+                fontSize={12}
+                tickLine={false}
+              />
+              <ChartTooltip
+                content={({ active, payload }) => (
+                  <ChartTooltipContent
+                    active={active}
+                    payload={payload}
+                    formatter={(value) => `${value} ${t('admin.stats.newUsers')}`}
+                  />
+                )}
+              />
+              <Area
+                type='basis'
+                dataKey='count'
+                stroke='hsl(var(--primary))'
+                fill='hsl(var(--primary))'
+                fillOpacity={0.2}
+                strokeWidth={2}
+              />
+            </AreaChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
 
       <div className='rounded-md border'>
         <Table>

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { getMeResponse } from '@/interfaces/api/User';
 import { getMe } from '@/api/User';
 import { User } from '@/interfaces/User';
+import Cookies from 'js-cookie';
 
 /**
  * Interface representing a user account with associated token
@@ -43,21 +44,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
  * Provider component for authentication context
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialize state from localStorage
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  // Initialize state from cookies instead of localStorage
+  const [token, setToken] = useState<string | null>(Cookies.get('token') || null);
   const [user, setUser] = useState<User | null>(
-    localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null
+    Cookies.get('user') ? JSON.parse(Cookies.get('user')!) : null
   );
   const [accounts, setAccounts] = useState<Account[]>(
-    localStorage.getItem('accounts') ? JSON.parse(localStorage.getItem('accounts')!) : []
+    Cookies.get('accounts') ? JSON.parse(Cookies.get('accounts')!) : []
   );
 
   /**
-   * Saves accounts to state and localStorage
+   * Saves accounts to state and cookies
    */
   const saveAccounts = (newAccounts: Account[]) => {
     setAccounts(newAccounts);
-    localStorage.setItem('accounts', JSON.stringify(newAccounts));
+    Cookies.set('accounts', JSON.stringify(newAccounts), { expires: 1 });
   };
 
   /**
@@ -98,8 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (account) {
       setToken(account.token);
       setUser(account.user);
-      localStorage.setItem('token', account.token);
-      localStorage.setItem('user', JSON.stringify(account.user));
+      Cookies.set('token', account.token, { expires: 1 });
+      Cookies.set('user', JSON.stringify(account.user), { expires: 1 });
     }
   };
 
@@ -128,14 +129,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const account = await addAccount(newToken);
     setToken(account.token);
     setUser(account.user);
-    localStorage.setItem('token', account.token);
-    localStorage.setItem('user', JSON.stringify(account.user));
+    Cookies.set('token', account.token, { expires: 1 });
+    Cookies.set('user', JSON.stringify(account.user), { expires: 1 });
     return account;
   };
 
   /**
    * Handles user logout
-   * @returns {boolean} True if switched to another account, false if logged out completely
    */
   const logout = async (): Promise<boolean> => {
     const currentAccount = accounts.find(acc => acc.user?.id === user?.id);
@@ -148,8 +148,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    Cookies.remove('token');
+    Cookies.remove('user');
 
     // Switch to another account if available
     if (updatedAccounts.length > 0) {
