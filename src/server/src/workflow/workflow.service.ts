@@ -342,4 +342,16 @@ export class WorkflowService {
       history: data,
     };
   }
+
+  public async getAllWorkflows() {
+    return this.prisma.workflow.findMany({
+      select: {
+        id: true,
+        name: true,
+        enabled: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
 }

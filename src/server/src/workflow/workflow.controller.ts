@@ -9,6 +9,7 @@ import {
   Get,
   HttpCode,
   Patch,
+  ForbiddenException,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
@@ -21,10 +22,14 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
+import { UsersService } from '../users/users.service';
 
 @Controller('workflows')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {}
+  constructor(
+    private readonly workflowService: WorkflowService,
+    private readonly userService: UsersService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
@@ -356,5 +361,37 @@ export class WorkflowController {
   async getWorkflowHistory(@Param('id') id: string, @Req() req: any) {
     const userId = req.user.id;
     return this.workflowService.getWorkflowHistory(userId, id);
+  }
+
+  @Get('/all')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all workflows (for admin)' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workflows have been successfully retrieved.',
+    schema: {
+      example: [
+        {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          name: 'Workflow 1',
+          enabled: true,
+          createdAt: '2023-01-01T00:00:00.000Z',
+          updatedAt: '2023-01-02T00:00:00.000Z',
+        },
+      ],
+    },
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getAllWorkflows(@Req() req: any) {
+    const userId = req.user.id;
+    const isAdmin = await this.userService.checkRole(userId, 'admin');
+    if (!isAdmin) {
+      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+    }
+    return this.workflowService.getAllWorkflows();
   }
 }
