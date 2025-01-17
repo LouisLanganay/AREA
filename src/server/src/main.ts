@@ -40,6 +40,8 @@ import {
   SpotifyService,
 } from './service/spotify.service';
 
+import {EventLogTerm, EventStreamerOnline, twitchService} from './service/twitch.services';
+
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
   allService.addService(TimerService);
@@ -48,6 +50,7 @@ export async function defineAllService(allService: any) {
   allService.addService(WeatherService);
   allService.addService(gcalendarService);
   allService.addService(SpotifyService);
+  allService.addService(twitchService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
@@ -66,6 +69,9 @@ export async function defineAllService(allService: any) {
   allService.addEventToService('gcalendar', ListenDeleteEventGcalendar);
   allService.addEventToService('gcalendar', ListenUpdateEventGcalendar);
   allService.addEventToService('gcalendar', EventAddGoogleCalendar);
+
+  allService.addEventToService('twitch', EventStreamerOnline);
+  allService.addEventToService('twitch', EventLogTerm);
 
   allService.addEventToService('spotify', EventCreatePlaylist);
   allService.addEventToService('spotify', EventCheckPlayer);

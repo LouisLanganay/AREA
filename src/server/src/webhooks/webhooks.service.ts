@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkflowService } from '../workflow/workflow.service';
+import { Response } from 'express';
 import { Cron } from '@nestjs/schedule';
 import {
   CalendarService,
@@ -45,5 +46,37 @@ export class WebhooksService {
     for (let i = 0; i < execute; i++) {
       this.workflowService.runWorkflowById(webhook.workflowId, body);
     }
+  }
+
+  async handleTwitchWebhook(
+      webhookId: string,
+      messageType: string,
+      body: any,
+      res: Response,
+  ) {
+    // Exemple de logs pour voir ce qu'on reçoit
+    console.log(`Webhook ${webhookId} received messageType: ${messageType}`, body);
+
+    const webhook = await this.prismaService.webhook.findUnique({
+      where: { id: webhookId },
+    });
+
+    if (messageType === 'webhook_callback_verification') {
+      console.log(
+        'Twitch is verifying the subscription. Challenge =',
+        body.challenge,
+      );
+      return res.status(200).send(body.challenge);
+    }
+
+    // Gérer les notifications
+    if (messageType === 'notification') {
+      const { subscription, event } = body;
+      console.log('Received event:', subscription.type, event);
+      await this.workflowService.runWorkflowById(webhook.workflowId, body);
+      return res.status(200).send('ok');
+    }
+
+    console.log('Unknown message type:', messageType);
   }
 }

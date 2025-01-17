@@ -19,6 +19,7 @@ import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { DiscordService } from '../app-discord/discord-app.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SpotifyAuthService } from './external-services/spotify.auth.service';
+import { TwitchAuthService } from '../auth/external-services/twitch.auth.services';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -26,6 +27,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
+    private readonly twitchAuthService: TwitchAuthService,
     private readonly spotifyAuthService: SpotifyAuthService,
   ) {}
 
@@ -334,6 +336,40 @@ export class AuthController {
     } catch (error) {
       throw new BadRequestException({
         err_code: 'SPOTIFY_TOKEN_EXCHANGE_FAILED',
+        details: error.message,
+      });
+    }
+  }
+  @Get('twitch/redirect')
+  twitchAuthRedirect(): { redirectUrl: string } {
+    // Génère l’URL d’authentification Twitch
+    console.log('Redirecting to Twitch OAuth');
+    const redirectUrl = this.twitchAuthService.generateAuthUrl();
+    return { redirectUrl };
+  }
+
+  @Post('twitch/callback')
+  @UseGuards(AuthGuard('jwt'))
+  async getTwitchCallback(@Body('code') code: string, @Req() req: any) {
+    console.log('Twitch OAuth callback received:', code);
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+
+    try {
+      console.log('AUTH: Exchanging code for tokens');
+      // Échange le code contre le token et stocke ce dernier dans la BDD
+      await this.twitchAuthService.getAccessToken(code, userId);
+
+      return { message: 'Twitch tokens stored in the database' };
+    } catch (error) {
+      throw new BadRequestException({
+        err_code: 'TWITCH_TOKEN_EXCHANGE_FAILED',
         details: error.message,
       });
     }
