@@ -206,12 +206,12 @@ export function Onboarding() {
     case 'bottom':
       return {
         top: rect.bottom + 20,
-        left: rect.left + rect.width / 2 - 150
+        left: rect.left + rect.width / 2 - 200
       };
     case 'top':
       return {
-        top: rect.top - 20 - 150,
-        left: rect.left + rect.width / 2 - 150
+        top: rect.top - 20 - 200,
+        left: rect.left + rect.width / 2 - 200
       };
     default:
       return { top: 0, left: 0 };
