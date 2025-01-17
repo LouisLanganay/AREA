@@ -40,7 +40,12 @@ import {
   SpotifyService,
 } from './service/spotify.service';
 
-import {EventLogTerm, EventStreamerOnline, EventWriteInBroadcasterChat, twitchService} from './service/twitch.services';
+import {
+  EventLogTerm,
+  EventStreamerOnline,
+  EventWriteInBroadcasterChat,
+  twitchService
+} from './service/twitch.services';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);

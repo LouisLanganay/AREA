@@ -27,8 +27,6 @@ class TwitchServices {
 
 
     async getToken(userId: string) {
-        // Code to get token in the prisma database
-
         const accessToken = await this.prismaService.token.findUnique({
             where: {userId_provider: {userId, provider: 'twitch'}},
             select: {accessToken: true},
@@ -39,7 +37,6 @@ class TwitchServices {
     }
 
     async listenToNewFollowers(broadcasterUserId: string, userId: string, callback_uri: string) {
-        // Code to listen to new followers
         const token = await this.getToken(userId);
         const url = 'https://api.twitch.tv/helix/eventsub/subscriptions';
 
@@ -162,7 +159,6 @@ class TwitchServices {
             throw new Error('Failed to send message to broadcaster chat');
         }
     }
-
 }
 
 //New follower to broadcasterUserId
@@ -317,6 +313,7 @@ export const EventWriteInBroadcasterChat: Event = {
         return true;
     }
 }
+
 export const twitchService: Service = {
     id: 'twitch',
     name: 'Twitch',
