@@ -1,5 +1,6 @@
 import { Req, Controller, Param, Post, Get, Body, Res , Headers } from '@nestjs/common';
 import { WebhooksService } from './webhooks.service';
+import { ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @Controller('webhooks')
@@ -8,6 +9,7 @@ export class WebhooksController {
   }
 
   @Post(':id')
+  @ApiOperation({ summary: 'Handle webhook' })
   async handleWebhook(@Param('id') id: string, @Req() req: any) {
     return this.webhooksService.handleWebhook(id, req.headers);
   }

@@ -145,12 +145,6 @@ export class AuthController {
     await this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // Cette méthode redirige vers Google pour l'authentification
-  }
-
   @Get('google/redirect/:service')
   async googleAuthRedirect(@Param('service') service: string) {
     if (service !== 'gcalendar') {
@@ -293,6 +287,26 @@ export class AuthController {
   }
 
   @Post('google')
+  @ApiOperation({ summary: 'Google OAuth, route for receive code from google' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens stored in the database',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
+  @ApiBody({
+    type: String,
+    examples: {
+      example1: {
+        summary: 'Example google oauth',
+        value: {
+          code: 'code',
+        },
+      },
+    },
+  })
   async googleOAuth(@Body('code') code: string) {
     if (!code) {
       throw new BadRequestException('Code is missing');
@@ -309,6 +323,7 @@ export class AuthController {
   }
 
   @Get('createAdmin')
+  @ApiOperation({ summary: 'Create an admin user default for test' })
   async createAdmin() {
     return await this.authService.createAdmin();
   }
