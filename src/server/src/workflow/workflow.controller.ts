@@ -10,6 +10,7 @@ import {
   HttpCode,
   Patch,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/createWorkflowDto';
@@ -191,9 +192,15 @@ export class WorkflowController {
     status: 403,
     description: 'Forbidden.',
   })
-  async getWorkflowsByUser(@Req() req: any) {
+  async getWorkflowsByUser(@Req() req: any, @Query('all') all: string) {
     const loggedInUserId = req.user.id;
-    console.log('Fetching workflows for user:', loggedInUserId);
+    if (all && all === 'true') {
+      const isAdmin = await this.userService.checkRole(loggedInUserId, 'admin');
+      if (!isAdmin) {
+        throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+      }
+      return this.workflowService.getAllWorkflows();
+    }
     return this.workflowService.getWorkflowsByUser(loggedInUserId);
   }
 
@@ -363,35 +370,35 @@ export class WorkflowController {
     return this.workflowService.getWorkflowHistory(userId, id);
   }
 
-  @Get('/all')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get all workflows (for admin)' })
-  @ApiResponse({
-    status: 200,
-    description: 'The workflows have been successfully retrieved.',
-    schema: {
-      example: [
-        {
-          id: '123e4567-e89b-12d3-a456-426614174000',
-          name: 'Workflow 1',
-          enabled: true,
-          createdAt: '2023-01-01T00:00:00.000Z',
-          updatedAt: '2023-01-02T00:00:00.000Z',
-        },
-      ],
-    },
-  })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden.',
-  })
-  @UseGuards(AuthGuard('jwt'))
-  async getAllWorkflows(@Req() req: any) {
-    const userId = req.user.id;
-    const isAdmin = await this.userService.checkRole(userId, 'admin');
-    if (!isAdmin) {
-      throw new ForbiddenException({ err_code: 'USER_ADMIN' });
-    }
-    return this.workflowService.getAllWorkflows();
-  }
+  // @Get('/all')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Get all workflows (for admin)' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The workflows have been successfully retrieved.',
+  //   schema: {
+  //     example: [
+  //       {
+  //         id: '123e4567-e89b-12d3-a456-426614174000',
+  //         name: 'Workflow 1',
+  //         enabled: true,
+  //         createdAt: '2023-01-01T00:00:00.000Z',
+  //         updatedAt: '2023-01-02T00:00:00.000Z',
+  //       },
+  //     ],
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 403,
+  //   description: 'Forbidden.',
+  // })
+  // @UseGuards(AuthGuard('jwt'))
+  // async getAllWorkflows(@Req() req: any) {
+  //   const userId = req.user.id;
+  //   const isAdmin = await this.userService.checkRole(userId, 'admin');
+  //   if (!isAdmin) {
+  //     throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+  //   }
+  //   return this.workflowService.getAllWorkflows();
+  // }
 }

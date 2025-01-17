@@ -9,7 +9,7 @@ import { Client, GatewayIntentBits, Guild } from 'discord.js';
 @Injectable()
 export class DiscordService {
   constructor(
-    private prisma: PrismaService,
+      private prisma: PrismaService,
     private configService: ConfigService,
     private httpService: HttpService,
   ) {}
