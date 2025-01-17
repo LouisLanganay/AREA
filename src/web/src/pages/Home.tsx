@@ -1,5 +1,4 @@
 import DiscordIcon from '@/assets/discord-icon.svg';
-import { useAuth } from '@/context/AuthContext';
 import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import { Button } from '@/components/ui/button';
 import DotPattern from '@/components/ui/dot-pattern';
@@ -15,15 +14,16 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { WorkflowNode } from '@/interfaces/Workflows';
 import { getLayoutedElements } from '@/utils/workflows';
+import { BoldIcon } from '@heroicons/react/24/outline';
 import {
   Bars3Icon,
   ChevronDownIcon,
   MoonIcon,
   RocketLaunchIcon,
-  ServerStackIcon,
   SparklesIcon,
   SunIcon,
   UserIcon,
@@ -32,17 +32,16 @@ import {
 } from '@heroicons/react/24/solid';
 import {
   ConnectionLineType,
-  ReactFlow,
   Edge,
-  MarkerType
+  MarkerType,
+  ReactFlow
 } from '@xyflow/react';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import LinkitLogoFull from '../assets/linkitLogoFull';
 import Node from '../components/flow/Node';
-import { Helmet } from 'react-helmet';
-import { BoldIcon } from '@heroicons/react/24/outline';
 
 export default function Home() {
   const navigate = useNavigate();

@@ -122,7 +122,6 @@ export default function Workflows() {
   }, [workflows]);
 
   const handleSelectTrigger = (action: Event) => {
-    console.log('action', action);
     setSelectedTrigger(action);
   };
 
@@ -366,7 +365,6 @@ export default function Workflows() {
         : newWorkflowName || t('workflows.newWorkflow');
 
       selectedTrigger.children = [];
-      console.log('selectedtrigger', selectedTrigger);
       const newWorkflow = await createWorkflow({
         name: finalName,
         description: newWorkflowDescription,

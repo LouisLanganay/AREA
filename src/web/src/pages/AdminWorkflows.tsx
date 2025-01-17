@@ -1,20 +1,17 @@
 import { getAllWorkflowsHistory } from '@/api/Workflows';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { WorkflowHistoryEntry } from '@/interfaces/api/Workflows';
+import { CheckIcon, ExclamationTriangleIcon, SignalIcon, SignalSlashIcon } from '@heroicons/react/24/outline';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ReferenceLine } from 'recharts';
-import { ChartContainer, ChartLegendContent, ChartLegend, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import clsx from 'clsx';
-import { ExclamationTriangleIcon, PauseIcon, PlayIcon, SignalIcon, SignalSlashIcon } from '@heroicons/react/24/outline';
-import { CheckIcon } from '@heroicons/react/24/outline';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from 'recharts';
 
 interface WorkflowStats {
   date: string;

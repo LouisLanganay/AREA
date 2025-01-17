@@ -1,4 +1,5 @@
-import { useAuth } from '@/context/AuthContext';
+import { isAdmin } from '@/api/User';
+import { getWorkflows } from '@/api/Workflows';
 import {
   Sidebar,
   SidebarContent,
@@ -13,35 +14,33 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/context/AuthContext';
+import { Workflow } from '@/interfaces/Workflows';
+import { getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
+import { QuestionMarkCircleIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import {
+  BoltIcon,
   ChevronRightIcon,
   CursorArrowRaysIcon,
+  DocumentIcon,
+  FolderIcon,
+  FolderOpenIcon,
   HomeIcon,
   LifebuoyIcon,
-  Squares2X2Icon,
-  UsersIcon,
-  FolderIcon,
-  DocumentIcon,
   PlusIcon,
-  FolderOpenIcon,
   SparklesIcon,
-  XMarkIcon,
-  BoltIcon,
+  UsersIcon,
+  XMarkIcon
 } from '@heroicons/react/24/solid';
-import { useTranslation } from 'react-i18next';
-import LinkitLogoFull from '../../assets/linkitLogoFull';
-import { UserInfo } from './UserInfo';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
-import { useEffect, useState } from 'react';
-import { getWorkflows } from '@/api/Workflows';
-import { Workflow } from '@/interfaces/Workflows';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
 import clsx from 'clsx';
 import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import LinkitLogoFull from '../../assets/linkitLogoFull';
 import { Button } from '../ui/button';
-import { QuestionMarkCircleIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
-import { isAdmin } from '@/api/User';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { UserInfo } from './UserInfo';
 
 interface SubItem {
   title: string;

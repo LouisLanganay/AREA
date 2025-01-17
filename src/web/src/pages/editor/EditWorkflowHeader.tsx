@@ -1,5 +1,4 @@
 import { deleteWorkflow, runWorkflow, updateWorkflow } from '@/api/Workflows';
-import { useAuth } from '@/context/AuthContext';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,40 +15,35 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Workflow, WorkflowHistory } from '@/interfaces/Workflows';
-import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { Workflow } from '@/interfaces/Workflows';
+import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
+import { ArrowLeftIcon, CheckIcon, StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import {
+  ClockIcon,
   EllipsisHorizontalIcon,
   FolderIcon,
   PlayCircleIcon,
   StarIcon as StarIconSolid,
   TrashIcon,
-  XMarkIcon,
-  ClockIcon
+  XMarkIcon
 } from '@heroicons/react/24/solid';
-import {
-  StarIcon as StarIconOutline
-} from '@heroicons/react/24/outline';
 import '@xyflow/react/dist/style.css';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
-import { WorkflowHistorySidebar } from './WorkflowHistorySidebar';
 
 export function WorkflowHeader({
   workflow,
   setWorkflow,
   setUpdatedWorkflow,
-  history,
   onOpenHistory
 }: {
   workflow: Workflow,
   updatedWorkflow: Workflow | null,
   setWorkflow: React.Dispatch<React.SetStateAction<Workflow | null>>,
   setUpdatedWorkflow: React.Dispatch<React.SetStateAction<Workflow | null>>,
-  history: WorkflowHistory[],
   onOpenHistory: () => void
 }) {
   const navigate = useNavigate();

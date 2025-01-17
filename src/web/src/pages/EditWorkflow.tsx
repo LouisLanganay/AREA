@@ -434,7 +434,6 @@ export default function EditWorkflow() {
         updatedWorkflow={updatedWorkflow}
         setWorkflow={setWorkflow}
         setUpdatedWorkflow={setUpdatedWorkflow}
-        history={workflowHistory}
         onOpenHistory={() => {
           setIsHistorySidebarOpen(!isHistorySidebarOpen);
           setSelectedNode(null);

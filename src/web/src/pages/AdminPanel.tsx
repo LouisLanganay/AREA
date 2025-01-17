@@ -1,6 +1,8 @@
 import { deleteUser, getUsers, setStatus } from '@/api/User';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
   Dialog,
   DialogContent,
@@ -28,13 +30,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useAuth } from '@/context/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import { User } from '@/interfaces/User';
-import { PlayIcon, StopIcon, TrashIcon, EyeIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, PlayIcon, ShieldCheckIcon, StopIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
-import { ChartContainer, ChartLegendContent, ChartLegend, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);

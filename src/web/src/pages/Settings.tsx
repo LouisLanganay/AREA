@@ -1,15 +1,13 @@
-import { updateUser, deleteUser, deleteMe } from '@/api/User';
-import { useAuth } from '@/context/AuthContext';
+import { deleteMe, updateUser } from '@/api/User';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,14 +28,15 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/context/AuthContext';
 import { useFontScale } from '@/context/FontScaleContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { MoonIcon, SunIcon } from '@heroicons/react/24/solid';
+import Cookies from 'js-cookie';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Cookies from 'js-cookie';
 
 export default function Settings() {
   const { t, i18n } = useTranslation();

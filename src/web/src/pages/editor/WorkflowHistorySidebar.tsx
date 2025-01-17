@@ -28,7 +28,6 @@ export function WorkflowHistorySidebar({
   useEffect(() => {
     const interval = setInterval(() => {
       const timeSinceLastRefresh = new Date().getTime() - lastRefresh.getTime();
-      console.log('timeSinceLastRefresh', timeSinceLastRefresh);
       setIsRefreshDisabled(timeSinceLastRefresh < 10000);
     }, 1000);
 
