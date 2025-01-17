@@ -43,11 +43,14 @@ export function EditWorkflowCommand({
                 <CommandItem
                   key={action.id}
                   onSelect={() => onSelectService(service, action)}
-                  className='flex items-center gap-2'
+                  className={clsx(
+                    'flex items-center gap-2',
+                    service.enabled ? '' : 'opacity-50 pointer-events-none'
+                  )}
                 >
                   <div className='p-1 rounded-md bg-muted border overflow-hidden'>
                     {service.image ? (
-                      <img src={service.image} alt={service.name} className='size-4 object-contain flex-shrink-0' />
+                      <img src={service.image} alt={service.name} className='size-4 rounded-sm object-contain flex-shrink-0' />
                     ) : (
                       <div className='size-4 bg-muted rounded-md items-center justify-center flex-shrink-0'>
                         <p className='text-xs text-muted-foreground flex items-center justify-center'>

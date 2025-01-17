@@ -148,4 +148,5 @@ export const TimerService: Service = {
   loginRequired: false,
   image: 'https://www.svgrepo.com/show/532140/timer.svg',
   Event: [],
+  enabled: true,
 };
