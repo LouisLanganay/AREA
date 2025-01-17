@@ -18,6 +18,7 @@ import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { DiscordService } from '../app-discord/discord-app.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SpotifyAuthService } from './external-services/spotify.auth.service';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -25,6 +26,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
+    private readonly spotifyAuthService: SpotifyAuthService,
   ) {}
 
   @Post('register')
@@ -139,6 +141,12 @@ export class AuthController {
   })
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     await this.authService.forgotPassword(forgotPasswordDto.email);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // Cette méthode redirige vers Google pour l'authentification
   }
 
   @Get('google/redirect/:service')
@@ -301,5 +309,33 @@ export class AuthController {
   @Get('createAdmin')
   async createAdmin() {
     return await this.authService.createAdmin();
+  }
+
+  @Get('spotify/redirect')
+  spotifyAuthRedirect(): { redirectUrl: string } {
+    const redirectUrl = this.spotifyAuthService.generateAuthUrl();
+    return { redirectUrl };
+  }
+
+  @Post('spotify/callback')
+  @UseGuards(AuthGuard('jwt'))
+  async getSpotifyCallback(@Body('code') code: string, @Req() req: any) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+    try {
+      console.log('AUTH: Exchanging code for tokens');
+      await this.spotifyAuthService.getAccessToken(code, userId);
+      return { message: 'Tokens stored in the database' };
+    } catch (error) {
+      throw new BadRequestException({
+        err_code: 'SPOTIFY_TOKEN_EXCHANGE_FAILED',
+        details: error.message,
+      });
+    }
   }
 }

@@ -14,6 +14,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
 import { GoogleAuthService } from './external-services/google.auth.service';
 import { DiscordAuthService } from './external-services/discord.auth.service';
+import { SpotifyAuthService } from './external-services/spotify.auth.service';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { DiscordAuthService } from './external-services/discord.auth.service';
     DiscordService,
     GoogleAuthService,
     DiscordAuthService,
+    SpotifyAuthService,
   ],
   exports: [AuthService],
 })

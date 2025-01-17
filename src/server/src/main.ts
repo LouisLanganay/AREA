@@ -31,6 +31,14 @@ import {
   EventDayAndTimeReached,
 } from './service/timer.service';
 import { MailerService } from './service/mailer.service';
+import {
+  EventCreatePlaylist,
+  EventCheckPlayer,
+  EventSkipToNext,
+  EventFollowPlaylist,
+  EventCheckDevices,
+  SpotifyService,
+} from './service/spotify.service';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
@@ -39,6 +47,7 @@ export async function defineAllService(allService: any) {
   allService.addService(MailerService);
   allService.addService(WeatherService);
   allService.addService(gcalendarService);
+  allService.addService(SpotifyService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
@@ -58,6 +67,11 @@ export async function defineAllService(allService: any) {
   allService.addEventToService('gcalendar', ListenUpdateEventGcalendar);
   allService.addEventToService('gcalendar', EventAddGoogleCalendar);
 
+  allService.addEventToService('spotify', EventCreatePlaylist);
+  allService.addEventToService('spotify', EventCheckPlayer);
+  allService.addEventToService('spotify', EventSkipToNext);
+  allService.addEventToService('spotify', EventFollowPlaylist);
+  allService.addEventToService('spotify', EventCheckDevices);
   return allService;
 }
 
