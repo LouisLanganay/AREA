@@ -15,6 +15,7 @@ import { HttpModule } from '@nestjs/axios';
 import { GoogleAuthService } from './external-services/google.auth.service';
 import { DiscordAuthService } from './external-services/discord.auth.service';
 import { SpotifyAuthService } from './external-services/spotify.auth.service';
+import {TwitchAuthService} from "./external-services/twitch.auth.services";
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { SpotifyAuthService } from './external-services/spotify.auth.service';
     GoogleAuthService,
     DiscordAuthService,
     SpotifyAuthService,
+    TwitchAuthService,
   ],
   exports: [AuthService],
 })
