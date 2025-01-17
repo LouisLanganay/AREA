@@ -1,5 +1,5 @@
 import { createWorkflowRequest, getWorkflowHistoryResponse, getWorkflowResponse, WorkflowHistoryEntry } from '@/interfaces/api/Workflows';
-import { Workflow, ensureChildrenArrays } from '@/interfaces/Workflows';
+import { BasicWorkflow, Workflow, ensureChildrenArrays } from '@/interfaces/Workflows';
 import axiosInstance from './axiosInstance';
 
 /**
@@ -79,7 +79,9 @@ export const getWorkflow = async (id: string, token: string): Promise<getWorkflo
  * @returns Promise with created workflow
  */
 export const createWorkflow = async (data: createWorkflowRequest, token: string) => {
+  console.log('data', data);
   const sanitizedData = ensureChildrenArrays(data);
+  console.log('sanitizedData', sanitizedData);
   const response = await axiosInstance.post<Workflow>(
     `/workflows`,
     {
@@ -133,6 +135,20 @@ export const getWorkflowHistory = async (id: string, token: string): Promise<get
  */
 export const getAllWorkflowsHistory = async (token: string): Promise<WorkflowHistoryEntry[]> => {
   const response = await axiosInstance.get(`/workflows-history/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+/**
+ * Fetches all workflows with basic information
+ * @param token - User's authentication token
+ * @returns Promise with array of basic workflow information
+ */
+export const getAllWorkflowsBasic = async (token: string): Promise<BasicWorkflow[]> => {
+  const response = await axiosInstance.get<BasicWorkflow[]>(`/workflows/all`, {
     headers: {
       Authorization: `Bearer ${token}`,
     }

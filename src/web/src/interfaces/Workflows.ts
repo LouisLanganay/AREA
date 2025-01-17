@@ -113,6 +113,17 @@ interface Workflow {
   favorite: boolean;                              // Favorite status
 }
 
+/**
+ * Interface for basic workflow information
+ */
+interface BasicWorkflow {
+  id: string;
+  name: string;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Constants for node dimensions and styling
 const nodeWidth = 330;
 const nodeHeight = 100;
@@ -166,5 +177,6 @@ export type {
   Condition,
   Variable,
   Workflow,
-  WorkflowHistory
+  WorkflowHistory,
+  BasicWorkflow
 };

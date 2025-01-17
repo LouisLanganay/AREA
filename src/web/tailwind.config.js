@@ -99,7 +99,7 @@ const config = {
   		backgroundImage: {
   			'border-gradient-ai': 'linear-gradient(90deg, rgba(56,189,248,0) 0%, hsl(var(--primary)) 32.29%, hsl(var(--second)) 67.19%, rgba(236,72,153,0) 100%)',
   			'text-gradient-ai': 'linear-gradient(90deg, hsl(var(--second)) 10%, hsl(var(--second-bis)) 30%, hsl(var(--primary)) 50%, hsl(var(--second)) 100%)',
-  			'gradient-conic': 'conic-gradient(var(--tw-gradient-stops))',
+  			'gradient-conic': 'conic-gradient(var(--tw-gradient-stops))'
   		},
   		boxShadow: {
   			'inset-sm': 'inset 0 1px 1px rgba(0,0,0,0.1)',
@@ -159,9 +159,25 @@ const config = {
   			},
   			'border-spin': {
   				'100%': {
-  					transform: 'rotate(360deg)',
-  				},
+  					transform: 'rotate(360deg)'
+  				}
   			},
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
+  				}
+  			}
   		},
   		animation: {
   			blob: 'blob 7s infinite',
@@ -169,6 +185,8 @@ const config = {
   			'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear',
   			shine: 'shine var(--duration) infinite linear',
   			'border-spin': 'border-spin 12s linear infinite',
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
   		utilities: {
   			'.animation-delay-2000': {

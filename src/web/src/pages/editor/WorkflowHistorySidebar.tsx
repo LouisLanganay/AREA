@@ -42,7 +42,7 @@ export function WorkflowHistorySidebar({
   };
 
   return (
-    <div className='w-full md:w-[400px] bg-muted/50 p-4 border-l z-30'>
+    <div className='w-full md:w-[400px] bg-muted p-4 border-l z-30'>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
@@ -78,7 +78,7 @@ export function WorkflowHistorySidebar({
           </div>
         </div>
 
-        <ScrollArea className='h-[calc(100vh-300px)] pr-1'>
+        <ScrollArea className='h-[calc(100vh-300px)] pr-1 relative'>
           <div className='space-y-2'>
             {history.length === 0 ? (
               <p className='text-sm text-muted-foreground text-center py-4'>
@@ -120,6 +120,7 @@ export function WorkflowHistorySidebar({
               </div>
             )}
           </div>
+          <div className='absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-muted to-transparent' />
         </ScrollArea>
       </div>
     </div>

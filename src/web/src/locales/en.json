@@ -128,6 +128,8 @@
       "language": {
         "fr": "French",
         "en": "English",
+        "ar": "Arabic",
+        "es": "Spanish",
         "label": "Language",
         "description": "Select the language for the application."
       },
@@ -161,7 +163,13 @@
       },
       "delete": {
         "label": "Delete Account",
-        "description": "Permanently delete your account and remove your data from our servers."
+        "description": "Permanently delete your account and remove your data from our servers.",
+        "success": "Account deleted successfully. You will be logged out in 5 seconds.",
+        "error": "Failed to delete account, please try again.",
+        "confirmation": {
+          "title": "Confirm Deletion",
+          "description": "Are you sure you want to delete your account? This action is irreversible and will remove all your data from our servers."
+        }
       },
       "openai": {
         "label": "OpenAI API Token",
@@ -629,8 +637,13 @@
     "enabled": "Enabled Services",
     "disabled": "Available Services",
     "noEnabledServices": "No enabled services found. Connect a service to get started.",
+    "noDisabledServices": "No available services found.",
     "connecting": "Connecting service...",
-    "connected": "Service connected successfully"
+    "connected": "Service connected successfully",
+    "triggers": "Triggers",
+    "actions": "Actions",
+    "useNow": "Use Now",
+    "connect": "Connect"
   },
   "onboarding": {
     "sidebar": {

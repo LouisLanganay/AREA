@@ -262,11 +262,11 @@ export default function AdminWorkflows() {
           <CardHeader>
             <CardTitle className='flex items-center gap-2'>
               <CheckIcon className='w-5 h-5 text-success' />
-              {t('admin.recentSuccessful')}
+              {t('admin.recentSuccess')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className='h-[200px]'>
+            <ScrollArea className='h-[200px] relative'>
               <div className='space-y-2'>
                 {recentWorkflows
                   .filter(wf => wf.status === 'success')
@@ -280,6 +280,7 @@ export default function AdminWorkflows() {
                     </div>
                   ))}
               </div>
+              <div className='absolute bottom-0 left-0 w-full h-14 bg-gradient-to-t from-card to-transparent' />
             </ScrollArea>
           </CardContent>
         </Card>
@@ -292,7 +293,7 @@ export default function AdminWorkflows() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className='h-[200px]'>
+            <ScrollArea className='h-[200px] relative'>
               <div className='space-y-2'>
                 {recentWorkflows
                   .filter(wf => wf.status === 'failure')
@@ -306,6 +307,7 @@ export default function AdminWorkflows() {
                     </div>
                   ))}
               </div>
+              <div className='absolute bottom-0 left-0 w-full h-14 bg-gradient-to-t from-card to-transparent' />
             </ScrollArea>
           </CardContent>
         </Card>

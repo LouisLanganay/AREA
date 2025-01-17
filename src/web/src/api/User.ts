@@ -81,6 +81,19 @@ export const deleteUser = async (token: string, userId: string): Promise<void> =
 };
 
 /**
+ * Deletes the current user
+ * @param token - User's authentication token
+ */
+export const deleteMe = async (token: string): Promise<void> => {
+  const response = await axiosInstance.delete(`/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+/**
  * Updates user status (admin only)
  * @param token - Admin's authentication token
  * @param userId - ID of user to update

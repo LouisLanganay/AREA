@@ -1,4 +1,4 @@
-import { updateUser } from '@/api/User';
+import { updateUser, deleteUser, deleteMe } from '@/api/User';
 import { useAuth } from '@/context/AuthContext';
 import {
   AlertDialog,
@@ -41,7 +41,7 @@ import Cookies from 'js-cookie';
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     displayName: user?.displayName || '',
@@ -75,6 +75,16 @@ export default function Settings() {
       value: 'en',
       label: t('settings.appearance.language.en'),
       flag: '/assets/flags/en.svg'
+    },
+    {
+      value: 'es',
+      label: t('settings.appearance.language.es'),
+      flag: '/assets/flags/es.svg'
+    },
+    {
+      value: 'ar',
+      label: t('settings.appearance.language.ar'),
+      flag: '/assets/flags/ar.svg'
     }
   ];
 
@@ -106,11 +116,27 @@ export default function Settings() {
     setFontScale(value);
   };
 
-  const handleDeleteAccount = () => {
-    toast({
-      description: t('settings.security.delete.confirmation.description'),
-      variant: 'destructive',
-    });
+  const handleDeleteAccount = async () => {
+    if (!user || !token) return;
+    try {
+      setIsLoading(true);
+      await deleteMe(token);
+      toast({
+        description: t('settings.security.delete.success'),
+        variant: 'success',
+      });
+      setTimeout(() => {
+        logout();
+      }, 5000);
+    } catch (error) {
+      console.error('Failed to delete account', error);
+      toast({
+        description: t('settings.security.delete.error'),
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleFormChange = (field: string, value: string) => {
@@ -366,9 +392,9 @@ export default function Settings() {
                       <AlertDialogCancel>
                         {t('settings.cancel')}
                       </AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDeleteAccount}>
+                      <Button onClick={handleDeleteAccount} variant='destructive'>
                         {t('settings.confirm')}
-                      </AlertDialogAction>
+                      </Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

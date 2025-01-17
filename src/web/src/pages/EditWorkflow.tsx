@@ -343,6 +343,8 @@ export default function EditWorkflow() {
     const defaultNode = findNode(workflow.triggers, nodeId);
     if (!defaultNode) return;
 
+    setSelectedNode(null);
+
     const resetNodeInTree = (nodes: Event[]): Event[] => nodes.map(node => node.id === nodeId ? defaultNode : node);
 
     setUpdatedWorkflow(prev => ({ ...prev!, triggers: resetNodeInTree(prev!.triggers) }));

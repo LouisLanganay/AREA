@@ -193,6 +193,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
                     size='sm'
                     variant='premiumClasic'
                     disabled={!aiPrompt.trim() || isGenerating}
+                    isLoading={isGenerating}
                   >
                     {mode === 'create' ? t('workflows.ai.generate') : t('workflows.ai.modify')}
                     <Wand2Icon className='size-4' />
