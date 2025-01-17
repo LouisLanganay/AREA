@@ -146,9 +146,12 @@ export const getAllWorkflowsHistory = async (token: string): Promise<WorkflowHis
  * @returns Promise with array of basic workflow information
  */
 export const getAllWorkflowsBasic = async (token: string): Promise<BasicWorkflow[]> => {
-  const response = await axiosInstance.get<BasicWorkflow[]>(`/workflows/all`, {
+  const response = await axiosInstance.get<BasicWorkflow[]>(`/workflows`, {
     headers: {
       Authorization: `Bearer ${token}`,
+    },
+    params: {
+      all: true
     }
   });
   return response.data;

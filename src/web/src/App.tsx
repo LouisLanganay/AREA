@@ -1,5 +1,5 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import { FontScaleProvider } from './context/FontScaleContext';
@@ -96,6 +96,17 @@ function LoginSuccess() {
 
 function App() {
   const isFirstVisit = Cookies.get('onboarding-completed') !== 'true';
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (isFirstVisit) {
+      const timer = setTimeout(() => {
+        setShowOnboarding(true);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isFirstVisit]);
 
   return (
     <AuthProvider>
@@ -264,7 +275,7 @@ function App() {
               />
 
             </Routes>
-            {isFirstVisit && <Onboarding />}
+            {showOnboarding && isFirstVisit && <Onboarding />}
           </BrowserRouter>
         </FontScaleProvider>
       </ThemeProvider>

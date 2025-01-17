@@ -44,21 +44,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
  * Provider component for authentication context
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Initialize state from cookies instead of localStorage
+  // Initialize state from localStorage and cookies
   const [token, setToken] = useState<string | null>(Cookies.get('token') || null);
   const [user, setUser] = useState<User | null>(
-    Cookies.get('user') ? JSON.parse(Cookies.get('user')!) : null
+    localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null
   );
   const [accounts, setAccounts] = useState<Account[]>(
-    Cookies.get('accounts') ? JSON.parse(Cookies.get('accounts')!) : []
+    localStorage.getItem('accounts') ? JSON.parse(localStorage.getItem('accounts')!) : []
   );
 
   /**
-   * Saves accounts to state and cookies
+   * Saves accounts to state and localStorage
    */
   const saveAccounts = (newAccounts: Account[]) => {
     setAccounts(newAccounts);
-    Cookies.set('accounts', JSON.stringify(newAccounts), { expires: 1 });
+    localStorage.setItem('accounts', JSON.stringify(newAccounts));
   };
 
   /**
@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(account.token);
       setUser(account.user);
       Cookies.set('token', account.token, { expires: 1 });
-      Cookies.set('user', JSON.stringify(account.user), { expires: 1 });
+      localStorage.setItem('user', JSON.stringify(account.user));
     }
   };
 
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(account.token);
     setUser(account.user);
     Cookies.set('token', account.token, { expires: 1 });
-    Cookies.set('user', JSON.stringify(account.user), { expires: 1 });
+    localStorage.setItem('user', JSON.stringify(account.user));
     return account;
   };
 
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUser(null);
     Cookies.remove('token');
-    Cookies.remove('user');
+    localStorage.removeItem('user');
 
     // Switch to another account if available
     if (updatedAccounts.length > 0) {

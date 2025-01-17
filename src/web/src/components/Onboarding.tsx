@@ -182,7 +182,7 @@ export function Onboarding() {
     if (shouldShow) {
       const timer = setTimeout(() => {
         setIsVisible(true);
-      }, 2000);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -263,7 +263,7 @@ export function Onboarding() {
         return;
       navigate(steps[currentStep].href);
     }
-  }, [currentHref, currentStep]);
+  }, [currentHref, currentStep, isVisible]);
 
   useEffect(() => {
     if (isVisible) {

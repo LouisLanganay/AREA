@@ -199,6 +199,10 @@ const config = {
   			'6xl': '96px',
   			'7xl': '128px',
   			'8xl': '160px'
+  		},
+  		willChange: {
+  			'transform': 'transform',
+  			'opacity': 'opacity'
   		}
   	}
   },

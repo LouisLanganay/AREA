@@ -3,8 +3,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Workflow, WorkflowHistory } from '@/interfaces/Workflows';
 import { PauseIcon } from '@heroicons/react/24/outline';
 import { ArrowPathIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { formatDate } from 'date-fns/format';
+import { fr } from 'date-fns/locale/fr';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -63,7 +63,7 @@ export function WorkflowHistorySidebar({
           </p>
           <div className='flex flex-row items-center gap-2'>
             <p className='text-sm text-muted-foreground'>
-              {t('workflows.lastRefresh', { time: format(lastRefresh, 'p', { locale: fr }) })}
+              {t('workflows.lastRefresh', { time: formatDate(lastRefresh, 'p', { locale: fr }) })}
             </p>
             <Button
               variant='outline'
@@ -105,7 +105,7 @@ export function WorkflowHistorySidebar({
                     )}
                     <div className='flex-1'>
                       <p className='text-sm font-medium'>
-                        {format(new Date(entry.executionDate), 'PPp', { locale: fr })}
+                        {formatDate(new Date(entry.executionDate), 'PPp', { locale: fr })}
                       </p>
                       <p className='text-xs text-muted-foreground'>
                         {entry.status === 'success'

@@ -29,7 +29,7 @@ import {
   TrashIcon,
   XMarkIcon
 } from '@heroicons/react/24/solid';
-import '@xyflow/react/dist/style.css';
+import 'reactflow/dist/style.css';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';

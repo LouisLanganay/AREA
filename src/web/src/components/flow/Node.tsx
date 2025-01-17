@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position } from 'reactflow';
 import { WorkflowNodeData } from '@/interfaces/Workflows';
 import { CheckIcon, ExclamationTriangleIcon, SignalIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';

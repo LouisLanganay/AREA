@@ -35,8 +35,8 @@ import {
   Edge,
   MarkerType,
   ReactFlow
-} from '@xyflow/react';
-import { useState } from 'react';
+} from 'reactflow';
+import { useState, useCallback, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
@@ -215,12 +215,12 @@ export default function Home() {
     }
   ];
 
-  const MobileNav = () => {
+  const MobileNav = useCallback(() => {
     const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-    const toggleSubmenu = (menu: string) => {
+    const toggleSubmenu = useCallback((menu: string) => {
       setOpenSubmenu(openSubmenu === menu ? null : menu);
-    };
+    }, [openSubmenu]);
 
     return (
       <Sheet>
@@ -398,7 +398,12 @@ export default function Home() {
         </SheetContent>
       </Sheet>
     );
-  };
+  }, []);
+
+  const layoutedElements = useMemo(() =>
+    getLayoutedElements(exampleNodes, exampleEdges, 'TB'),
+  [exampleNodes, exampleEdges]
+  );
 
   return (
     <div className='min-h-screen bg-background'>
@@ -540,13 +545,13 @@ export default function Home() {
           <div className='w-[385px] h-[calc(100vh-300px)] hidden md:flex'>
             <div className='w-[385px] h-full'>
               <ReactFlow
-                nodes={getLayoutedElements(exampleNodes, exampleEdges, 'TB').nodes}
-                edges={getLayoutedElements(exampleNodes, exampleEdges, 'TB').edges as Edge[]}
+                nodes={layoutedElements.nodes}
+                edges={layoutedElements.edges as Edge[]}
                 nodeTypes={{node: Node}}
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag={false}
-                viewport={{ x: 10, y: 0, zoom: 1.1 }}
+                defaultViewport={{ x: 10, y: 0, zoom: 1.1 }}
                 connectionLineType={ConnectionLineType.SmoothStep}
                 fitView
                 zoomOnPinch={false}

@@ -13,9 +13,10 @@ import {
   Background,
   ConnectionLineType,
   Controls,
-  ReactFlow
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+  ReactFlow,
+  Node
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { isEqual } from 'lodash';
@@ -23,7 +24,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddNode from '../components/flow/AddNode';
-import Node from '../components/flow/Node';
+import NodeComponent from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
@@ -32,7 +33,7 @@ import Cookies from 'js-cookie';
 import { WorkflowHistorySidebar } from './editor/WorkflowHistorySidebar';
 
 const nodeTypes = {
-  node: Node,
+  node: NodeComponent,
   custom2: AddNode,
 };
 
@@ -451,8 +452,8 @@ export default function EditWorkflow() {
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
-                onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
-                onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
+                onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds) as WorkflowNode[])}
+                onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds) as WorkflowEdge[])}
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag
@@ -460,7 +461,9 @@ export default function EditWorkflow() {
                 fitView
                 zoomOnPinch={false}
                 zoomOnDoubleClick={false}
-                onNodeClick={onNodeClick}
+                onNodeClick={(_: React.MouseEvent, node: Node<any>) => {
+                  onNodeClick(_, node as WorkflowNode);
+                }}
               >
                 <div className='w-full h-fit top-0 left-0 z-10 absolute'>
                   {hasChanges && (
