@@ -123,6 +123,46 @@ class TwitchServices {
         await this.listenToNewFollowers(broadcasterUserId, userId, url);
         console.log('Watch response:');
     }
+
+    async writeInBroadcasterChat(
+        userId: string,
+        broadcasterName: string,
+        userName: string,
+        message: string
+    ): Promise<void> {
+        try {
+            const token = await this.getToken(userId);
+            const broadcasterId = await this.getBroadcasterIdByLogin(
+                broadcasterName,
+                token.accessToken
+            );
+            const twitchUserId = await this.getBroadcasterIdByLogin(
+                userName,
+                token.accessToken
+            );
+            const urlChat = `https://api.twitch.tv/helix/chat/messages`;
+            const body = {
+                broadcaster_id: broadcasterId,
+                sender_id: twitchUserId,
+                message,
+            };
+            const config = {
+                headers: {
+                    'Client-Id': process.env.TWITCH_CLIENT_ID,
+                    Authorization: `Bearer ${token.accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            };
+            const { data } = await firstValueFrom(
+                this.httpService.post(urlChat, body, config)
+            );
+            console.log('Message sent:', data);
+        } catch (error) {
+            console.error('Error sending message to chat:', error.message);
+            throw new Error('Failed to send message to broadcaster chat');
+        }
+    }
+
 }
 
 //New follower to broadcasterUserId
@@ -213,12 +253,76 @@ export const EventLogTerm: Event = {
     }
 }
 
+export const EventWriteInBroadcasterChat: Event = {
+    type: 'reaction',
+    id_node: 'writeInBroadcasterChat',
+    name: 'Write in Broadcaster Chat (admin only)',
+    description: 'Write a message in the broadcaster chat if you have access',
+    serviceName: 'twitch',
+    fieldGroups: [
+        {
+            id: 'messageDetails',
+            name: 'Message Details',
+            description: 'Information about the message',
+            type: 'group',
+            fields: [
+                {
+                    id: 'message',
+                    type: 'string',
+                    required: true,
+                    description: 'The message to write',
+                },
+                {
+                    id: 'broadcasterName',
+                    type: 'string',
+                    required: true,
+                    description: 'The streamer NAME',
+                },
+                {
+                    id: 'userName',
+                    type: 'string',
+                    required: true,
+                    description: 'The user NAME',
+                }
+            ],
+        },
+    ],
+
+    execute: async (parameters: FieldGroup[]) => {
+        const messageDetails = parameters.find(
+            (param) => param.id === 'messageDetails',
+        );
+        if (!messageDetails) {
+            console.error('message details not found');
+            return false;
+        }
+
+        const message = messageDetails?.fields.find(
+            (field) => field.id === 'message',
+        )?.value;
+        const broadcasterName = messageDetails?.fields.find(
+            (field) => field.id === 'broadcasterName',
+        )?.value;
+        const userName = messageDetails?.fields.find(
+            (field) => field.id === 'userName',
+        )?.value;
+        const userId = parameters
+            .find((group) => group.id === 'workflow_information')
+            ?.fields.find((field) => field.id === 'user_id')?.value;
+
+        const twitchService = new TwitchServices(prismaService, configService, httpService);
+        await twitchService.writeInBroadcasterChat(userId, broadcasterName, userName, message);
+        console.log('Message written in chat:', message, 'by', userName, 'in', broadcasterName);
+
+        return true;
+    }
+}
 export const twitchService: Service = {
     id: 'twitch',
     name: 'Twitch',
     description: 'Service to interact with Twitch API',
     loginRequired: true,
-    image: 'https://cdn.iconscout.com/icon/free/png-256/twitch-3-569463.png',
+    image: 'https://raw.githubusercontent.com/get-icon/geticon/fc0f660daee147afb4a56c64e12bde6486b73e39/icons/twitch.svg',
     Event: [],
     auth: {
         uri: '/auth/twitch/redirect',

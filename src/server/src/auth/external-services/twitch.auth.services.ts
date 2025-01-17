@@ -19,6 +19,8 @@ export class TwitchAuthService {
             'chat:read',
             'chat:edit',
             'channel:read:subscriptions',
+            'user:write:chat',
+            'user:bot',
         ].join(' ');
 
         const url = `${baseUrl}?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}`;

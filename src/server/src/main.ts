@@ -40,7 +40,7 @@ import {
   SpotifyService,
 } from './service/spotify.service';
 
-import {EventLogTerm, EventStreamerOnline, twitchService} from './service/twitch.services';
+import {EventLogTerm, EventStreamerOnline, EventWriteInBroadcasterChat, twitchService} from './service/twitch.services';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
@@ -72,6 +72,7 @@ export async function defineAllService(allService: any) {
 
   allService.addEventToService('twitch', EventStreamerOnline);
   allService.addEventToService('twitch', EventLogTerm);
+  allService.addEventToService('twitch', EventWriteInBroadcasterChat);
 
   allService.addEventToService('spotify', EventCreatePlaylist);
   allService.addEventToService('spotify', EventCheckPlayer);
