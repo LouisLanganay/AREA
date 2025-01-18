@@ -545,7 +545,7 @@ export const EventAddGoogleCalendar: Event = {
 export const gcalendarService: Service = {
   id: 'gcalendar',
   name: 'Google Calendar',
-  description: 'Google Calendar service',
+  description: 'Calendar from Google to manage your events',
   Event: [],
   image: 'https://www.svgrepo.com/show/353803/google-calendar.svg',
   loginRequired: true,

@@ -267,7 +267,7 @@ export const EventBanUserDiscord: Event = {
 export const discordService: Service = {
   id: 'discord',
   name: 'Discord',
-  description: 'Messaging service for teams',
+  description: 'Messaging service for gaming communities',
   loginRequired: true,
   image: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
   Event: [],

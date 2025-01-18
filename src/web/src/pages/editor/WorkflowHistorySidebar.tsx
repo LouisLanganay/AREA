@@ -23,7 +23,7 @@ export function WorkflowHistorySidebar({
 }: WorkflowHistorySidebarProps) {
   const { t } = useTranslation();
   const [lastRefresh, setLastRefresh] = useState(new Date());
-  const [isRefreshDisabled, setIsRefreshDisabled] = useState(true);
+  const [isRefreshDisabled, setIsRefreshDisabled] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {

@@ -472,7 +472,7 @@ export const EventCreatePlaylist: Event = {
 export const SpotifyService: Service = {
   id: 'spotify',
   name: 'Spotify',
-  description: 'application for listen music',
+  description: 'Service for integrating Spotify functionality through the API',
   loginRequired: true,
   image:
     'https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg',

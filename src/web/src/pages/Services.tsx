@@ -1,20 +1,18 @@
-import { oauthCallback } from '@/api/Auth';
+import axiosInstance from '@/api/axiosInstance';
 import { getServices } from '@/api/Services';
-import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
+import { useOAuth } from '@/hooks/useOAuth';
 import { Service } from '@/interfaces/Services';
+import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon } from '@heroicons/react/24/outline';
 import { PlusIcon } from '@heroicons/react/24/solid';
+import { AnimatePresence, motion } from 'framer-motion';
 import Cookies from 'js-cookie';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axiosInstance from '@/api/axiosInstance';
-import { useOAuth } from '@/hooks/useOAuth';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon } from '@heroicons/react/24/outline';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -49,7 +47,7 @@ export default function Services() {
     if (!service?.auth?.uri) return;
     try {
       const url = await axiosInstance.get(`${import.meta.env.VITE_API_URL}${service?.auth?.uri}`).then(res => res.data.redirectUrl);
-      const redirectUri = `${window.location.origin}/services`;
+      const redirectUri = `${window.location.origin}/service-login-success`;
       const finalUrl = url.replace('%5BREDIRECT_URI%5D', encodeURIComponent(redirectUri));
       openServiceOAuthUrl(finalUrl, service.id);
     } catch (error) {
@@ -65,53 +63,6 @@ export default function Services() {
       return true;
     return false;
   }
-
-  useEffect(() => {
-    const handleOAuthCallback = async () => {
-      const serviceId = Cookies.get('service_oauth_provider');
-
-      if (!token || !serviceId)
-        return;
-
-      const service = services.find(s => s.id === serviceId);
-
-      if (!service?.auth?.callback_uri || !userToken)
-        return;
-
-      toast({
-        description: t('services.connecting'),
-        variant: 'loading',
-        duration: Infinity,
-      });
-
-      try {
-        const response = await oauthCallback(service.auth.callback_uri, token, userToken);
-        if (response.status !== 201)
-          throw new Error('Failed to connect service');
-        Cookies.remove('service_oauth_provider');
-        setTimeout(async () => {
-          const updatedServices = await getServices(userToken);
-          setServices(updatedServices);
-          toast({
-            description: t('services.connected'),
-            variant: 'success',
-          });
-        }, 2000);
-      } catch (error: any) {
-        Cookies.remove('service_oauth_provider');
-        console.error('OAuth callback error:', error);
-        if (error?.response?.status === 500) {
-          toast({
-            description: t('error.INTERNAL_SERVER_ERROR_DESCRIPTION'),
-            variant: 'destructive',
-          });
-        }
-        navigate('/services');
-      }
-    };
-
-    handleOAuthCallback();
-  }, [token, services]);
 
   function handleCreateWorkflow() {
     navigate(`/workflows/`);

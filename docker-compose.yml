@@ -1,37 +1,37 @@
 version: '3.8'
 
 services:
-  client_web:
-    container_name: linkit_web-service
-    build:
-      context: ./src/web/
-      dockerfile: DockerfileDev
-    ports:
-      - "8081:8081"
-    volumes:
-      - ./src/web:/web_service
-      - ./src/shared:/shared
-      - npm_cache:/root/.npm
-    env_file:
-      - .env
-    networks:
-      - app_network
-    depends_on:
-      - client_mobile
-      - server
-    command: >
-      bash -c "
-      while [ ! -f /web_service/public/app-debug.apk ]; do
-        echo 'Waiting for mobile build to complete...'
-        sleep 5
-      done &&
-      rm -rf node_modules &&
-      rm -rf package-lock.json &&
-      rm -rf node_modules/@capacitor &&
-      npm cache clean --force &&
-      npm install -g typescript &&
-      npm install && npm run build && npm run preview -- --host --port 8081
-      "
+  #client_web:
+  #  container_name: linkit_web-service
+  #  build:
+  #    context: ./src/web/
+  #    dockerfile: DockerfileDev
+  #  ports:
+  #    - "8081:8081"
+  #  volumes:
+  #    - ./src/web:/web_service
+  #    - ./src/shared:/shared
+  #    - npm_cache:/root/.npm
+  #  env_file:
+  #    - .env
+  #  networks:
+  #    - app_network
+  #  depends_on:
+  #    - client_mobile
+  #    - server
+  #  command: >
+  #    bash -c "
+  #    while [ ! -f /web_service/public/app-debug.apk ]; do
+  #      echo 'Waiting for mobile build to complete...'
+  #      sleep 5
+  #    done &&
+  #    rm -rf node_modules &&
+  #    rm -rf package-lock.json &&
+  #    rm -rf node_modules/@capacitor &&
+  #    npm cache clean --force &&
+  #    npm install -g typescript &&
+  #    npm install && npm run build && npm run preview -- --host --port 8081
+  #    "
 
   client_mobile:
     container_name: linkit_mobile-service

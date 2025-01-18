@@ -118,7 +118,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 w-full md:min-w-[400px] max-w-[250px] md:max-w-[400px]">
+    <div className="fixed bottom-4 right-4 z-50 w-full md:min-w-[400px] max-w-[330px] md:max-w-[400px]">
       <div className="relative overflow-hidden rounded-xl p-[1px]">
         <div
           className={clsx("absolute inset-[-300px] bg-gradient-conic from-transparent from-70%",

@@ -641,6 +641,7 @@
     }
   },
   "services": {
+    "redirecting": "Redirection vers les services...",
     "description": "Connectez vos services préférés pour créer des flux de travail automatisés puissants",
     "enabled": "Services activés",
     "disabled": "Services disponibles",

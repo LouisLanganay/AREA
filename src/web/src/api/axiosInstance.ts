@@ -28,6 +28,9 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Add ngrok-skip-browser-warning header
+    config.headers['ngrok-skip-browser-warning'] = 'true';
+
     return config;
   },
   (error) => {

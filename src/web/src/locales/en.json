@@ -641,6 +641,7 @@
     }
   },
   "services": {
+    "redirecting": "Redirecting to services...",
     "description": "Connect your favorite services to create powerful automated workflows",
     "enabled": "Enabled Services",
     "disabled": "Available Services",

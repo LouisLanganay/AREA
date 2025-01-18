@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -32,7 +33,10 @@ export default function Loading() {
         </div>
       ) : (
         <div className='text-center'>
-          <h2 className='text-3xl font-bold'>{t('loading.authenticating')}</h2>
+          <h2 className='text-3xl font-bold flex items-center gap-2'>
+            <Loader2 className='animate-spin' />
+            {t('loading.authenticating')}
+          </h2>
           <p>{t('loading.pleaseWait')}</p>
         </div>
       )}

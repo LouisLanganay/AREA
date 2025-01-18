@@ -178,7 +178,7 @@ export function Onboarding() {
   const currentHref = useLocation().pathname;
 
   useEffect(() => {
-    const shouldShow = !isPlatform('capacitor') && Cookies.get('onboarding-completed') !== 'true';
+    const shouldShow = Cookies.get('onboarding-completed') !== 'true';
     if (shouldShow) {
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -192,7 +192,10 @@ export function Onboarding() {
       const target = document.querySelector(steps[currentStep].target);
       if (target) {
         const rect = target.getBoundingClientRect();
-        const pos = calculatePosition(rect, steps[currentStep].position);
+        const isMobile = window.innerWidth <= 768;
+        const pos = isMobile
+          ? { top: window.innerHeight / 2 - 150, left: window.innerWidth / 2 - 150 }
+          : calculatePosition(rect, steps[currentStep].position);
         setPosition(pos);
       }
     };
