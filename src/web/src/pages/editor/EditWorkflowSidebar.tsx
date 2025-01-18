@@ -130,7 +130,7 @@ export function EditWorkflowSidebar({
   };
 
   return (
-    <div className='w-full md:w-[400px] bg-muted/50 p-4 border-l z-30'>
+    <div className='w-full md:w-[400px] bg-muted p-4 border-l z-30'>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
@@ -150,7 +150,7 @@ export function EditWorkflowSidebar({
               )}
             </div>
             <div className='font-medium text-sm text-foreground'>
-              {selectedNode.description}
+              {selectedNode.description || selectedNode.name}
             </div>
           </div>
           <Button

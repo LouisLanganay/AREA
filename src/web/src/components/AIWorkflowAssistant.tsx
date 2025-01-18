@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { Workflow } from '@/interfaces/Workflows';
-import { ChevronDownIcon, QuestionMarkCircleIcon, SparklesIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { BoltIcon, ChevronDownIcon, QuestionMarkCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { TrashIcon } from '@heroicons/react/24/solid';
 import { AxiosError } from 'axios';
 import clsx from 'clsx';
@@ -118,7 +118,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-4 z-50 w-full md:min-w-[400px] max-w-[330px] md:max-w-[400px]">
       <div className="relative overflow-hidden rounded-xl p-[1px]">
         <div
           className={clsx("absolute inset-[-300px] bg-gradient-conic from-transparent from-70%",
@@ -128,7 +128,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
         />
         <div
           className={clsx(
-            'bg-card p-3 border border-border rounded-xl opacity-100 relative overflow-hidden md:min-w-[400px] max-w-[400px]',
+            'bg-card p-3 border border-border rounded-xl opacity-100 relative overflow-hidden',
             !isAIAssistantOpen && 'cursor-pointer'
           )}
           onClick={() => !isAIAssistantOpen && handleOpenAIAssistant()}
@@ -193,6 +193,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
                     size='sm'
                     variant='premiumClasic'
                     disabled={!aiPrompt.trim() || isGenerating}
+                    isLoading={isGenerating}
                   >
                     {mode === 'create' ? t('workflows.ai.generate') : t('workflows.ai.modify')}
                     <Wand2Icon className='size-4' />
@@ -234,7 +235,7 @@ export function AIWorkflowAssistant({ token, mode, workflow, onSuccess }: AIWork
                         variant='premiumClasic'
                       >
                         {t('workflows.ai.openWorkflow')}
-                        <Squares2X2Icon className='size-4' />
+                        <BoltIcon className='size-4' />
                       </Button>
                     </div>
                   </motion.div>

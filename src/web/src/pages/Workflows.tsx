@@ -161,9 +161,20 @@ export default function Workflows() {
                 );
               } else {
                 return (
-                  <Badge key={service} variant='outline' className='text-xs h-full'>
-                    <span>{service}</span>
-                  </Badge>
+                  <TooltipProvider key={service} delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Badge variant='outline' className='text-xs p-1'>
+                          <span className='size-5 flex items-center justify-center'>
+                            {service.charAt(0).toUpperCase()}
+                          </span>
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent className='bg-background text-foreground border shadow-md'>
+                        <p>{service}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 );
               }
             })}

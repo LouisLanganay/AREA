@@ -146,7 +146,7 @@ export const TimerService: Service = {
   name: 'Timer Service',
   description: 'Service to handle events based on time',
   loginRequired: false,
-  image: 'https://www.svgrepo.com/show/532140/timer.svg',
+  image: 'https://www.svgrepo.com/show/120927/timer.svg',
   Event: [],
   enabled: true,
 };

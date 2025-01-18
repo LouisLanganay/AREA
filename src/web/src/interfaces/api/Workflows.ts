@@ -1,4 +1,4 @@
-import { Event, Workflow } from "../Workflows";
+import { Event, Workflow, WorkflowHistory } from "../Workflows";
 
 /**
  * Interface for the response when fetching a workflow
@@ -16,7 +16,31 @@ interface createWorkflowRequest {
   triggers: Event[];   // Array of events that trigger the workflow
 }
 
+/**
+ * Interface for workflow history entry with workflow details
+ */
+interface WorkflowHistoryEntry {
+  executionDate: string;
+  status: 'success' | 'failure';
+  workflow: {
+    id: string;
+    name: string;
+  };
+}
+
+/**
+ * Interface for the response when fetching the workflow history
+ * Updated to match actual API response structure
+ */
+interface getWorkflowHistoryResponse {
+  workflowId: string;
+  name: string;
+  history: WorkflowHistory[]; // Array of workflow history items
+}
+
 export type {
   getWorkflowResponse,
-  createWorkflowRequest
+  createWorkflowRequest,
+  getWorkflowHistoryResponse,
+  WorkflowHistoryEntry
 };

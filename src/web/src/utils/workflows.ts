@@ -1,6 +1,6 @@
 import { WorkflowNode, WorkflowEdge, nodeWidth, nodeHeight, Workflow, Event, Field } from '@/interfaces/Workflows';
 import dagre from '@dagrejs/dagre';
-import { ConnectionLineType } from '@xyflow/react';
+import { ConnectionLineType } from 'reactflow';
 
 /**
  * Recursively searches for a node by its ID in a tree structure of events

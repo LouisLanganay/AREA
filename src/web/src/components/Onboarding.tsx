@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, ChevronRightIcon, DocumentIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { BoltIcon, CalendarIcon, ChevronRightIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -29,7 +29,7 @@ const steps: OnboardingStep[] = [
       <div className='flex flex-col gap-2 bg-muted-foreground/10 p-2 rounded-md mb-2'>
         <div className='flex items-center gap-2'>
           <div className='w-8 h-8 rounded-md bg-primary/20 flex items-center justify-center'>
-            <Squares2X2Icon className='w-4 h-4 text-primary/70' />
+            <BoltIcon className='w-4 h-4 text-primary/70' />
           </div>
           <div className='flex-1'>
             <div className='h-2 w-32 bg-muted-foreground/20 rounded'></div>
@@ -172,16 +172,29 @@ export function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(Cookies.get('onboarding-completed') !== 'true');
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
   const currentHref = useLocation().pathname;
+
+  useEffect(() => {
+    const shouldShow = Cookies.get('onboarding-completed') !== 'true';
+    if (shouldShow) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     const updatePosition = () => {
       const target = document.querySelector(steps[currentStep].target);
       if (target) {
         const rect = target.getBoundingClientRect();
-        const pos = calculatePosition(rect, steps[currentStep].position);
+        const isMobile = window.innerWidth <= 768;
+        const pos = isMobile
+          ? { top: window.innerHeight / 2 - 150, left: window.innerWidth / 2 - 150 }
+          : calculatePosition(rect, steps[currentStep].position);
         setPosition(pos);
       }
     };
@@ -252,7 +265,7 @@ export function Onboarding() {
         return;
       navigate(steps[currentStep].href);
     }
-  }, [currentHref, currentStep]);
+  }, [currentHref, currentStep, isVisible]);
 
   useEffect(() => {
     if (isVisible) {

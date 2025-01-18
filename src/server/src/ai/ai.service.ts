@@ -149,7 +149,7 @@ export class AiService {
       console.log("workflow", workflowUpdated.triggers[0].fieldGroups[0]?.fields[0]);
 
       // Valider la structure minimale du workflow
-      if (!workflowUpdated.name || !workflowUpdated.description || !Array.isArray(workflowUpdated.triggers)) {
+      if (!workflowUpdated.name || !Array.isArray(workflowUpdated.triggers)) {
         throw new BadRequestException('Invalid workflow structure generated');
       }
 

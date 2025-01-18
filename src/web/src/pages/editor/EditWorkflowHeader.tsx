@@ -1,5 +1,4 @@
 import { deleteWorkflow, runWorkflow, updateWorkflow } from '@/api/Workflows';
-import { useAuth } from '@/context/AuthContext';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,10 +15,13 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Workflow } from '@/interfaces/Workflows';
-import { ArrowLeftIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
+import { ArrowLeftIcon, CheckIcon, StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 import {
+  ClockIcon,
   EllipsisHorizontalIcon,
   FolderIcon,
   PlayCircleIcon,
@@ -27,24 +29,22 @@ import {
   TrashIcon,
   XMarkIcon
 } from '@heroicons/react/24/solid';
-import {
-  StarIcon as StarIconOutline
-} from '@heroicons/react/24/outline';
-import '@xyflow/react/dist/style.css';
-import React, { useState, useEffect } from 'react';
+import 'reactflow/dist/style.css';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { getWorkflowName, getWorkflowPath } from '@/utils/workflowPath';
 
 export function WorkflowHeader({
   workflow,
   setWorkflow,
-  setUpdatedWorkflow
+  setUpdatedWorkflow,
+  onOpenHistory
 }: {
   workflow: Workflow,
   updatedWorkflow: Workflow | null,
   setWorkflow: React.Dispatch<React.SetStateAction<Workflow | null>>,
-  setUpdatedWorkflow: React.Dispatch<React.SetStateAction<Workflow | null>>
+  setUpdatedWorkflow: React.Dispatch<React.SetStateAction<Workflow | null>>,
+  onOpenHistory: () => void
 }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -169,6 +169,7 @@ export function WorkflowHeader({
         description: t('workflows.runWorkflowDescriptionSuccess'),
         variant: 'success',
       });
+      onOpenHistory();
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to run workflow', error);
@@ -300,6 +301,14 @@ export function WorkflowHeader({
               {t('workflows.runNow')}
             </DropdownMenuItem>
             <DropdownMenuItem
+              disabled={isLoading}
+              onClick={onOpenHistory}
+            >
+              <ClockIcon className='size-4' />
+              {t('workflows.history')}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
               onSelect={() => handleEnable(!workflow.enabled)}
               disabled={isLoading}
             >
@@ -340,6 +349,18 @@ export function WorkflowHeader({
           <Button
             variant='outline'
             size='sm'
+            className='p-2'
+            onClick={onOpenHistory}
+            disabled={isLoading}
+            aria-label={t('workflows.history')}
+          >
+            <ClockIcon className='w-4 h-4' />
+            {t('workflows.history')}
+          </Button>
+          <Separator orientation='vertical' className='h-6' />
+          <Button
+            variant='outline'
+            size='sm'
             onClick={() => handleEnable(!workflow.enabled)}
             disabled={isLoading}
           >
@@ -353,7 +374,6 @@ export function WorkflowHeader({
               {workflow.enabled ? t('workflows.enabled') : t('workflows.disabled')}
             </div>
           </Button>
-          <Separator orientation='vertical' className='h-6' />
           <Button
             variant='destructiveOutline'
             size='sm'

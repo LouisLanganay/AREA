@@ -12,7 +12,7 @@ export default function ClientAPK() {
     }, 1000);
 
     const timer = setTimeout(() => {
-      window.location.href = '/src/app-debug.apk';
+      window.location.href = '/app-debug.apk';
     }, 3000);
 
     return () => {
@@ -35,7 +35,7 @@ export default function ClientAPK() {
           {t('client.apk.description')}
           <Button
             variant='link'
-            onClick={() => window.location.href = '/src/app-debug.apk'}
+            onClick={() => window.location.href = '/app-debug.apk'}
             className='px-0'
           >
             {t('client.apk.download')}

@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position } from 'reactflow';
 
 interface NodeData {
   onAdd?: (nodeId: string) => void;

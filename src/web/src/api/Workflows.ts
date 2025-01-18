@@ -1,5 +1,5 @@
-import { createWorkflowRequest, getWorkflowResponse } from '@/interfaces/api/Workflows';
-import { Workflow, ensureChildrenArrays } from '@/interfaces/Workflows';
+import { createWorkflowRequest, getWorkflowHistoryResponse, getWorkflowResponse, WorkflowHistoryEntry } from '@/interfaces/api/Workflows';
+import { BasicWorkflow, Workflow, ensureChildrenArrays } from '@/interfaces/Workflows';
 import axiosInstance from './axiosInstance';
 
 /**
@@ -106,6 +106,52 @@ export const runWorkflow = async (id: string, token: string) => {
   const response = await axiosInstance.get(`/workflows/run/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+/**
+ * Gets the execution history of a workflow
+ * @param id - Workflow ID
+ * @param token - User's authentication token
+ * @returns Promise with workflow history
+ */
+export const getWorkflowHistory = async (id: string, token: string): Promise<getWorkflowHistoryResponse> => {
+  const response = await axiosInstance.get(`/workflows/${id}/history`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+/**
+ * Gets the execution history of all workflows (admin only)
+ * @param token - User's authentication token
+ * @returns Promise with all workflows history
+ */
+export const getAllWorkflowsHistory = async (token: string): Promise<WorkflowHistoryEntry[]> => {
+  const response = await axiosInstance.get(`/workflows-history/all`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    }
+  });
+  return response.data;
+};
+
+/**
+ * Fetches all workflows with basic information
+ * @param token - User's authentication token
+ * @returns Promise with array of basic workflow information
+ */
+export const getAllWorkflowsBasic = async (token: string): Promise<BasicWorkflow[]> => {
+  const response = await axiosInstance.get<BasicWorkflow[]>(`/workflows`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: {
+      all: true
     }
   });
   return response.data;

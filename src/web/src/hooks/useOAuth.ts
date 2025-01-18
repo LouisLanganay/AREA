@@ -15,7 +15,7 @@ export const useOAuth = () => {
    */
   const openOAuthUrl = async (url: string, provider: string) => {
     // Store provider in cookie for 5 minutes (1/288 of a day)
-    Cookies.set('oauth_provider', provider, { expires: 1/288 });
+    Cookies.set('oauth_provider', provider.toLowerCase(), { expires: 1/288 });
 
     if (isPlatform('capacitor')) {
       // Mobile platform handling
@@ -51,10 +51,10 @@ export const useOAuth = () => {
     if (isPlatform('capacitor')) {
       // Mobile platform handling
       App.addListener('appUrlOpen', async ({ url: redirectUrl }) => {
-        if (redirectUrl.includes('services')) {
+        if (redirectUrl.includes('service-login-success')) {
           // Close browser and clean up cookie on completion
           await Browser.close();
-          Cookies.remove('service_oauth_provider');
+          window.location.href = redirectUrl;
         }
       });
 
