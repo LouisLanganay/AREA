@@ -1,15 +1,28 @@
-FROM node:18-alpine
+FROM node:21.7.0
 
-WORKDIR /app
+# Installer Redis
+RUN apt-get update && apt-get install -y redis-server
 
+# Définir le dossier de travail
+WORKDIR /server
+
+# Copier les fichiers package.json et installer les dépendances
 COPY package*.json ./
+RUN npm i
 
-RUN npm install
-
+# Copier le reste des fichiers
 COPY . .
 
-RUN npx prisma db push
+# Rendre le script de démarrage exécutable
+RUN chmod +x startup.sh
 
-EXPOSE 8080
+# Exposer les ports nécessaires
+EXPOSE 8080 6379
 
-CMD ["npm", "start"]
+CMD sh -c 'redis-server --daemonize yes --protected-mode no && \
+                      echo "------------------------------------" && \
+                      echo "Before Prisma Migrate" && \
+                      until npx prisma migrate deploy; do echo "Retrying Prisma Migrate"; sleep 5; done && \
+                      npx prisma generate && \
+                      echo "After Prisma Migrate" && \
+                      npm run start'

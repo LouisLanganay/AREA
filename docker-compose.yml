@@ -5,7 +5,7 @@ services:
     container_name: linkit_web-service
     build:
       context: ./src/web/
-      dockerfile: DockerfileDev
+      dockerfile: Dockerfile
     ports:
       - "8081:8081"
     volumes:
@@ -13,12 +13,13 @@ services:
       - ./src/shared:/shared
       - npm_cache:/root/.npm
     depends_on:
+      - client_mobile
       - server
     command: >
       bash -c "
       npm install &&
       npm run build &&
-      npm run dev
+      npm run start
       "
     networks:
       - app_network
@@ -27,7 +28,7 @@ services:
     container_name: linkit_mobile-service
     build:
       context: ./src/web/
-      dockerfile: DockerfileDev
+      dockerfile: Dockerfile
     volumes:
       - ./src/web:/web_service
       - ./src/shared:/shared
@@ -40,8 +41,8 @@ services:
       cd android &&
       ./gradlew assembleDebug &&
       cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/ &&
-      echo 'APK generated at /web_service/app-debug.apk'
+      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/LinkIt.apk &&
+      echo 'APK generated at /web_service/LinkIt.apk'
       "
     networks:
       - app_network
@@ -69,7 +70,7 @@ services:
     container_name: linkit_server
     build:
       context: ./src/server/
-      dockerfile: DockerfileDev
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:

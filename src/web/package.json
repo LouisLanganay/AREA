@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "vite --port=8081",
     "dev": "vite --port=8081",
     "build": "tsc -b && vite build && npx cap sync",
     "apk": "cd android && ./gradlew assembleDebug",
