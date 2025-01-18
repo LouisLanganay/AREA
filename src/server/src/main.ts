@@ -10,7 +10,6 @@ import {
   EventCheckTemperature,
   EventGetWeatherForecast,
 } from './service/meteo.service';
-import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
   discordService,
   EventBanUserDiscord,
@@ -31,7 +30,6 @@ import {
   EventDayAndTimeReached,
 } from './service/timer.service';
 import { OutlookService, EventSendEmail, EventMonitorEmails, EventCreateEmailDraft } from './service/outlook.service';
-import { MailerService } from './service/mailer.service';
 import {
   EventCreatePlaylist,
   EventCheckPlayer,
