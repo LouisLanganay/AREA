@@ -1,4 +1,5 @@
-import { useAuth } from '@/context/AuthContext';
+import { isAdmin } from '@/api/User';
+import { getWorkflows } from '@/api/Workflows';
 import {
   Sidebar,
   SidebarContent,
@@ -13,34 +14,33 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { useAuth } from '@/context/AuthContext';
+import { Workflow } from '@/interfaces/Workflows';
+import { getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
+import { QuestionMarkCircleIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import {
+  BoltIcon,
   ChevronRightIcon,
   CursorArrowRaysIcon,
+  DocumentIcon,
+  FolderIcon,
+  FolderOpenIcon,
   HomeIcon,
   LifebuoyIcon,
-  Squares2X2Icon,
-  UsersIcon,
-  FolderIcon,
-  DocumentIcon,
   PlusIcon,
-  FolderOpenIcon,
   SparklesIcon,
+  UsersIcon,
   XMarkIcon
 } from '@heroicons/react/24/solid';
-import { useTranslation } from 'react-i18next';
-import LinkitLogoFull from '../../assets/linkitLogoFull';
-import { UserInfo } from './UserInfo';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
-import { useEffect, useState } from 'react';
-import { getWorkflows } from '@/api/Workflows';
-import { Workflow } from '@/interfaces/Workflows';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { getWorkflowName, groupWorkflowsByFolder } from '@/utils/workflowPath';
 import clsx from 'clsx';
 import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import LinkitLogoFull from '../../assets/linkitLogoFull';
 import { Button } from '../ui/button';
-import { RocketLaunchIcon } from '@heroicons/react/24/outline';
-import { isAdmin } from '@/api/User';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/collapsible';
+import { UserInfo } from './UserInfo';
 
 interface SubItem {
   title: string;
@@ -80,7 +80,7 @@ const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[])
       },
       {
         title: t('sidebar.items.workflows'),
-        icon: Squares2X2Icon,
+        icon: BoltIcon,
         url: '/workflows',
         subItems: workflowItems
       },
@@ -97,7 +97,12 @@ const getGroups = (t: (key: string) => string, workflowItems: WorkflowSubItem[])
       {
         title: t('sidebar.items.users'),
         icon: UsersIcon,
-        url: '/users'
+        url: '/admin/users'
+      },
+      {
+        title: t('sidebar.items.adminWorkflows'),
+        icon: BoltIcon,
+        url: '/admin/workflows'
       }
     ],
     isAdmin: true
@@ -167,6 +172,11 @@ export function AppSidebar() {
     ));
   };
 
+  const handleOnboarding = () => {
+    Cookies.remove('onboarding-completed');
+    window.location.reload();
+  };
+
   const renderFolderStructure = () => {
     return Object.entries(workflowGroups).map(([path, workflows]) => {
       if (!path) {
@@ -215,7 +225,7 @@ export function AppSidebar() {
           <LinkitLogoFull className='w-24 h-fit object-contain fill-foreground' />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent data-onboarding="sidebar" className='[&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar]:rounded-lg [&::-webkit-scrollbar-thumb]:rounded-lg [&::-webkit-scrollbar-track]:my-1 [&::-webkit-scrollbar-track]:rounded-lg [&::-webkit-scrollbar-track]:bg-muted [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20'>
         {groups.map((group) => (
           <SidebarGroup key={group.title} className={clsx(
             group.isAdmin === true && userIsAdmin !== true && 'hidden'
@@ -263,7 +273,7 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <div className='flex flex-col'>
+        <div className='flex flex-col' data-onboarding="sidebar-footer">
           {isPremiumBannerVisible && (
             <div className='p-3 rounded-lg border border-primary/20 bg-primary/10 relative group/premium-banner overflow-hidden'>
               <div className="absolute inset-0 z-0">
@@ -307,6 +317,14 @@ export function AppSidebar() {
                 <LifebuoyIcon className='w-5 h-5' />
                 <span>{t('sidebar.items.documentation')}</span>
               </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <button onClick={() => handleOnboarding()}>
+                <QuestionMarkCircleIcon className='size-4' />
+                <span>{t('sidebar.items.onboarding')}</span>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </ul>

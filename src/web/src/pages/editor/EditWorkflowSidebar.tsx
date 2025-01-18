@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Service } from '@/interfaces/Services';
 import { Field, FieldGroup, Event } from '@/interfaces/Workflows';
+import { DateTimePicker } from '@/components/ui/dateTimePicker';
 
 interface EditWorkflowSidebarProps {
   selectedNode: Event | null;
@@ -100,6 +101,13 @@ export function EditWorkflowSidebar({
           onSelect={(date) => onFieldChange(field.id, date, nodeId)}
         />
       );
+    case 'dateTime':
+      return (
+        <DateTimePicker
+          value={currentValue ? new Date(currentValue) : undefined}
+          onChange={(date) => onFieldChange(field.id, date, nodeId)}
+        />
+      );
     case 'checkbox':
       return (
         <Checkbox
@@ -122,7 +130,7 @@ export function EditWorkflowSidebar({
   };
 
   return (
-    <div className='w-full md:w-[400px] bg-muted/50 p-4 border-l z-30'>
+    <div className='w-full md:w-[400px] bg-muted p-4 border-l z-30'>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-2'>
@@ -142,7 +150,7 @@ export function EditWorkflowSidebar({
               )}
             </div>
             <div className='font-medium text-sm text-foreground'>
-              {selectedNode.description}
+              {selectedNode.description || selectedNode.name}
             </div>
           </div>
           <Button

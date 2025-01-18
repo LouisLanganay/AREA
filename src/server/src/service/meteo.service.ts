@@ -149,8 +149,9 @@ export const EventGetWeatherForecast: Event = {
 export const WeatherService: Service = {
   id: 'weather',
   name: 'Weather Service',
-  description: 'Service to check weather conditions',
+  description: 'Be able to check the weather conditions in a specific location',
   loginRequired: false,
-  image: 'https://www.svgrepo.com/show/479349/weather-symbol-1.svg',
+  image: 'https://upload.wikimedia.org/wikipedia/fr/4/47/Logo_Météo_France_2016.svg',
   Event: [],
+  enabled: true,
 };

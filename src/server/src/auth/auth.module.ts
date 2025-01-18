@@ -15,12 +15,14 @@ import { HttpModule } from '@nestjs/axios';
 import { GoogleAuthService } from './external-services/google.auth.service';
 import { DiscordAuthService } from './external-services/discord.auth.service';
 import { OutlookAuthService } from './external-services/outlook.auth.service';
+import { SpotifyAuthService } from './external-services/spotify.auth.service';
+import {TwitchAuthService} from "./external-services/twitch.auth.services";
 
 @Module({
   imports: [
     JwtModule.register({
       secret: process.env.JWT_SECRET, // Remplacez par une clé plus sécurisée
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '4h' },
       global: true,
     }),
     UsersModule, // Module pour la gestion des utilisateurs
@@ -39,6 +41,8 @@ import { OutlookAuthService } from './external-services/outlook.auth.service';
     GoogleAuthService,
     DiscordAuthService,
     OutlookAuthService,
+    SpotifyAuthService,
+    TwitchAuthService,
   ],
   exports: [AuthService],
 })

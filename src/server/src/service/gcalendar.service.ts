@@ -35,7 +35,6 @@ export class CalendarService {
       access_token: accessToken.accessToken,
       refresh_token: accessToken.refreshToken,
     });
-
     this.calendar = google.calendar({ version: 'v3', auth: oAuth2Client });
   }
 
@@ -74,20 +73,45 @@ export class CalendarService {
       return false;
     }
     const url = `${ipRedirect}/webhooks/${createWebHook.id}`;
-    const watchResponse = await this.calendar.events.watch({
+    await this.calendar.events.watch({
       calendarId: calendarId,
       requestBody: {
-        id: createWebHook.id, // ID unique pour le channel
+        id: createWebHook.id,
         type: 'webhook',
         address: url,
         token: process.env.SECRET_WEBHOOK,
       },
     });
-    console.log('Watch response:');
-    const expiration = new Date(watchResponse.data.expiration / 1000);
+    const listResponse = await this.calendar.events.list({
+      calendarId: calendarId,
+      showDeleted: true,
+    });
+    if (!listResponse) return false;
+
+    // const expiration = new Date(watchResponse.data.expiration / 100);
+    const expiration = new Date();
+    expiration.setDate(expiration.getDate() + 7);
+    const syncToken = await this.getSyncToken(listResponse, calendarId);
     await this.userService.updateWebhook(userId, createWebHook.id, {
       expiration,
+      params: {
+        syncToken,
+      },
     });
+    return false;
+  }
+
+  async getSyncToken(listResponse: any, calendarId: string) {
+    let token = listResponse.data.nextSyncToken;
+    while (listResponse.data.nextPageToken && !token) {
+      listResponse = await this.calendar.events.list({
+        calendarId,
+        pageToken: listResponse.data.nextPageToken,
+        showDeleted: true,
+      });
+      token = listResponse.data.nextSyncToken;
+    }
+    return token;
   }
 
   @Cron('0 0 * * *')
@@ -122,51 +146,166 @@ export class CalendarService {
     }
   }
 
-  async getEvents(eventId: string, calendarId: string, userId: string) {
-    await this.setToken(userId);
-    //     const {google} = require('googleapis');
-    //
-    // // ... (Code pour initialiser l'authentification et le client de l'API Google Agenda) ...
-    //
-    // // Supposons que vous ayez extrait resourceId et resourceUri de la notification push
-    //     const resourceId = '...';
-    //     const resourceUri = '...';
-    //
-    // // Effectuez une requête GET pour récupérer l'événement
-    this.calendar.events.instances(
-      {
-        calendarId: 'primary', // Remplacez par l'ID de l'agenda approprié
-        eventId: eventId, // Ou utilisez une autre méthode pour identifier l'événement à partir du resourceUri
-        showDeleted: true,
+  async getEventsTypeWithSyncToken(webhook) {
+    await this.setToken(webhook.userId);
+    const listResponse = await this.calendar.events.list({
+      calendarId: webhook.channelId,
+      syncToken: webhook.params.syncToken,
+    });
+    await this.prismaService.webhook.update({
+      where: {
+        id: webhook.id,
       },
-      (err, res) => {
-        if (err) {
-          return;
+      data: {
+        params: {
+          syncToken: listResponse.data.nextSyncToken,
+        },
+      },
+    });
+    const actionNode = await this.prismaService.node.findFirst({
+      where: {
+        workflowId: webhook.workflowId,
+        type: 'action',
+      },
+    });
+    //verifier combien de fois il faut executer en fonction du workflow et renvoyer le nombre
+    let nbExec = 0;
+    for (const event of listResponse.data.items) {
+      const status = event.status;
+      let finalStatus = '';
+      if (status === 'cancelled') {
+        finalStatus = 'cancelled';
+      }
+      if (status === 'confirmed') {
+        const updated = new Date(event.updated);
+        const created = new Date(event.created);
+        const diff = Math.abs(updated.getTime() - created.getTime());
+        if (diff < 1000) {
+          finalStatus = 'created';
+        } else {
+          finalStatus = 'updated';
         }
-        console.log('instance :', res.data);
-      },
-    );
-    this.calendar.events.get(
-      {
-        calendarId: 'primary',
-        eventId: eventId,
-      },
-      (err, res) => {
-        if (err) {
-          console.error('Error getting event:', err);
-          return;
-        }
-        console.log('Event:', res.data);
-      },
-    );
+      }
+      if (finalStatus === '') return 0;
+      if (
+        finalStatus === 'cancelled' &&
+        actionNode.id_node === 'listenDeleteEventGcalendar'
+      )
+        nbExec++;
+      if (
+        finalStatus === 'created' &&
+        actionNode.id_node === 'listenCreateEventGcalendar'
+      )
+        nbExec++;
+      if (
+        finalStatus === 'updated' &&
+        actionNode.id_node === 'listenUpdateEventGcalendar'
+      )
+        nbExec++;
+    }
+    return nbExec;
   }
 }
 
-export const ListenEventGcalendar: Event = {
+export const ListenCreateEventGcalendar: Event = {
   type: 'action',
-  id_node: 'listenEventGcalendar',
-  name: 'Listen Event Google Calendar',
-  description: 'Listen Event Google Calendar',
+  id_node: 'listenCreateEventGcalendar',
+  name: 'Listen Create Event Google Calendar',
+  description: 'Listen Create Event Google Calendar',
+  serviceName: 'gcalendar',
+  fieldGroups: [
+    {
+      id: 'calendar_details',
+      name: 'Calendar Information',
+      description: 'Information about the Calendar',
+      type: 'group',
+      fields: [
+        //set calendar
+        {
+          id: 'calendar',
+          type: 'string',
+          required: true,
+          description: 'Calendar ID',
+          value: 'primary',
+        },
+      ],
+    },
+  ],
+  check: async (parameters: FieldGroup[]) => {
+    const userId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'user_id')?.value;
+    const workflowId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'workflow_id')?.value;
+
+    const eventGroup = parameters.find(
+      (group) => group.id === 'calendar_details',
+    );
+
+    if (!eventGroup) {
+      console.error('Event details group not found');
+      throw new BadRequestException('Event details are missing');
+    }
+    const calendar = eventGroup.fields.find((field) => field.id === 'calendar');
+    const calendarService = new CalendarService(); // Assurez-vous que ce service est correctement implémenté
+    await calendarService.startWatch(userId, workflowId, calendar.value);
+    return false;
+  },
+};
+
+export const ListenDeleteEventGcalendar: Event = {
+  type: 'action',
+  id_node: 'listenDeleteEventGcalendar',
+  name: 'Listen Delete Event Google Calendar',
+  description: 'Listen Delete Event Google Calendar',
+  serviceName: 'gcalendar',
+  fieldGroups: [
+    {
+      id: 'calendar_details',
+      name: 'Calendar Information',
+      description: 'Information about the Calendar',
+      type: 'group',
+      fields: [
+        //set calendar
+        {
+          id: 'calendar',
+          type: 'string',
+          required: true,
+          description: 'Calendar ID',
+          value: 'primary',
+        },
+      ],
+    },
+  ],
+  check: async (parameters: FieldGroup[]) => {
+    const userId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'user_id')?.value;
+    const workflowId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'workflow_id')?.value;
+
+    const eventGroup = parameters.find(
+      (group) => group.id === 'calendar_details',
+    );
+
+    if (!eventGroup) {
+      console.error('Event details group not found');
+      throw new BadRequestException('Event details are missing');
+    }
+    const calendar = eventGroup.fields.find((field) => field.id === 'calendar');
+    const calendarService = new CalendarService(); // Assurez-vous que ce service est correctement implémenté
+    await calendarService.startWatch(userId, workflowId, calendar.value);
+    return false;
+  },
+};
+
+export const ListenUpdateEventGcalendar: Event = {
+  type: 'action',
+  id_node: 'listenUpdateEventGcalendar',
+  name: 'Listen Update Event Google Calendar',
+  description: 'Listen Update Event Google Calendar',
   serviceName: 'gcalendar',
   fieldGroups: [
     {
@@ -252,9 +391,9 @@ export const EventAddGoogleCalendar: Event = {
         },
         {
           id: 'startDateTime',
-          type: 'string',
+          type: 'dateTime',
           required: true,
-          description: 'Start date and time of the event (RFC3339 format)',
+          description: 'Start date and time of the event',
         },
         {
           id: 'TimeZone',
@@ -287,9 +426,9 @@ export const EventAddGoogleCalendar: Event = {
         },
         {
           id: 'endDateTime',
-          type: 'string',
+          type: 'dateTime',
           required: true,
-          description: 'End date and time of the event (RFC3339 format)',
+          description: 'End date and time of the event',
         },
         {
           id: 'attendees',
@@ -335,9 +474,7 @@ export const EventAddGoogleCalendar: Event = {
     const startDateTimeField = eventGroup.fields.find(
       (field) => field.id === 'startDateTime',
     );
-    const TimeZone = eventGroup.fields.find(
-      (field) => field.id === 'startTimeZone',
-    );
+    const TimeZone = eventGroup.fields.find((field) => field.id === 'TimeZone');
     const endDateTimeField = eventGroup.fields.find(
       (field) => field.id === 'endDateTime',
     );
@@ -398,7 +535,6 @@ export const EventAddGoogleCalendar: Event = {
 
     try {
       await calendarService.addEvent(calendarId, event, userId);
-      console.log('Event added successfully');
     } catch (error) {
       console.error('Failed to add event:', error);
       throw new BadRequestException('Failed to add event to Google Calendar');
@@ -406,36 +542,10 @@ export const EventAddGoogleCalendar: Event = {
   },
 };
 
-export const EventIsNewEvent: Event = {
-  type: 'reaction',
-  id_node: 'eventIsNewEventGcalendar',
-  name: 'Is New Calendar Event',
-  description: 'Check if the event is new in Google Calendar',
-  serviceName: 'gcalendar',
-  fieldGroups: [],
-  execute: async (parameters: FieldGroup[]) => {
-    const calendarService = new CalendarService(); // Assurez-vous que ce service est correctement implémenté
-    const userId = parameters
-      .find((group) => group.id === 'workflow_information')
-      ?.fields.find((field) => field.id === 'user_id')?.value;
-
-    const data_supply = parameters
-      .find((group) => group.id === 'data_supply')
-      ?.fields.find((field) => field.id === 'data')?.value;
-    const eventId = data_supply['x-goog-resource-id'];
-    const calendarId = data_supply['x-goog-resource-uri'];
-    if (!eventId || !calendarId) {
-      console.error('Missing required data for event');
-      return false;
-    }
-    await calendarService.getEvents(eventId, calendarId, userId);
-  },
-};
-
 export const gcalendarService: Service = {
   id: 'gcalendar',
   name: 'Google Calendar',
-  description: 'Google Calendar service',
+  description: 'Calendar from Google to manage your events',
   Event: [],
   image: 'https://www.svgrepo.com/show/353803/google-calendar.svg',
   loginRequired: true,

@@ -1,5 +1,4 @@
 import DiscordIcon from '@/assets/discord-icon.svg';
-import { useAuth } from '@/context/AuthContext';
 import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import { Button } from '@/components/ui/button';
 import DotPattern from '@/components/ui/dot-pattern';
@@ -15,15 +14,16 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { WorkflowNode } from '@/interfaces/Workflows';
 import { getLayoutedElements } from '@/utils/workflows';
+import { BoldIcon } from '@heroicons/react/24/outline';
 import {
   Bars3Icon,
   ChevronDownIcon,
   MoonIcon,
   RocketLaunchIcon,
-  ServerStackIcon,
   SparklesIcon,
   SunIcon,
   UserIcon,
@@ -32,16 +32,16 @@ import {
 } from '@heroicons/react/24/solid';
 import {
   ConnectionLineType,
-  ReactFlow,
   Edge,
-  MarkerType
-} from '@xyflow/react';
-import { useState } from 'react';
+  MarkerType,
+  ReactFlow
+} from 'reactflow';
+import { useState, useCallback, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import LinkitLogoFull from '../assets/linkitLogoFull';
 import Node from '../components/flow/Node';
-import { Helmet } from 'react-helmet';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -96,9 +96,9 @@ export default function Home() {
       decoding: 'async' as const,
     },
     {
-      title: t('home.stack.services.apple.title'),
-      description: t('home.stack.services.apple.description'),
-      icon: '/assets/stack/apple-icon.svg',
+      title: t('home.stack.services.outlook.title'),
+      description: t('home.stack.services.outlook.description'),
+      icon: '/assets/stack/outlook-icon.svg',
       loading: 'lazy' as const,
       decoding: 'async' as const,
     },
@@ -110,9 +110,9 @@ export default function Home() {
       decoding: 'async' as const,
     },
     {
-      title: t('home.stack.services.github.title'),
-      description: t('home.stack.services.github.description'),
-      icon: '/assets/stack/github-icon.svg',
+      title: t('home.stack.services.spotify.title'),
+      description: t('home.stack.services.spotify.description'),
+      icon: '/assets/stack/spotify-icon.svg',
       loading: 'lazy' as const,
       decoding: 'async' as const,
     },
@@ -215,12 +215,12 @@ export default function Home() {
     }
   ];
 
-  const MobileNav = () => {
+  const MobileNav = useCallback(() => {
     const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-    const toggleSubmenu = (menu: string) => {
+    const toggleSubmenu = useCallback((menu: string) => {
       setOpenSubmenu(openSubmenu === menu ? null : menu);
-    };
+    }, [openSubmenu]);
 
     return (
       <Sheet>
@@ -398,7 +398,12 @@ export default function Home() {
         </SheetContent>
       </Sheet>
     );
-  };
+  }, []);
+
+  const layoutedElements = useMemo(() =>
+    getLayoutedElements(exampleNodes, exampleEdges, 'TB'),
+  [exampleNodes, exampleEdges]
+  );
 
   return (
     <div className='min-h-screen bg-background'>
@@ -540,13 +545,13 @@ export default function Home() {
           <div className='w-[385px] h-[calc(100vh-300px)] hidden md:flex'>
             <div className='w-[385px] h-full'>
               <ReactFlow
-                nodes={getLayoutedElements(exampleNodes, exampleEdges, 'TB').nodes}
-                edges={getLayoutedElements(exampleNodes, exampleEdges, 'TB').edges as Edge[]}
+                nodes={layoutedElements.nodes}
+                edges={layoutedElements.edges as Edge[]}
                 nodeTypes={{node: Node}}
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag={false}
-                viewport={{ x: 10, y: 0, zoom: 1.1 }}
+                defaultViewport={{ x: 10, y: 0, zoom: 1.1 }}
                 connectionLineType={ConnectionLineType.SmoothStep}
                 fitView
                 zoomOnPinch={false}
@@ -600,7 +605,11 @@ export default function Home() {
                   </p>
                 </div>
                 <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2 overflow-hidden mt-20'>
-                  <div className='border border-primary/20 bg-primary/10 rounded-lg absolute -bottom-1 -right-7 max-w-[350px]'>
+                  <div className='rounded-lg border border-primary/20 bg-primary/10 group/premium-banner overflow-hidden absolute -bottom-1 -right-7 max-w-[350px]'>
+                    <div className="absolute inset-0 z-0">
+                      <div className="absolute bg-second/70 size-16 rounded-full blur-2xl animate-blob" />
+                      <div className="absolute inset-[90%] bg-primary size-14 rounded-full blur-2xl animate-blob animation-delay-2000" />
+                    </div>
                     <div className='relative h-full w-full'>
                       <div className="absolute bottom-full left-16 -mb-px flex h-8 items-end overflow-hidden">
                         <div className="flex -mb-px h-[2px] w-56">
@@ -665,7 +674,7 @@ export default function Home() {
                           <div className='space-y-4 bg-card border rounded-lg p-4 shadow-sm'>
                             <div className='flex items-center gap-2'>
                               <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
-                                <ServerStackIcon className='size-5 object-contain' />
+                                <BoldIcon className='size-5 object-contain' />
                               </div>
                               <p className='text-sm font-semibold'>{t('home.features.scalability.sidebar.titleGroup')}</p>
                             </div>

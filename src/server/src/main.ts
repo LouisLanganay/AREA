@@ -12,15 +12,18 @@ import {
 } from './service/meteo.service';
 import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
-  discordService, EventBanUserDiscord, EventjoinGuildDiscord,
+  discordService,
+  EventBanUserDiscord,
+  EventjoinGuildDiscord,
   EventlistenMessageDiscord,
   EventsendMessageDiscord,
 } from './service/discord.service';
 import {
   EventAddGoogleCalendar,
-  EventIsNewEvent,
   gcalendarService,
-  ListenEventGcalendar,
+  ListenCreateEventGcalendar,
+  ListenDeleteEventGcalendar,
+  ListenUpdateEventGcalendar,
 } from './service/gcalendar.service';
 import {
   TimerService,
@@ -28,6 +31,22 @@ import {
   EventDayAndTimeReached,
 } from './service/timer.service';
 import { OutlookService, EventSendEmail, EventMonitorEmails, EventCreateEmailDraft } from './service/outlook.service';
+import { MailerService } from './service/mailer.service';
+import {
+  EventCreatePlaylist,
+  EventCheckPlayer,
+  EventSkipToNext,
+  EventFollowPlaylist,
+  EventCheckDevices,
+  SpotifyService,
+} from './service/spotify.service';
+
+import {
+  EventLogTerm,
+  EventStreamerOnline,
+  EventWriteInBroadcasterChat,
+  twitchService
+} from './service/twitch.services';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
@@ -35,6 +54,8 @@ export async function defineAllService(allService: any) {
   allService.addService(OutlookService);
   allService.addService(WeatherService);
   allService.addService(gcalendarService);
+  allService.addService(SpotifyService);
+  allService.addService(twitchService);
 
   allService.addEventToService('discord', EventlistenMessageDiscord);
   allService.addEventToService('discord', EventsendMessageDiscord);
@@ -51,10 +72,20 @@ export async function defineAllService(allService: any) {
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
 
-  allService.addEventToService('gcalendar', ListenEventGcalendar);
+  allService.addEventToService('gcalendar', ListenCreateEventGcalendar);
+  allService.addEventToService('gcalendar', ListenDeleteEventGcalendar);
+  allService.addEventToService('gcalendar', ListenUpdateEventGcalendar);
   allService.addEventToService('gcalendar', EventAddGoogleCalendar);
-  // allService.addEventToService('gcalendar', EventIsNewEvent);
 
+  allService.addEventToService('twitch', EventStreamerOnline);
+  allService.addEventToService('twitch', EventLogTerm);
+  allService.addEventToService('twitch', EventWriteInBroadcasterChat);
+
+  allService.addEventToService('spotify', EventCreatePlaylist);
+  allService.addEventToService('spotify', EventCheckPlayer);
+  allService.addEventToService('spotify', EventSkipToNext);
+  allService.addEventToService('spotify', EventFollowPlaylist);
+  allService.addEventToService('spotify', EventCheckDevices);
   return allService;
 }
 

@@ -9,7 +9,7 @@ import { Client, GatewayIntentBits, Guild } from 'discord.js';
 @Injectable()
 export class DiscordService {
   constructor(
-    private prisma: PrismaService,
+      private prisma: PrismaService,
     private configService: ConfigService,
     private httpService: HttpService,
   ) {}
@@ -148,7 +148,6 @@ export class DiscordService {
   async discordCallback(code: string, req: any): Promise<any> {
     console.log('Discord OAuth callback received:', code);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const deletedTokens = await this.prisma.token.deleteMany(); // Supprime toutes les entrées de la table `Token`
     if (!code) {
       throw new BadRequestException('Code or userId is missing');
     }
@@ -367,7 +366,7 @@ export class DiscordService {
 
     const token = await this.prisma.token.upsert({
       where: {
-        userId_provider: { userId, provider },
+        userId_provider: { userId: userBddId, provider },
       },
       update: {
         accessToken,

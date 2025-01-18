@@ -84,4 +84,5 @@ export const MailTestService: Service = {
   description: 'Service to test sending emails',
   loginRequired: false,
   Event: [],
+  enabled: true,
 };

@@ -167,6 +167,7 @@ export const EventsendMessageDiscord: Event = {
     },
   ],
   execute: (parameters: FieldGroup[]) => {
+
     console.log("Executing 'Send Message' reaction for Discord");
     const channelDetails = parameters.find(
       (param) => param.id === 'channelDetails',
@@ -266,7 +267,7 @@ export const EventBanUserDiscord: Event = {
 export const discordService: Service = {
   id: 'discord',
   name: 'Discord',
-  description: 'Messaging service for teams',
+  description: 'Messaging service for gaming communities',
   loginRequired: true,
   image: 'https://www.svgrepo.com/show/353655/discord-icon.svg',
   Event: [],

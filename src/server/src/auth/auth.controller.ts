@@ -19,6 +19,8 @@ import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { OutlookAuthService } from './external-services/outlook.auth.service';
 import { DiscordService } from '../app-discord/discord-app.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SpotifyAuthService } from './external-services/spotify.auth.service';
+import { TwitchAuthService } from '../auth/external-services/twitch.auth.services';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -27,6 +29,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
     private readonly outlookAuthService: OutlookAuthService,
+    private readonly twitchAuthService: TwitchAuthService,
+    private readonly spotifyAuthService: SpotifyAuthService,
   ) {}
 
   @Post('register')
@@ -312,6 +316,26 @@ export class AuthController {
   }
 
   @Post('google')
+  @ApiOperation({ summary: 'Google OAuth, route for receive code from google' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens stored in the database',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+  })
+  @ApiBody({
+    type: String,
+    examples: {
+      example1: {
+        summary: 'Example google oauth',
+        value: {
+          code: 'code',
+        },
+      },
+    },
+  })
   async googleOAuth(@Body('code') code: string) {
     if (!code) {
       throw new BadRequestException('Code is missing');
@@ -328,7 +352,70 @@ export class AuthController {
   }
 
   @Get('createAdmin')
+  @ApiOperation({ summary: 'Create an admin user default for test' })
   async createAdmin() {
     return await this.authService.createAdmin();
+  }
+
+  @Get('spotify/redirect')
+  spotifyAuthRedirect(): { redirectUrl: string } {
+    const redirectUrl = this.spotifyAuthService.generateAuthUrl();
+    return { redirectUrl };
+  }
+
+  @Post('spotify/callback')
+  @UseGuards(AuthGuard('jwt'))
+  async getSpotifyCallback(@Body('code') code: string, @Req() req: any) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+    try {
+      console.log('AUTH: Exchanging code for tokens');
+      await this.spotifyAuthService.getAccessToken(code, userId);
+      return { message: 'Tokens stored in the database' };
+    } catch (error) {
+      throw new BadRequestException({
+        err_code: 'SPOTIFY_TOKEN_EXCHANGE_FAILED',
+        details: error.message,
+      });
+    }
+  }
+  @Get('twitch/redirect')
+  twitchAuthRedirect(): { redirectUrl: string } {
+    // Génère l’URL d’authentification Twitch
+    console.log('Redirecting to Twitch OAuth');
+    const redirectUrl = this.twitchAuthService.generateAuthUrl();
+    return { redirectUrl };
+  }
+
+  @Post('twitch/callback')
+  @UseGuards(AuthGuard('jwt'))
+  async getTwitchCallback(@Body('code') code: string, @Req() req: any) {
+    console.log('Twitch OAuth callback received:', code);
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+
+    try {
+      console.log('AUTH: Exchanging code for tokens');
+      // Échange le code contre le token et stocke ce dernier dans la BDD
+      await this.twitchAuthService.getAccessToken(code, userId);
+
+      return { message: 'Twitch tokens stored in the database' };
+    } catch (error) {
+      throw new BadRequestException({
+        err_code: 'TWITCH_TOKEN_EXCHANGE_FAILED',
+        details: error.message,
+      });
+    }
   }
 }

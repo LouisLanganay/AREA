@@ -1,11 +1,15 @@
-import { Req, Controller, Param, Post, Res, Get, Body } from '@nestjs/common';
+import { Req, Controller, Param, Post, Get, Body, Res , Headers } from '@nestjs/common';
 import { WebhooksService } from './webhooks.service';
+import { ApiOperation } from '@nestjs/swagger';
+import { Response } from 'express';
 
 @Controller('webhooks')
 export class WebhooksController {
-  constructor(private readonly webhooksService: WebhooksService) {}
+  constructor(private readonly webhooksService: WebhooksService) {
+  }
 
   @Post(':id')
+  @ApiOperation({ summary: 'Handle webhook' })
   async handleWebhook(@Param('id') id: string, @Req() req: any) {
     const data = req.headers;
     return this.webhooksService.handleWebhook(id, data);
@@ -55,5 +59,25 @@ export class WebhooksController {
       console.error('No validation token found in request');
       res.status(400).send('Validation token is missing');
     }
+  }
+
+  @Get(':id')
+  async handleWebhookGet(@Param('id') id: string, @Req() req: any) {
+    return this.webhooksService.handleWebhook(id, req.headers);
+  }
+
+  @Post('twitch/:webhookId')
+  async handleTwitchWebhook(
+      @Param('webhookId') webhookId: string,
+      @Headers('Twitch-Eventsub-Message-Type') messageType: string,
+      @Body() body: any,
+      @Res() res: Response,
+  ) {
+    return this.webhooksService.handleTwitchWebhook(
+      webhookId,
+      messageType,
+      body,
+      res,
+    );
   }
 }

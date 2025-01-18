@@ -408,4 +408,20 @@ export class UsersService {
       },
     });
   }
+
+  public async getUserWorkflowsHistory(userId: string) {
+    return this.prismaService.workflow.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        name: true,
+        historyWorkflow: {
+          select: {
+            executionDate: true,
+            status: true,
+          },
+        },
+      },
+    });
+  }
 }

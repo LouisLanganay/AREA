@@ -312,4 +312,46 @@ export class WorkflowService {
         : undefined,
     }));
   }
+
+  public async getWorkflowHistory(userId: string, workflowId) {
+    const workflow = await this.prisma.workflow.findUnique({
+      where: { id: workflowId },
+      select: { userId: true, name: true },
+    });
+    if (!workflow) {
+      throw new NotFoundException({
+        err_code: 'WORKFLOW_NOT_FOUND',
+      });
+    }
+
+    if (workflow.userId !== userId) {
+      throw new ForbiddenException({
+        err_code: 'WORKFLOW_INVALID_PERM',
+      });
+    }
+    const data = await this.prisma.historyWorkflow.findMany({
+      where: { workflowId },
+      select: {
+        executionDate: true,
+        status: true,
+      },
+    });
+    return {
+      workflowId,
+      name: workflow.name,
+      history: data,
+    };
+  }
+
+  public async getAllWorkflows() {
+    return this.prisma.workflow.findMany({
+      select: {
+        id: true,
+        name: true,
+        enabled: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
 }

@@ -1,10 +1,10 @@
 import { getServices } from '@/api/Services';
-import { getWorkflow, updateWorkflow } from '@/api/Workflows';
+import { getWorkflow, getWorkflowHistory, updateWorkflow } from '@/api/Workflows';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Service } from '@/interfaces/Services';
-import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode } from '@/interfaces/Workflows';
+import { Event, FieldGroup, flowStyles, Workflow, WorkflowEdge, WorkflowNode, WorkflowHistory } from '@/interfaces/Workflows';
 import { findNode, getLayoutedElements, validateWorkflow } from '@/utils/workflows';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import {
@@ -13,9 +13,10 @@ import {
   Background,
   ConnectionLineType,
   Controls,
-  ReactFlow
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+  ReactFlow,
+  Node
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
 import { isEqual } from 'lodash';
@@ -23,13 +24,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import AddNode from '../components/flow/AddNode';
-import Node from '../components/flow/Node';
+import NodeComponent from '../components/flow/Node';
 import { EditWorkflowCommand } from './editor/EditWorkflowCommand';
 import { WorkflowHeader } from './editor/EditWorkflowHeader';
 import { EditWorkflowSidebar } from './editor/EditWorkflowSidebar';
+import { AIWorkflowAssistant } from '@/components/AIWorkflowAssistant';
+import Cookies from 'js-cookie';
+import { WorkflowHistorySidebar } from './editor/WorkflowHistorySidebar';
 
 const nodeTypes = {
-  node: Node,
+  node: NodeComponent,
   custom2: AddNode,
 };
 
@@ -49,6 +53,9 @@ export default function EditWorkflow() {
   const { token } = useAuth();
   const hasChanges = !isEqual(workflow, updatedWorkflow);
   const isValid = updatedWorkflow ? validateWorkflow(updatedWorkflow) : false;
+  const openaiToken = Cookies.get('openaiToken') ?? null;
+  const [workflowHistory, setWorkflowHistory] = useState<WorkflowHistory[]>([]);
+  const [isHistorySidebarOpen, setIsHistorySidebarOpen] = useState(false);
 
   const flattenNodesAndCreateEdges = useCallback((triggers: Event[], services: Service[]) => {
     let allEdges: WorkflowEdge[] = [];
@@ -119,6 +126,7 @@ export default function EditWorkflow() {
     if (node.type === 'node') {
       const areaNode = findNode(updatedWorkflow?.triggers, node.id) || null;
       setSelectedNode(areaNode);
+      setIsHistorySidebarOpen(false);
 
       setNodes(nodes => nodes.map(n => ({
         ...n,
@@ -136,12 +144,14 @@ export default function EditWorkflow() {
 
         if (!id || !token) return;
         const workflow = await getWorkflow(id, token);
+        const { history } = await getWorkflowHistory(id, token);
         if (!workflow) {
           navigate('/workflows');
           return;
         }
         setWorkflow(workflow);
         setUpdatedWorkflow(workflow);
+        setWorkflowHistory(history);
 
         const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(workflow.triggers, fetchedServices);
         const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
@@ -198,6 +208,7 @@ export default function EditWorkflow() {
       const updatedSelectedNode = findNode(newWorkflow.triggers, nodeId);
       if (updatedSelectedNode) {
         setSelectedNode(updatedSelectedNode);
+        setIsHistorySidebarOpen(false);
       }
     }
   }, [updatedWorkflow, selectedNode]);
@@ -333,6 +344,8 @@ export default function EditWorkflow() {
     const defaultNode = findNode(workflow.triggers, nodeId);
     if (!defaultNode) return;
 
+    setSelectedNode(null);
+
     const resetNodeInTree = (nodes: Event[]): Event[] => nodes.map(node => node.id === nodeId ? defaultNode : node);
 
     setUpdatedWorkflow(prev => ({ ...prev!, triggers: resetNodeInTree(prev!.triggers) }));
@@ -422,11 +435,15 @@ export default function EditWorkflow() {
         updatedWorkflow={updatedWorkflow}
         setWorkflow={setWorkflow}
         setUpdatedWorkflow={setUpdatedWorkflow}
+        onOpenHistory={() => {
+          setIsHistorySidebarOpen(!isHistorySidebarOpen);
+          setSelectedNode(null);
+        }}
       />
       <div className='w-full flex h-[calc(100vh-64px)]'>
         <div className={clsx(
           'transition-all duration-300 h-full',
-          selectedNode ? 'w-[calc(100%-400px)]' : 'w-full'
+          (selectedNode || isHistorySidebarOpen) ? 'w-[calc(100%-400px)]' : 'w-full'
         )}>
           <style>{flowStyles}</style>
           <div className='bg-muted/50 h-full flex items-center justify-center w-full'>
@@ -435,8 +452,8 @@ export default function EditWorkflow() {
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
-                onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds))}
-                onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds))}
+                onNodesChange={(changes) => setNodes((nds) => applyNodeChanges(changes, nds) as WorkflowNode[])}
+                onEdgesChange={(changes) => setEdges((eds) => applyEdgeChanges(changes, eds) as WorkflowEdge[])}
                 nodesConnectable={false}
                 nodesDraggable={false}
                 panOnDrag
@@ -444,7 +461,9 @@ export default function EditWorkflow() {
                 fitView
                 zoomOnPinch={false}
                 zoomOnDoubleClick={false}
-                onNodeClick={onNodeClick}
+                onNodeClick={(_: React.MouseEvent, node: Node<any>) => {
+                  onNodeClick(_, node as WorkflowNode);
+                }}
               >
                 <div className='w-full h-fit top-0 left-0 z-10 absolute'>
                   {hasChanges && (
@@ -506,6 +525,18 @@ export default function EditWorkflow() {
             hasChangesOnNode={hasChangesOnNode}
           />
         )}
+        {isHistorySidebarOpen && (
+          <WorkflowHistorySidebar
+            workflow={workflow}
+            history={workflowHistory.slice(-10)}
+            onClose={() => setIsHistorySidebarOpen(false)}
+            onRefresh={async () => {
+              if (!id || !token) return;
+              const { history } = await getWorkflowHistory(id, token);
+              setWorkflowHistory(history);
+            }}
+          />
+        )}
       </div>
 
       <EditWorkflowCommand
@@ -513,6 +544,21 @@ export default function EditWorkflow() {
         onOpenChange={setIsCommandOpen}
         services={services}
         onSelectService={handleSelectService}
+      />
+
+      <AIWorkflowAssistant
+        token={openaiToken}
+        mode='edit'
+        workflow={updatedWorkflow ?? workflow}
+        onSuccess={(newWorkflow) => {
+          setUpdatedWorkflow(newWorkflow);
+          const { nodes: flowNodes, edges: flowEdges } = flattenNodesAndCreateEdges(newWorkflow.triggers, services);
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(flowNodes, flowEdges, 'TB');
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+          setSelectedNode(null);
+          setIsCommandOpen(false);
+        }}
       />
     </div>
   );

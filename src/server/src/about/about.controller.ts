@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ServiceRegister } from '../service/register.service';
 import * as os from 'node:os';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 export class AboutController {
@@ -21,6 +22,7 @@ export class AboutController {
   }
 
   @Get('/about.json')
+  @ApiOperation({ summary: 'Get about.json with data for service' })
   getAbout(): any {
     const json = {
       client: {
@@ -51,7 +53,7 @@ export class AboutController {
         })),
       });
     });
-    json['services'] = jsonServices;
+    json['server']['services'] = jsonServices;
     return json;
   }
 }
