@@ -27,7 +27,7 @@ import {
   EventDateReached,
   EventDayAndTimeReached,
 } from './service/timer.service';
-import { OutlookService, EventSendEmail, EventMonitorEmails, EventCreateEmailDraft } from './service/mailer.service';
+import { OutlookService, EventSendEmail, EventMonitorEmails, EventCreateEmailDraft } from './service/outlook.service';
 
 export async function defineAllService(allService: any) {
   allService.addService(discordService);

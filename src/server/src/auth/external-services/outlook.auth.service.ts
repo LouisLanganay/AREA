@@ -10,7 +10,7 @@ export class OutlookAuthService {
     const baseUrl = process.env.OUTLOOK_AUTH_URL;
     const clientId = process.env.OUTLOOK_CLIENT_ID;
     const redirectUri = process.env.OUTLOOK_REDIRECT_URI;
-    const scopes = ['Mail.Read', 'Mail.Send', 'offline_access'].join(' ');
+    const scopes = ['Mail.Read', 'Mail.Send', 'Mail.ReadWrite', 'offline_access'].join(' ');
 
     const url = `${baseUrl}?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent("[REDIRECT_URI]")}&scope=${scopes}&response_mode=query`;
 

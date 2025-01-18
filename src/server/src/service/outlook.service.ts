@@ -149,7 +149,7 @@ export const EventCreateEmailDraft: Event = {
 export const EventMonitorEmails: Event = {
   type: 'action',
   id_node: 'monitorEmails',
-  name: 'Monitor Emails',
+  name: 'Listen mailbox',
   description: 'Monitor incoming emails',
   serviceName: 'outlook',
   fieldGroups: [],
