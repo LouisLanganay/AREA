@@ -14,8 +14,17 @@ services:
       - npm_cache:/root/.npm
     env_file:
       - .env
+    networks:
+      - app_network
+    depends_on:
+      - client_mobile
+      - server
     command: >
       bash -c "
+      while [ ! -f /web_service/public/app-debug.apk ]; do
+        echo 'Waiting for mobile build to complete...'
+        sleep 5
+      done &&
       rm -rf node_modules &&
       rm -rf package-lock.json &&
       rm -rf node_modules/@capacitor &&
@@ -33,8 +42,10 @@ services:
       - ./src/web:/web_service
       - ./src/shared:/shared
       - npm_cache:/root/.npm
-    depends_on:
-      - client_web
+    env_file:
+      - .env
+    networks:
+      - app_network
     command: >
       bash -c "
       rm -rf node_modules/@capacitor &&
@@ -45,48 +56,47 @@ services:
       cd android &&
       ./gradlew assembleDebug &&
       cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/ &&
-      echo 'APK generated at /web_service/app-debug.apk'
+      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/public/ &&
+      echo 'APK generated at /web_service/public/app-debug.apk'
       "
 
-  #database:
-  #  container_name: linkit_database
-  #  image: mariadb:11.6.2
-  #  env_file:
-  #    - .env
-  #  ports:
-  #    - "3306:3306"
-  #  volumes:
-  #    - db-data:/var/lib/mysql
-  #  environment:
-  #    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #    MYSQL_DATABASE: ${MYSQL_DATABASE}
-  #    MYSQL_USER: ${MYSQL_USER}
-  #    MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  #  networks:
-  #    - app_network
-  #  security_opt:
-  #    - no-new-privileges:true
-
-  #server:
-  #  container_name: linkit_server
-  #  build:
-  #    context: ./src/server/
-  #    dockerfile: DockerfileDev
-  #  ports:
-  #    - "8080:8080"
-  #  volumes:
-  #    - ./src/server:/server
-  #    - ./src/shared:/shared
-  #    - npm_cache:/root/.npm
-  #  env_file:
-  #    - .env
-  #  depends_on:
-  #    - database
-  #  networks:
-  #    - app_network
-  #  security_opt:
-  #    - no-new-privileges:true
+  database:
+    container_name: linkit_database
+    image: mariadb:11.6.2
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
+  server:
+    container_name: linkit_server
+    build:
+      context: ./src/server/
+      dockerfile: DockerfileDev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/server:/server
+      - ./src/shared:/shared
+      - npm_cache:/root/.npm
+    env_file:
+      - .env
+    depends_on:
+      - database
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   db-data:
