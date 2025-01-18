@@ -21,7 +21,7 @@ services:
       - server
     command: >
       bash -c "
-      while [ ! -f /web_service/public/app-debug.apk ]; do
+      while [ ! -f /web_service/public/LinkIt.apk ]; do
         echo 'Waiting for mobile build to complete...'
         sleep 5
       done &&
@@ -56,7 +56,7 @@ services:
       cd android &&
       ./gradlew assembleDebug &&
       cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/public/ &&
+      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/public/LinkIt.apk &&
       echo 'APK generated at /web_service/public/LinkIt.apk'
       "
 
