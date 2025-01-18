@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { BoltIcon, CalendarIcon, ChevronRightIcon, DocumentIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
-import { isPlatform } from '@ionic/react';
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import Cookies from 'js-cookie';
