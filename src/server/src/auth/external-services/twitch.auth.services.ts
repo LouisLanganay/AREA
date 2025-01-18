@@ -11,7 +11,7 @@ export class TwitchAuthService {
      * @returns {string} L'URL de redirection vers Twitch
      */
     generateAuthUrl(): string {
-        const baseUrl = process.env.TWITCH_AUTH_URL;
+        const baseUrl = "https://id.twitch.tv/oauth2/authorize";
         const clientId = process.env.TWITCH_CLIENT_ID;
         const redirectUri = '[REDIRECT_URI]';
         const scopes = [
@@ -36,9 +36,8 @@ export class TwitchAuthService {
      */
     async getAccessToken(authCode: string, userId: string): Promise<void> {
         console.log('TWITCH: Exchanging code for tokens');
-        const tokenUrl = process.env.TWITCH_TOKEN_URL; // ex: "https://id.twitch.tv/oauth2/token"
+        const tokenUrl = "https://id.twitch.tv/oauth2/token"
 
-        // Prépare le corps de la requête
         const body = new URLSearchParams({
             client_id: process.env.TWITCH_CLIENT_ID!,
             client_secret: process.env.TWITCH_CLIENT_SECRET!,
@@ -48,7 +47,6 @@ export class TwitchAuthService {
         });
 
         try {
-            // On envoie la requête POST vers l'endpoint OAuth de Twitch
             const response = await fetch(tokenUrl, {
                 method: 'POST',
                 headers: {
@@ -59,18 +57,15 @@ export class TwitchAuthService {
 
             const responseBody = await response.text();
 
-            // Vérifie si la requête est OK
             if (!response.ok) {
                 console.error('Failed to exchange code for tokens:', response.status, response.statusText);
                 console.error('Response body:', responseBody);
                 throw new BadRequestException('Failed to exchange code for tokens');
             }
 
-            // Parse la réponse JSON
             const data = JSON.parse(responseBody);
             console.log('Twitch Tokens received:', data);
 
-            // On stocke les tokens dans la table "token"
             await this.prisma.token.create({
                 data: {
                     provider: 'twitch',
@@ -78,7 +73,6 @@ export class TwitchAuthService {
                     accessToken: data.access_token,
                     refreshToken: data.refresh_token,
                     expiresAt: new Date(Date.now() + data.expires_in * 1000),
-                    // expires_in indique le nombre de secondes de validité du token
                 },
             });
 

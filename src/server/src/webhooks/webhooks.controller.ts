@@ -26,7 +26,6 @@ export class WebhooksController {
       @Body() body: any,
       @Res() res: Response,
   ) {
-    console.log('JE SUIS LA');
     return this.webhooksService.handleTwitchWebhook(
       webhookId,
       messageType,
