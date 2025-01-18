@@ -14,7 +14,7 @@ const config: CapacitorConfig = {
     App: {
       appUrlOpen: {
         domain: 'localhost:8081',
-        paths: ['/login-success']
+        paths: ['/login-success', '/service-login-success']
       }
     }
   },

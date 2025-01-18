@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 /**
  * Custom Axios instance for API requests
@@ -20,12 +21,15 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // Get token from localStorage
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
 
     // Add token to Authorization header if present
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Add ngrok-skip-browser-warning header
+    config.headers['ngrok-skip-browser-warning'] = 'true';
 
     return config;
   },
@@ -50,7 +54,7 @@ axiosInstance.interceptors.response.use(
       localStorage.removeItem('user');
 
       // Redirect to login page
-      window.location.href = '/login';
+      //window.location.href = '/login';
     }
 
     return Promise.reject(error);

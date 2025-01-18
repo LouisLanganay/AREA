@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite --port=8081",
     "dev": "vite --port=8081",
-    "build": "tsc -b && vite build && npx cap sync",
+    "build": "tsc -b && vite build",
     "apk": "cd android && ./gradlew assembleDebug",
     "lint": "eslint src --fix",
     "preview": "vite preview"
@@ -21,6 +21,7 @@
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.9.1",
     "@ionic/react": "^8.4.1",
+    "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.2",
@@ -40,7 +41,6 @@
     "@radix-ui/react-toast": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tanstack/react-table": "^8.20.5",
-    "@xyflow/react": "^12.3.5",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -59,7 +59,10 @@
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.53.2",
     "react-i18next": "^15.1.1",
+    "react-remove-scroll-bar": "^2.3.8",
     "react-router-dom": "^6.28.0",
+    "reactflow": "^11.11.4",
+    "recharts": "^2.15.0",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"

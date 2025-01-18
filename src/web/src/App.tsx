@@ -1,6 +1,6 @@
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import React, { useEffect } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from './components/Layout';
 import { FontScaleProvider } from './context/FontScaleContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -22,6 +22,12 @@ import Premium from './pages/Premium';
 import AssetLinks from './pages/AssetLinks';
 import { Onboarding } from '@/components/Onboarding';
 import NotFound from './pages/NotFound';
+import AdminWorkflows from './pages/AdminWorkflows';
+import { useTranslation } from 'react-i18next';
+import { oauthCallback } from './api/Auth';
+import { toast } from './hooks/use-toast';
+import { getServices } from './api/Services';
+import { Service } from './interfaces/Services';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -78,16 +84,79 @@ function LoginSuccess() {
       }
     };
 
+    const handleDefault = () => {
+      Cookies.remove('oauth_provider');
+      navigate('/workflows');
+    };
+
     switch (provider) {
-    case 'Google':
+    case 'google':
       handleGoogle();
       break;
-    case 'Discord':
+    case 'discord':
       handleDiscord();
       break;
     default:
-      break;
+      handleDefault();
     }
+  }, [location]);
+
+  return <Loading />;
+}
+
+function ServiceLoginSuccess() {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('code');
+  const { token: userToken } = useAuth();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const serviceId = Cookies.get('service_oauth_provider');
+      if (!token || !userToken || !serviceId) return;
+      let services: Service[] = [];
+      try {
+        services = await getServices(userToken);
+      } catch (error) {
+        console.error(error);
+      }
+      const service = services.find(s => s.id === serviceId);
+      if (!service?.auth?.callback_uri || !userToken) return;
+      const myToast = toast({
+        description: t('services.connecting'),
+        variant: 'loading',
+        duration: 3000,
+      });
+      try {
+        const response = await oauthCallback(service.auth.callback_uri, token, userToken);
+        if (response.status !== 201) throw new Error('Failed to connect service');
+        Cookies.remove('service_oauth_provider');
+        myToast.update({
+          id: myToast.id,
+          description: t('services.redirecting'),
+          variant: 'success',
+          duration: 3000,
+        });
+        setTimeout(() => {
+          navigate('/services');
+        }, 2000);
+      } catch (error: any) {
+        Cookies.remove('service_oauth_provider');
+        console.error('OAuth callback error:', error);
+        if (error?.response?.status === 500) {
+          myToast.update({
+            id: myToast.id,
+            description: t('error.INTERNAL_SERVER_ERROR_DESCRIPTION'),
+            variant: 'destructive',
+          });
+        }
+        navigate('/services');
+      }
+    };
+
+    handleOAuthCallback();
   }, [location]);
 
   return <Loading />;
@@ -95,6 +164,17 @@ function LoginSuccess() {
 
 function App() {
   const isFirstVisit = Cookies.get('onboarding-completed') !== 'true';
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (isFirstVisit) {
+      const timer = setTimeout(() => {
+        setShowOnboarding(true);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isFirstVisit]);
 
   return (
     <AuthProvider>
@@ -132,10 +212,10 @@ function App() {
                 element={
                   <Home />
                 }
-              ></Route>
+              />
 
               <Route
-                path="/users"
+                path="/admin/users"
                 element={
                   <ProtectedRoute>
                     <Layout>
@@ -143,7 +223,18 @@ function App() {
                     </Layout>
                   </ProtectedRoute>
                 }
-              ></Route>
+              />
+
+              <Route
+                path="/admin/workflows"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <AdminWorkflows />
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
 
               <Route
                 path="/services"
@@ -217,6 +308,13 @@ function App() {
               />
 
               <Route
+                path='/service-login-success'
+                element={
+                  <ServiceLoginSuccess />
+                }
+              />
+
+              <Route
                 path='/forgot-password'
                 element={
                   <ForgotPassword />
@@ -252,7 +350,7 @@ function App() {
               />
 
             </Routes>
-            {isFirstVisit && <Onboarding />}
+            {showOnboarding && isFirstVisit && <Onboarding />}
           </BrowserRouter>
         </FontScaleProvider>
       </ThemeProvider>

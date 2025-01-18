@@ -31,6 +31,7 @@
                 <data android:host="localhost" />
                 <data android:port="8081" />
                 <data android:pathPrefix="/login-success" />
+                <data android:pathPrefix="/service-login-success" />
             </intent-filter>
 
         </activity>

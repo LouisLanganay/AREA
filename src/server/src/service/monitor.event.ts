@@ -110,11 +110,12 @@ export class EventMonitor {
       fields: workflowFields,
     };
 
-    let status_workflow = 'success';
+    let status_workflow = 'failure';
     try {
       if (typeof event.check === 'function') {
         const result = await event.check([params, nodeFieldGroupWorkflow]);
         if (result) {
+          status_workflow = 'success';
           const root_node = workflow.triggers.find(
             (node) => node.id_node === event.id_node,
           );
@@ -125,6 +126,8 @@ export class EventMonitor {
               serviceList,
             );
           }
+        } else {
+          status_workflow = 'failure';
         }
       }
     } catch (error) {

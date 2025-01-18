@@ -12,17 +12,26 @@ services:
       - ./src/web:/web_service
       - ./src/shared:/shared
       - npm_cache:/root/.npm
+    env_file:
+      - .env
+    networks:
+      - app_network
     depends_on:
       - client_mobile
       - server
     command: >
       bash -c "
-      npm install &&
-      npm run build &&
-      npm run start
+      while [ ! -f /web_service/public/app-debug.apk ]; do
+        echo 'Waiting for mobile build to complete...'
+        sleep 5
+      done &&
+      rm -rf node_modules &&
+      rm -rf package-lock.json &&
+      rm -rf node_modules/@capacitor &&
+      npm cache clean --force &&
+      npm install -g typescript &&
+      npm install && npm run build && npm run preview -- --host --port 8081
       "
-    networks:
-      - app_network
 
   client_mobile:
     container_name: linkit_mobile-service
@@ -33,19 +42,23 @@ services:
       - ./src/web:/web_service
       - ./src/shared:/shared
       - npm_cache:/root/.npm
+    env_file:
+      - .env
+    networks:
+      - app_network
     command: >
       bash -c "
+      rm -rf node_modules/@capacitor &&
+      npm install -g typescript &&
       npm install &&
       npm run build &&
       npx cap sync &&
       cd android &&
       ./gradlew assembleDebug &&
       cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/LinkIt.apk &&
-      echo 'APK generated at /web_service/LinkIt.apk'
+      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/public/ &&
+      echo 'APK generated at /web_service/public/LinkIt.apk'
       "
-    networks:
-      - app_network
 
   database:
     container_name: linkit_database
@@ -65,7 +78,6 @@ services:
       - app_network
     security_opt:
       - no-new-privileges:true
-
   server:
     container_name: linkit_server
     build:

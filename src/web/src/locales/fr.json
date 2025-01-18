@@ -5,10 +5,39 @@
     "users": "Utilisateurs"
   },
   "admin": {
+    "copyToClipboard": "Copié dans le presse-papiers",
+    "fetchError": "Échec de la récupération des utilisateurs, veuillez réessayer.",
     "active": "Actif",
+    "fetchHistoryError": "Échec de la récupération de l'historique, veuillez réessayer.",
+    "deleteSuccess": "Utilisateur supprimé avec succès.",
+    "deleteError": "Échec de la suppression de l'utilisateur, veuillez réessayer.",
+    "statusChangeSuccess": "Statut de l'utilisateur modifié avec succès.",
+    "statusChangeError": "Échec de la modification du statut de l'utilisateur, veuillez réessayer.",
     "suspended": "Suspendu",
     "title": "Gestion des utilisateurs",
+    "workflowStats": "Exécutions de flux de travail",
+    "statsDescription": "Voir les statistiques sur le nombre d'exécutions pour chaque flux de travail.",
     "usersTitle": "Utilisateurs enregistrés",
+    "viewProfile": "Voir le profil",
+    "recentFailed": "Échecs récents",
+    "recentSuccess": "Réussites récentes",
+    "live": "En direct activé",
+    "pause": "En direct désactivé",
+    "workflowCreationStats": "Statistiques de création de flux de travail",
+    "viewMode": {
+      "daily": "Exécutions quotidiennes",
+      "hourly": "Exécutions horaires",
+      "minute": "Exécutions par minute"
+    },
+    "stats": {
+      "title": "Statistiques de flux de travail",
+      "success": "Succès",
+      "error": "Erreur",
+      "registrations": "Inscriptions",
+      "newUsers": "nouveaux utilisateurs",
+      "created": "Créé",
+      "updated": "Mis à jour"
+    },
     "users": {
       "id": "ID",
       "name": "Nom",
@@ -18,31 +47,55 @@
       "edit": "Modifier",
       "delete": "Supprimer",
       "cancel": "Annuler",
-      "confirm": "Confirmer"
+      "confirm": "Confirmer",
+      "provider": "Fournisseur",
+      "role": "Rôle",
+      "createdAt": "Créé le",
+      "updatedAt": "Mis à jour le",
+      "lastConnection": "Dernière connexion",
+      "close": "Fermer"
     },
     "openMenu": "Ouvrir le menu",
     "suspend": "Suspendre",
     "activate": "Activer",
     "confirmDeleteTitle": "Confirmer la suppression",
-    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{userName}} ?",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer l'utilisateur {{userName}}?",
     "confirmStatusTitle": "Confirmer le changement de statut",
-    "confirmStatus": "Êtes-vous sûr de vouloir {{status}} l'utilisateur {{userName}} ?",
+    "confirmStatus": "Êtes-vous sûr de vouloir {{status}} l'utilisateur {{userName}}?",
     "editTitle": "Modifier l'utilisateur",
-    "saveChanges": "Enregistrer les modifications"
+    "saveChanges": "Enregistrer les modifications",
+    "registrationStats": "Inscriptions d'utilisateurs",
+    "lastSevenDays": "Activité des 7 derniers jours",
+    "last24Hours": "Activité des dernières 24 heures",
+    "lastHour": "Activité de la dernière heure",
+    "workflowActivityDescription": "Suivre l'activité de création et de mise à jour des flux de travail au fil du temps"
   },
   "sidebar": {
     "groups": {
       "application": "Application",
       "administration": "Administration"
     },
+    "premium": {
+      "title": "AI Premium",
+      "description": "Construisez vos flux de travail avec la puissance de l'IA. Disponible uniquement avec le premium.",
+      "button": "Passer à Premium"
+    },
     "items": {
       "home": "Accueil",
-      "workflows": "Mes Workflows",
-      "services": "Mes Services",
+      "workflows": "Mes flux de travail",
+      "services": "Mes services",
       "users": "Utilisateurs",
       "settings": "Paramètres",
       "switchAccount": "Changer de compte",
-      "logout": "Déconnexion"
+      "switchAccountSuccess": "Compte changé avec succès",
+      "logout": "Déconnexion",
+      "addAccount": "Ajouter un compte",
+      "currentAccount": "Actuel",
+      "switchTheme": "Changer de thème",
+      "documentation": "Documentation",
+      "onboarding": "Intégration",
+      "newWorkflow": "Nouveau flux de travail",
+      "adminWorkflows": "Flux de travail"
     }
   },
   "settings": {
@@ -57,8 +110,8 @@
       "automation": "Automatisation"
     },
     "account": {
-      "title": "Informations du compte",
-      "description": "Gérez les détails et les préférences de votre compte.",
+      "title": "Informations sur le compte",
+      "description": "Gérez les détails et préférences de votre compte.",
       "avatar": {
         "change": "Changer d'avatar",
         "alt": "Photo de profil",
@@ -75,55 +128,41 @@
       "languages": {
         "fr": "Français",
         "en": "Anglais",
-        "placeholder": "Sélectionnez une langue"
+        "placeholder": "Sélectionnez la langue"
       }
     },
     "appearance": {
+      "language": {
+        "fr": "Français",
+        "en": "Anglais",
+        "ar": "Arabe",
+        "es": "Espagnol",
+        "label": "Langue",
+        "description": "Sélectionnez la langue de l'application."
+      },
       "title": "Apparence",
       "description": "Personnalisez l'apparence de l'application.",
       "darkMode": {
         "label": "Mode sombre",
-        "description": "Activez le mode sombre pour une expérience visuelle confortable en faible luminosité."
+        "description": "Activez le mode sombre pour un confort visuel en basse lumière.",
+        "switch": "Changer de mode"
       },
       "fontSize": {
-        "label": "Taille de la police",
+        "label": "Taille de police",
         "description": "Ajustez la taille de la police pour une meilleure lisibilité.",
-        "small": "Petite",
-        "medium": "Moyenne",
-        "large": "Grande",
-        "xLarge": "Très grande"
-      }
-    },
-    "notifications": {
-      "title": "Préférences de notification",
-      "description": "Gérez la façon dont vous recevez les notifications.",
-      "email": {
-        "label": "Notifications par email",
-        "description": "Recevez des notifications par email."
-      },
-      "push": {
-        "label": "Notifications push",
-        "description": "Recevez des notifications push sur vos appareils."
-      },
-      "frequency": {
-        "label": "Fréquence des notifications",
-        "placeholder": "Sélectionnez une fréquence",
-        "options": {
-          "realtime": "En temps réel",
-          "hourly": "Résumé horaire",
-          "daily": "Résumé quotidien",
-          "weekly": "Résumé hebdomadaire"
-        }
+        "small": "Petit",
+        "medium": "Moyen",
+        "large": "Grand",
+        "xLarge": "Très grand"
       }
     },
     "security": {
       "title": "Paramètres de sécurité",
-      "description": "Gérez la sécurité et l'accès à votre compte.",
+      "description": "Gérez la sécurité et l'accès de votre compte.",
       "password": {
-        "change": "Changer le mot de passe",
-        "current": "Mot de passe actuel",
-        "new": "Nouveau mot de passe",
-        "confirm": "Confirmer le mot de passe"
+        "label": "Changer le mot de passe",
+        "description": "Changez votre mot de passe pour renforcer la sécurité de votre compte.",
+        "change": "Changer le mot de passe"
       },
       "twoFactor": {
         "label": "Authentification à deux facteurs",
@@ -131,17 +170,25 @@
       },
       "delete": {
         "label": "Supprimer le compte",
+        "description": "Supprimez définitivement votre compte et retirez vos données de nos serveurs.",
+        "success": "Compte supprimé avec succès. Vous serez déconnecté dans 5 secondes.",
+        "error": "Échec de la suppression du compte, veuillez réessayer.",
         "confirmation": {
-          "title": "Êtes-vous absolument sûr ?",
-          "description": "Cette action est irréversible. Cela supprimera définitivement votre compte et supprimera vos données de nos serveurs."
+          "title": "Confirmer la suppression",
+          "description": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible et supprimera toutes vos données de nos serveurs."
         }
+      },
+      "openai": {
+        "label": "Jeton API OpenAI",
+        "description": "Entrez votre jeton API OpenAI pour activer les fonctionnalités d'IA",
+        "saveSuccess": "Jeton OpenAI enregistré avec succès"
       }
     },
     "automation": {
       "title": "Paramètres d'automatisation",
       "description": "Configurez les options spécifiques à l'automatisation.",
       "executionLimit": {
-        "label": "Limite quotidienne d'exécutions"
+        "label": "Limite d'exécution quotidienne"
       },
       "apiKey": {
         "label": "Clé API"
@@ -159,24 +206,480 @@
     }
   },
   "workflows": {
+    "runWorkflowDescriptionError": "Échec de l'exécution du flux de travail, veuillez réessayer.",
+    "fetchErrorDescription": "Échec de la récupération des données du serveur. Veuillez réessayer.",
     "selectAll": "Tout sélectionner",
-    "selectRow": "Sélectionner une ligne",
+    "selectRow": "Sélectionner la ligne",
     "name": "Nom",
+    "creatingWorkflow": "Création du flux de travail...",
+    "updateItem": "Mettre à jour le flux de travail",
+    "live": "En direct",
+    "workflow": "flux de travail",
+    "history": "Historique",
+    "refresh": "Rafraîchir",
+    "lastRefresh": "Dernier rafraîchissement à {{time}}",
+    "workflowDisabled": "Le flux de travail est désactivé, il ne sera pas exécuté.",
+    "noHistory": "Aucun historique disponible",
+    "executionSuccess": "Exécution réussie",
+    "executionHistory": "Historique des exécutions",
+    "executionError": "Échec de l'exécution",
+    "workflows": "flux de travail",
+    "ai": {
+      "assistant": "Assistant de flux de travail IA",
+      "editor": "Éditeur de flux de travail IA",
+      "modify": "Modifier",
+      "workflowUpdated": "Flux de travail mis à jour avec succès",
+      "generating": "Génération du flux de travail...",
+      "error": "Une erreur s'est produite lors de la génération du flux de travail. Veuillez réessayer.",
+      "setupToken": "Configurez votre jeton API OpenAI pour générer des flux de travail.",
+      "settings": "Ouvrir les paramètres",
+      "prompt": "Entrez votre invite",
+      "success": "Flux de travail généré avec succès",
+      "workflowCreated": "Flux de travail créé avec succès",
+      "resultDescription": "Votre flux de travail nommé {{name}} et ayant pour objectif {{description}} a été créé. Vous pouvez le voir en cliquant sur le bouton ci-dessous.",
+      "result": "Résultat :",
+      "clear": "Effacer le résultat",
+      "openWorkflow": "Ouvrir le flux de travail",
+      "generate": "Générer",
+      "description": "Version bêta, cela peut ne pas toujours fonctionner.",
+      "tooltip": "Pour générer un flux de travail, écrivez une description de ce que vous voulez faire. Notez que vous pouvez consulter la liste des services disponibles dans la section services."
+    },
+    "paused": "En pause",
+    "copyLink": "Copier le lien",
+    "quickActions": "Actions rapides",
     "enabled": "Activé",
+    "removedFromFavorites": "Retiré des favoris",
+    "addedToFavorites": "Ajouté aux favoris",
+    "removeFromFavorites": "Retirer des favoris",
+    "addToFavorites": "Ajouter aux favoris",
+    "updateLoadingDescription": "Mise à jour du flux de travail...",
     "openMenu": "Ouvrir le menu",
+    "updateSuccessDescription": "Nom du flux de travail mis à jour",
     "actions": "Actions",
-    "edit": "Modifier",
-    "delete": "Supprimer",
+    "changesToSave": "Ce flux de travail a des modifications à enregistrer",
+    "discardChanges": "Annuler les modifications",
+    "success": "Terminé",
+    "save2": "Enregistrer",
+    "saving": "Le flux de travail est en cours d'enregistrement...",
+    "edit": "Modifier dans le constructeur",
     "filterByName": "Filtrer par nom...",
-    "bulkActions": "Actions groupées",
+    "deletingWorkflow": "Suppression du flux de travail...",
+    "deleteCancelledDescription": "Suppression annulée.",
+    "noDescription": "Pas de description",
+    "bulkActions": "Actions en masse",
     "enableAll": "Tout activer",
     "disableAll": "Tout désactiver",
+    "runWorkflowDescription": "Exécution du flux de travail...",
+    "runWorkflowDescriptionSuccess": "Flux de travail exécuté avec succès !",
     "columns": "Colonnes",
-    "create": "Créer un Workflow",
+    "create": "Créer un nouveau flux de travail",
+    "enable": "Activer",
+    "disable": "Désactiver",
+    "enableSuccess": "Flux de travail mis à jour",
+    "enableSuccessDescription": "Le flux de travail a été mis à jour.",
+    "creation": {
+      "info": {
+        "title": "Créer un nouveau flux de travail",
+        "subtitle": "Entrez les informations de base sur votre flux de travail",
+        "name": "Nom",
+        "description": "Description",
+        "namePlaceholder": "Entrez le nom du flux de travail",
+        "descriptionPlaceholder": "Entrez la description du flux de travail"
+      },
+      "cancel": "Annuler",
+      "back": "Retour",
+      "nextStep": "Étape suivante",
+      "create": "Créer le flux de travail",
+      "trigger": {
+        "title": "Sélectionner le déclencheur",
+        "description": "Choisissez un événement qui déclenchera votre flux de travail",
+        "back": "Retour",
+        "create": "Créer le flux de travail",
+        "connectMoreServices": "Connectez plus de services pour débloquer plus de possibilités d'automatisation pour créer des flux de travail.",
+        "goToServices": "Gérer"
+      },
+      "folder": {
+        "title": "Choisir un dossier",
+        "description": "Sélectionnez un dossier existant ou créez-en un nouveau pour votre flux de travail",
+        "existing": "Dossiers existants",
+        "new": "Nouveau dossier",
+        "newPlaceholder": "Entrez le nom du dossier",
+        "createNew": "Créer un nouveau dossier"
+      }
+    },
     "noResults": "Aucun résultat trouvé",
     "selectedRows": "{{selected}} sur {{total}} lignes sélectionnées",
     "previous": "Précédent",
     "next": "Suivant",
-    "apps": "Applications"
+    "apps": "Applications",
+    "runNow": "Exécuter maintenant",
+    "disabled": "Désactivé",
+    "delete": "Supprimer",
+    "confirmDeleteTitle": "Confirmer la suppression",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer le flux de travail '{{workflowName}}'?",
+    "linkCopied": "Lien copié dans le presse-papiers",
+    "linkCopiedDescription": "Lien copié dans le presse-papiers.",
+    "updateErrorTitle": "Erreur de mise à jour du flux de travail",
+    "updateErrorDescription": "Une erreur s'est produite lors de la mise à jour du flux de travail. Veuillez réessayer.",
+    "deleteErrorTitle": "Erreur de suppression du flux de travail",
+    "deleteErrorDescription": "Une erreur s'est produite lors de la suppression du flux de travail. Veuillez réessayer.",
+    "typeNameToConfirm": "Tapez '{{workflowName}}' pour confirmer.",
+    "trigger": "Déclencheur",
+    "remove": "Supprimer le nœud",
+    "confirmRemove": "Confirmer la suppression ?",
+    "cancel": "Annuler",
+    "validationErrorTitle": "Erreur de validation",
+    "validationErrorDescription": "Veuillez remplir tous les champs obligatoires.",
+    "invalidFields": "Erreur",
+    "resetNode": "Annuler les modifications",
+    "searchServices": "Rechercher des services...",
+    "nodeResetTitle": "Réinitialisation du nœud",
+    "nodeResetDescription": "Êtes-vous sûr de vouloir réinitialiser le nœud?",
+    "nodeAddedTitle": "Nœud ajouté",
+    "nodeAddedDescription": "Le nœud a été ajouté au flux de travail.",
+    "save": "Enregistrer les modifications",
+    "back": "Retour",
+    "deleteSuccess": "Flux de travail supprimé avec succès",
+    "deleteSuccessDescription": "Le flux de travail a été supprimé.",
+    "createSuccess": "Flux de travail créé avec succès",
+    "createSuccessDescription": "Le flux de travail a été créé.",
+    "createError": "Erreur de création du flux de travail",
+    "createErrorDescription": "Une erreur s'est produite lors de la création du flux de travail. Veuillez réessayer.",
+    "rootFolder": "Dossier racine",
+    "lastTenExecutions": "Affichage des 10 dernières exécutions de ce flux de travail."
+  },
+  "login": {
+    "passwordRequired": "Le mot de passe est requis",
+    "title": "Connectez-vous à votre compte",
+    "description": "Entrez vos identifiants ci-dessous pour vous connecter",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "signUp": "Inscrivez-vous",
+    "signIn": "Se connecter",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "emailPlaceholder": "Entrez votre e-mail",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "or": "OU",
+    "emailInvalid": "Adresse e-mail invalide",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+    "forgotPassword": "Mot de passe oublié ?"
+  },
+  "register": {
+    "usernameUnavailable": "Le nom d'utilisateur est déjà utilisé",
+    "createAccount": "Créer un compte",
+    "fillInDetails": "Remplissez vos informations pour créer un nouveau compte",
+    "username": "Nom d'utilisateur",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmez le mot de passe",
+    "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+    "emailPlaceholder": "Entrez votre e-mail",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "signIn": "Se connecter",
+    "or": "OU",
+    "usernameRequired": "Le nom d'utilisateur est requis",
+    "emailInvalid": "Adresse e-mail invalide",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas"
+  },
+  "error": {
+    "USER_NOT_FOUND": "Utilisateur non trouvé",
+    "INTERNAL_SERVER_ERROR": "Erreur interne du serveur",
+    "INTERNAL_SERVER_ERROR_DESCRIPTION": "Une erreur s'est produite lors du traitement de votre demande. Veuillez réessayer plus tard.",
+    "USERNAME_ALREADY_USE": "Le nom d'utilisateur est déjà pris.",
+    "EMAIL_ALREADY_USE": "L'e-mail est déjà utilisé.",
+    "FIELD_ALREADY_USE": "La valeur de ce champ est déjà utilisée.",
+    "DB_UNAVAILABLE": "Base de données indisponible. Une erreur interne s'est produite.",
+    "USER_NOT_LOCAL_REG": "Utilisateur non trouvé.",
+    "INVALID_CREDENTIAL": "Mot de passe incorrect.",
+    "HACH_FAIL": "Une erreur interne s'est produite lors de la création du mot de passe.",
+    "INTERNAL_FRONT_URL": "Erreur interne du serveur.",
+    "FAIL_SEND_MAIL": "Une erreur interne s'est produite lors de l'envoi de l'e-mail.",
+    "USER_NOT_FOUND_RESET": "Jeton invalide. L'utilisateur n'existe pas.",
+    "INVALID_TOKEN": "Le jeton de réinitialisation est invalide.",
+    "TOKEN_EXPIRED": "Le jeton de réinitialisation a expiré.",
+    "WORKFLOW_INVALID_PERM": "Permissions insuffisantes pour supprimer ou mettre à jour le flux de travail.",
+    "WORKFLOW_UNKNOWN": "Le flux de travail n'existe pas.",
+    "USER_FORBIDDEN_EDIT": "Vous n'avez pas la permission de modifier cet utilisateur.",
+    "AI_WORKFLOW_GENERATION_ERROR": "Une erreur s'est produite lors de la génération du flux de travail. Veuillez réessayer.",
+    "AI_WORKFLOW_GENERATION_SUCCESS": "Flux de travail généré avec succès",
+    "AI_WORKFLOW_SYNTAX_ERROR_GENERATION": "Le flux de travail généré n'est pas valide. Veuillez réessayer."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "back": "Retour",
+    "tip": "Astuce",
+    "tryAgain": "Réessayer"
+  },
+  "forgotPassword": {
+    "title": "Réinitialisez votre mot de passe",
+    "description": "Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "email": "Adresse e-mail",
+    "emailPlaceholder": "Entrez votre e-mail",
+    "emailInvalid": "Adresse e-mail invalide",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "backToLogin": "Retour à la connexion",
+    "checkEmail": "Vérifiez votre e-mail",
+    "checkEmailDescription": "Si un compte existe pour cet e-mail, vous recevrez un lien de réinitialisation de mot de passe sous peu."
+  },
+  "home": {
+    "theme": {
+      "dark": "Passer en mode sombre",
+      "light": "Passer en mode clair"
+    },
+    "navigation": {
+      "menu": "Menu",
+      "theme": {
+        "toggleDark": "Passer en mode sombre",
+        "toggleLight": "Passer en mode clair"
+      },
+      "features": {
+        "scalability": {
+          "sidebar": {
+            "close": "Fermer la barre latérale"
+          }
+        },
+        "title": "Fonctionnalités",
+        "description": "Automatisez vos tâches en connectant vos services préférés. Simple, puissant et accessible à tous.",
+        "intro": "Créez des flux de travail automatisés entre vos applications préférées.",
+        "pricing": "Des plans adaptés à vos besoins, du gratuit à l'entreprise.",
+        "integrations": "Plus de 100 services compatibles pour vos automatisations.",
+        "team": "Rencontrez notre équipe",
+        "stack": "Technologie",
+        "teamDescription": "Nous sommes un groupe dynamique d'individus passionnés par ce que nous faisons et dédiés à fournir les meilleurs résultats pour nos clients.",
+        "stackDescription": "LinkIt vous permet d'orchestrer vos applications et services préférés avec une large gamme d'intégrations.",
+        "linkLabel": "En savoir plus sur les fonctionnalités de LinkIt",
+        "teamLinkLabel": "En savoir plus sur notre équipe",
+        "stackLinkLabel": "En savoir plus sur notre pile technologique"
+      },
+      "documentation": {
+        "title": "Documentation",
+        "api": "Documentation complète de notre API publique.",
+        "source": "Accédez à notre code source sur GitHub.",
+        "mobile": "Téléchargez notre application mobile."
+      },
+      "enterprise": {
+        "title": "Entreprise",
+        "solutions": "Fonctionnalités avancées pour les grandes organisations.",
+        "cases": "Découvrez comment nos clients utilisent LinkIt.",
+        "contact": "Parlons de vos besoins spécifiques."
+      },
+      "logo": "Retour à l'accueil"
+    },
+    "auth": {
+      "signin": "Se connecter",
+      "register": "S'inscrire",
+      "dashboard": "Ouvrir le tableau de bord"
+    },
+    "mobile": {
+      "discover": "Découvrez notre application mobile.",
+      "getStarted": "Commencer"
+    },
+    "title": {
+      "automate": "Automatisez.",
+      "iterate": "Itérez.",
+      "scale": "Évoluez."
+    },
+    "description": "Automatisez vos tâches en connectant vos services préférés. Simple, puissant et accessible à tous.",
+    "team": {
+      "title": "Rencontrez notre équipe",
+      "description": "Nous sommes un groupe dynamique d'individus passionnés par ce que nous faisons et dédiés à fournir les meilleurs résultats pour nos clients.",
+      "roles": {
+        "frontend": "Développeur Frontend",
+        "backend": "Développeur Backend",
+        "backendAndDevOps": "Développeur Backend et DevOps"
+      }
+    },
+    "features": {
+      "title": "Automatisez vos flux de travail",
+      "subtitle": "Tout ce dont vous avez besoin pour automatiser vos flux de travail",
+      "mobile": {
+        "title": "Adapté aux mobiles",
+        "description": "Notre application mobile est conçue pour être conviviale et facile à utiliser, avec un accent sur la simplicité et l'efficacité."
+      },
+      "performance": {
+        "title": "Capacités IA",
+        "description": "Exploitez nos outils basés sur l'IA pour automatiser les flux de travail sans effort. Découvrez une automatisation intelligente adaptée à vos besoins.",
+        "ai": {
+          "title": "Génération de flux de travail IA",
+          "description": "Générez vos flux de travail avec notre générateur de flux de travail IA. Pas besoin de coder, décrivez simplement votre flux de travail et laissez l'IA faire le reste."
+        }
+      },
+      "scalability": {
+        "title": "Évolutivité",
+        "description": "Toutes les actions et réactions dans notre application sont hautement personnalisables, vous permettant d'adapter les flux de travail à vos besoins spécifiques.",
+        "sidebar": {
+          "titleGroup": "Options du serveur",
+          "label": "ID du serveur",
+          "title": "Envoyer un message sur un canal"
+        }
+      },
+      "connect": {
+        "title": "Connectez vos applications",
+        "description": "Intégrez sans effort vos applications préférées comme Discord, YouTube et les services Google. Créez des flux de travail automatisés puissants qui fonctionnent ensemble."
+      }
+    },
+    "stack": {
+      "title1": "Intégrez",
+      "title2": "des automatisations avec plusieurs services.",
+      "description": "LinkIt vous permet d'orchestrer vos applications et services préférés avec une large gamme d'intégrations.",
+      "services": {
+        "discord": {
+          "title": "Discord",
+          "description": "Connectez votre compte Discord pour automatiser vos flux de travail et rester connecté avec votre communauté sans effort."
+        },
+        "apple": {
+          "title": "Apple",
+          "description": "Connectez votre compte Apple pour automatiser vos flux de travail et vous intégrer parfaitement à votre écosystème Apple."
+        },
+        "google": {
+          "title": "Google",
+          "description": "Connectez votre compte Google pour automatiser vos flux de travail et améliorer la productivité avec les services Google."
+        },
+        "github": {
+          "title": "Github",
+          "description": "Connectez votre compte Github pour automatiser vos flux de travail et rationaliser votre processus de développement."
+        },
+        "youtube": {
+          "title": "Youtube",
+          "description": "Connectez votre compte Youtube pour automatiser vos flux de travail et gérer votre contenu vidéo plus efficacement."
+        },
+        "twitch": {
+          "title": "Twitch",
+          "description": "Connectez votre compte Twitch pour automatiser vos flux de travail et interagir avec votre audience en temps réel."
+        },
+        "outlook": {
+          "title": "Outlook",
+          "description": "Connectez votre compte Outlook pour automatiser vos flux de travail et gérer vos e-mails plus efficacement."
+        },
+        "spotify": {
+          "title": "Spotify",
+          "description": "Connectez votre compte Spotify pour automatiser vos flux de travail et gérer votre musique plus efficacement."
+        }
+      }
+    },
+    "cta": {
+      "title1": "Commencez à automatiser",
+      "title2": "vos flux de travail dès aujourd'hui.",
+      "description": "Créez votre premier flux de travail en quelques minutes avec notre constructeur de flux de travail facile.",
+      "button": "Ouvrir le constructeur"
+    }
+  },
+  "resetPassword": {
+    "title": "Réinitialisez votre mot de passe",
+    "description": "Entrez votre nouveau mot de passe ci-dessous pour réinitialiser votre mot de passe.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmez le mot de passe",
+    "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez votre nouveau mot de passe",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "backToLogin": "Retour à la connexion",
+    "success": "Réinitialisation du mot de passe réussie",
+    "successDescription": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe."
+  },
+  "client": {
+    "apk": {
+      "startIn": "Le téléchargement commence dans {{seconds}} secondes",
+      "title": "Téléchargement du client LinkIt...",
+      "description": "Si le téléchargement ne commence pas automatiquement, ",
+      "download": "cliquez ici"
+    }
+  },
+  "loading": {
+    "error": "L'authentification prend plus de 10 secondes. Veuillez réessayer.",
+    "authenticating": "Authentification...",
+    "pleaseWait": "Veuillez patienter pendant que nous vérifions vos informations."
+  },
+  "premium": {
+    "includes": "Comprend tout dans {{previous_tier}}, plus :",
+    "include": "Comprend :",
+    "contactUs": "Contactez-nous",
+    "title": "Choisissez votre plan",
+    "description": "Débloquez tout le potentiel de l'automatisation avec nos fonctionnalités premium",
+    "recommended": "Recommandé",
+    "tiers": {
+      "free": {
+        "name": "Plan de démarrage",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
+        "description": "Parfait pour les petites automatisations et un usage personnel ou pour tester.",
+        "button": "Commencer",
+        "features": {
+          "workflows": "Jusqu'à 5 flux de travail actifs",
+          "integrations": "Intégrations de base",
+          "support": "Support communautaire"
+        }
+      },
+      "pro": {
+        "name": "Plan Pro",
+        "price": {
+          "monthly": "10",
+          "yearly": "8"
+        },
+        "description": "Idéal pour les automatisations et intégrations en croissance et un usage professionnel.",
+        "button": "Passer au Pro",
+        "features": {
+          "ai": "Suggestions de flux de travail alimentées par l'IA",
+          "priority": "Exécution prioritaire",
+          "storage": "Flux de travail illimités",
+          "support": "Support prioritaire"
+        }
+      },
+      "enterprise": {
+        "name": "Plan Entreprise",
+        "price": null,
+        "description": "Parfait pour les grandes organisations et les automatisations de niveau entreprise.",
+        "button": "Contactez-nous",
+        "features": {
+          "commercial": "Utilisation commerciale"
+        }
+      }
+    }
+  },
+  "services": {
+    "redirecting": "Redirection vers les services...",
+    "description": "Connectez vos services préférés pour créer des flux de travail automatisés puissants",
+    "enabled": "Services activés",
+    "disabled": "Services disponibles",
+    "noEnabledServices": "Aucun service activé trouvé. Connectez un service pour commencer.",
+    "noDisabledServices": "Aucun service disponible trouvé.",
+    "connecting": "Connexion du service...",
+    "connected": "Service connecté avec succès",
+    "triggers": "Déclencheurs",
+    "actions": "Actions",
+    "useNow": "Utiliser maintenant",
+    "connect": "Connecter"
+  },
+  "onboarding": {
+    "sidebar": {
+      "title": "Menu latéral",
+      "description": "La barre latérale vous permet de naviguer à travers vos flux de travail et services. Vous pouvez également accéder à vos paramètres et préférences ici."
+    },
+    "createWorkflow": {
+      "title": "Créer un flux de travail",
+      "description": "Cliquez ici pour créer votre premier flux de travail automatisé."
+    },
+    "next": "Suivant",
+    "previous": "Précédent",
+    "finish": "Terminer",
+    "skip": "Passer",
+    "of": "de",
+    "services": {
+      "title": "Connecter des services",
+      "description": "Connectez vos services préférés comme Discord, Google ou GitHub pour commencer à créer des flux de travail automatisés entre eux."
+    },
+    "sidebarFooter": {
+      "title": "Profil utilisateur",
+      "description": "Accédez aux paramètres de votre profil, gérez votre compte et personnalisez vos préférences à partir d'ici."
+    }
+  },
+  "notFound": {
+    "title": "Page non trouvée",
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
   }
 }
