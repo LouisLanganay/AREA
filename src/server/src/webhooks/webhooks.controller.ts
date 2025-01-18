@@ -21,13 +21,9 @@ export class WebhooksController {
     const validationToken = req.query.validationToken;
 
     if (validationToken) {
-      console.log('Validation token received:', validationToken);
       res.status(200).send(validationToken);
       return;
     }
-
-    console.log('==========recu============', id);
-    console.log('body = ', body);
 
     const clientState = body.value[0]?.clientState;
     if (clientState !== 'secureClientState') {
@@ -54,7 +50,6 @@ export class WebhooksController {
       const validationToken = req.query.validationToken;
 
     if (validationToken) {
-      console.log('Validation token received:', validationToken);
       res.status(200).send(validationToken);
     } else {
       console.error('No validation token found in request');

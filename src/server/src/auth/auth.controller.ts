@@ -181,7 +181,6 @@ export class AuthController {
   @Post('outlook/callback')
   @UseGuards(AuthGuard('jwt'))
   async getOutlookCallback(@Body('code') code: string, @Req() req: any) {
-    console.log('Outlook OAuth callback received:', code);
     if (!code) {
       throw new BadRequestException('Code is missing');
     }
@@ -190,7 +189,6 @@ export class AuthController {
       throw new BadRequestException('User ID is missing');
     }
     try {
-      console.log('AUTH: Exchanging code for tokens');
       await this.outlookAuthService.getAccessToken(code, userId);
       return { message: 'Tokens stored in the database' };
     } catch (error) {

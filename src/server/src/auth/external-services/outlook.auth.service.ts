@@ -14,12 +14,10 @@ export class OutlookAuthService {
 
     const url = `${baseUrl}?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent("[REDIRECT_URI]")}&scope=${scopes}&response_mode=query`;
 
-    console.log('Outlook auth URL generated:', url);
     return url;
   }
 
   async getAccessToken(authCode: string, userId: string): Promise<void> {
-    console.log('OUTLOOK: Exchanging code for tokens');
     const tokenUrl = process.env.OUTLOOK_TOKEN_URL;
   
     const body = new URLSearchParams({
@@ -48,9 +46,7 @@ export class OutlookAuthService {
       }
   
       const data = JSON.parse(responseBody);
-  
-      console.log('Tokens received:', data);
-  
+    
       await this.prisma.token.create({
         data: {
           provider: 'outlook',

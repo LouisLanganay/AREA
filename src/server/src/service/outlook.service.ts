@@ -68,7 +68,6 @@ export const EventSendEmail: Event = {
     }
 
     try {
-      console.log('Executing Outlook email reaction...');
       await outlookTools.sendEmail(userId, recipientEmail, subject, message);
     } catch (error) {
       console.error('Error in EventSendEmail:', error.message);
@@ -135,9 +134,7 @@ export const EventCreateEmailDraft: Event = {
     }
 
     try {
-      console.log('Calling OutlookTools to create a draft...');
       const draft = await outlookTools.createDraft(userId, recipientEmail, subject, message);
-      console.log('Draft created successfully:', draft);
       return draft;
     } catch (error) {
       console.error('Error creating draft in EventCreateEmailDraft:', error.message);

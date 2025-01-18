@@ -91,7 +91,6 @@ export class OutlookTools {
         console.log('accessToken not found');
         throw new Error('Access token not found');
     }
-    console.log('accessToken', token.accessToken);
 
     const body = {
         subject: subject,
@@ -108,9 +107,7 @@ export class OutlookTools {
         ],
         isDraft: true,
       };
-  
-      console.log('Draft body:', JSON.stringify(body));
-  
+    
       try {
         const response = await fetch('https://graph.microsoft.com/v1.0/me/messages', {
           method: 'POST',
@@ -126,8 +123,6 @@ export class OutlookTools {
           console.error(`Failed to create draft. Status: ${response.status}`, errorBody);
           throw new Error(`Failed to create draft: ${response.statusText}`);
         }
-  
-        console.log('Draft created successfully:');
       } catch (error) {
         console.error('Error creating draft:', error.message);
         throw error;
@@ -149,7 +144,6 @@ export class OutlookTools {
       const url = `${redirect}/webhooks/outlook/${createWebHook.id}`;
       try {
         const subscription = await this.createEmailSubscription(userId, url);
-        console.log('Subscription created successfully:', subscription);
         return false;
       } catch (error) {
         console.error('Error creating subscription:', error.message);
@@ -168,8 +162,6 @@ export class OutlookTools {
       throw new Error('Access token not found');
     }
 
-    console.log('Using access token for subscription:', token.accessToken);
-
     const body = {
       changeType: 'created',
       notificationUrl: notificationUrl,
@@ -177,8 +169,6 @@ export class OutlookTools {
       expirationDateTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
       clientState: 'secureClientState',
     };
-
-    console.log('Subscription request body:', JSON.stringify(body));
 
     try {
       const response = await fetch('https://graph.microsoft.com/v1.0/subscriptions', {
@@ -197,7 +187,6 @@ export class OutlookTools {
       }
 
       const data = await response.json();
-      console.log('Subscription created successfully:', data);
       return data;
     } catch (error) {
       console.error('Error creating subscription:', error.message);

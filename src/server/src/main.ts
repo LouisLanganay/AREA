@@ -32,7 +32,6 @@ import { OutlookService, EventSendEmail, EventMonitorEmails, EventCreateEmailDra
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
   allService.addService(TimerService);
-  allService.addService(MailTestService);
   allService.addService(OutlookService);
   allService.addService(WeatherService);
   allService.addService(gcalendarService);
@@ -44,8 +43,6 @@ export async function defineAllService(allService: any) {
 
   allService.addEventToService('weather', EventCheckTemperature);
   allService.addEventToService('weather', EventGetWeatherForecast);
-
-  allService.addEventToService('mailTest', EventSendMail);
 
   allService.addEventToService('outlook', EventSendEmail);
   allService.addEventToService('outlook', EventMonitorEmails);
