@@ -15,10 +15,6 @@ export class OutlookTools {
     subject: string,
     message: string,
   ) {
-    console.log('Sending email with the following details:');
-    console.log('Recipient:', recipientEmail);
-    console.log('Subject:', subject);
-    console.log('Message:', message);
 
     const token = await this.prisma.token.findUnique({
       where: { userId_provider: { userId: userId, provider: 'outlook' } },
@@ -29,7 +25,6 @@ export class OutlookTools {
         console.log('accessToken not found');
         throw new Error('Access token not found');
     }
-    console.log('accessToken', token.accessToken);
 
     const body = {
       message: {
@@ -47,8 +42,6 @@ export class OutlookTools {
         ],
       },
     };
-
-    console.log('Email body:', JSON.stringify(body));
 
     try {
       const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
@@ -68,7 +61,6 @@ export class OutlookTools {
         );
         throw new Error(`Failed to send email: ${response.statusText}`);
       }
-      console.log('Email sent successfully');
     } catch (error) {
       console.error('Error sending email:', error.message);
       throw error;
