@@ -152,19 +152,6 @@ export class DiscordService {
       throw new BadRequestException('Code or userId is missing');
     }
 
-    console.log(
-      'DISCORD_CLIENT_ID:',
-      this.configService.get<string>('DISCORD_CLIENT_ID'),
-    );
-    console.log(
-      'DISCORD_CLIENT_SECRET:',
-      this.configService.get<string>('DISCORD_CLIENT_SECRET'),
-    );
-    console.log(
-      'IP_REDIRECT:',
-      `${this.configService.get<string>('IP_REDIRECT')}auth/discord/callback`,
-    );
-
     const tokens = await this.exchangeCodeForTokens(
       code,
       this.configService.get<string>('DISCORD_CLIENT_ID'),

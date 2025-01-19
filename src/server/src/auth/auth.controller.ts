@@ -146,6 +146,9 @@ export class AuthController {
   }
 
   @Get('google/redirect/:service')
+  @ApiOperation({ summary: 'Redirect to Google OAuth' })
+  @ApiResponse({ status: 200, description: 'Redirect URL' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   async googleAuthRedirect(@Param('service') service: string) {
     if (service !== 'gcalendar') {
       return;
@@ -160,6 +163,9 @@ export class AuthController {
   }
 
   @Post('google/callback/:service')
+  @ApiOperation({ summary: 'Google OAuth callback' })
+  @ApiResponse({ status: 200, description: 'Tokens stored in the database' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   @UseGuards(AuthGuard('jwt'))
   async googleAuthCallback(
     @Param('service') service: string,
@@ -175,13 +181,17 @@ export class AuthController {
   }
 
   @Get('discord/redirect')
+  @ApiOperation({ summary: 'Redirect to Discord OAuth' })
+  @ApiResponse({ status: 200, description: 'Redirect URL' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   async discordAuthRedirect(@Req() req) {
+    console.log('Redirecting to Discord OAuth');
     const redirectUrl = await this.discordService.getRedirectUrl();
     return { redirectUrl };
   }
 
   //retourne le dans le body le lien de redirection
-  //@Get('discord')
+  @Get('discord')
   async discordAuth() {
     const redirectUrl = await this.discordService.getRedirectUrl();
     console.log('Redirecting to Discord OAuth:', redirectUrl);
@@ -315,6 +325,9 @@ export class AuthController {
   }
 
   @Post('discord')
+  @ApiOperation({ summary: 'Discord OAuth, route for receive code from discord' })
+  @ApiResponse({status: 200, description: 'Tokens stored in the database'})
+  @ApiResponse({status: 400, description: 'Bad Request'})
   async discordOAuth(@Body('code') code: string) {
     if (!code) {
       throw new BadRequestException('Code is missing');
@@ -329,12 +342,18 @@ export class AuthController {
   }
 
   @Get('spotify/redirect')
+  @ApiOperation({ summary: 'Redirect to Spotify OAuth' })
+  @ApiResponse({ status: 200, description: 'Redirect URL' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   spotifyAuthRedirect(): { redirectUrl: string } {
     const redirectUrl = this.spotifyAuthService.generateAuthUrl();
     return { redirectUrl };
   }
 
   @Post('spotify/callback')
+  @ApiOperation({ summary: 'Spotify OAuth callback' })
+  @ApiResponse({ status: 200, description: 'Tokens stored in the database' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   @UseGuards(AuthGuard('jwt'))
   async getSpotifyCallback(@Body('code') code: string, @Req() req: any) {
     if (!code) {
@@ -355,6 +374,10 @@ export class AuthController {
       });
     }
   }
+
+  @ApiOperation({ summary: 'Redirect to Twitch OAuth' })
+  @ApiResponse({ status: 200, description: 'Redirect URL' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   @Get('twitch/redirect')
   twitchAuthRedirect(): { redirectUrl: string } {
     // Génère l’URL d’authentification Twitch
@@ -364,6 +387,9 @@ export class AuthController {
   }
 
   @Post('twitch/callback')
+  @ApiOperation({ summary: 'Twitch OAuth callback' })
+  @ApiResponse({ status: 200, description: 'Tokens stored in the database' })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
   @UseGuards(AuthGuard('jwt'))
   async getTwitchCallback(@Body('code') code: string, @Req() req: any) {
     console.log('Twitch OAuth callback received:', code);
