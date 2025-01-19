@@ -1,5 +1,6 @@
 # area
-# **Project README**
+
+![image](assets\linkit illustration.png)
 
 ## **Project Concept**
 
