@@ -5,17 +5,17 @@ import {
   Body,
   UseGuards,
   Req,
-  Put,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   Patch,
+  ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { WorkflowService } from './workflow.service';
-import { CreateWorkflowDto } from './dto/creatWorkflowDto';
+import { CreateWorkflowDto } from './dto/createWorkflowDto';
 import { AuthGuard } from '@nestjs/passport';
-import { updateWorkflowDto } from './dto/updateWorkflow.dto';
+import { UpdateWorkflowDto } from './dto/updateWorkflow.dto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,10 +23,14 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
+import { UsersService } from '../users/users.service';
 
 @Controller('workflows')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {}
+  constructor(
+    private readonly workflowService: WorkflowService,
+    private readonly userService: UsersService,
+  ) {}
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
@@ -43,16 +47,37 @@ export class WorkflowController {
           description: 'This is a new workflow',
           image: 'https://example.com/image.png',
           enabled: true,
-          nodes: [
+          triggers: [
             {
-              id: 'node1',
+              id_node: 'node1',
               type: 'type1',
               name: 'Node 1',
               serviceName: 'Service 1',
-              dependsOn: [],
-              fieldGroups: [],
-              conditions: null,
-              variables: null,
+              fieldGroups: [
+                {
+                  id: 'information_group_1',
+                  name: 'information group 1',
+                  description: 'this is a new group of information',
+                  type: 'type 1',
+                  fields: [
+                    {
+                      id: 'information 1',
+                      type: 'type2',
+                      required: true,
+                      description: 'the first inforamtion',
+                      value: 'the value depends on type',
+                    },
+                    {
+                      id: 'information 2',
+                      type: 'type2',
+                      required: true,
+                      description: 'the seconde inforamtion',
+                      value: 'the value depends on type',
+                    },
+                  ],
+                },
+              ],
+              children: ['a new node same as triggers'],
             },
           ],
         },
@@ -64,24 +89,14 @@ export class WorkflowController {
     description: 'The workflow has been successfully created.',
     schema: {
       example: {
-        id: '123e4567-e89b-12d3-a456-426614174000',
-        name: 'New Workflow',
-        description: 'This is a new workflow',
-        image: 'https://example.com/image.png',
+        id: 'workflow id ',
+        userId: 'user id',
+        name: 'name of workflow',
+        description: 'workflow description',
+        image: 'https://example.com/workflow.png',
         enabled: true,
-        userId: '123e4567-e89b-12d3-a456-426614174000',
-        nodes: [
-          {
-            id: 'node1',
-            type: 'type1',
-            name: 'Node 1',
-            serviceName: 'Service 1',
-            dependsOn: [],
-            fieldGroups: [],
-            conditions: null,
-            variables: null,
-          },
-        ],
+        createdAt: 'timestamp',
+        updatedAt: 'timestamp',
       },
     },
   })
@@ -136,7 +151,7 @@ export class WorkflowController {
   })
   @HttpCode(200)
   async getWorkflowById(@Param('id') id: string, @Req() req: any) {
-    const userId = req.user.id; // Récupère l'ID utilisateur depuis le token
+    const userId = req.user.id;
     return this.workflowService.getWorkflowById(id, userId);
   }
 
@@ -177,14 +192,16 @@ export class WorkflowController {
     status: 403,
     description: 'Forbidden.',
   })
-  async getWorkflowsByUser(@Param('userId') userId: string, @Req() req: any) {
-    const loggedInUserId = req.user.userId; // ID utilisateur connecté
-    if (userId !== loggedInUserId) {
-      throw new ForbiddenException(
-        'You are not authorized to access these workflows',
-      );
+  async getWorkflowsByUser(@Req() req: any, @Query('all') all: string) {
+    const loggedInUserId = req.user.id;
+    if (all && all === 'true') {
+      const isAdmin = await this.userService.checkRole(loggedInUserId, 'admin');
+      if (!isAdmin) {
+        throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+      }
+      return this.workflowService.getAllWorkflows();
     }
-    return this.workflowService.getWorkflowsByUser(userId);
+    return this.workflowService.getWorkflowsByUser(loggedInUserId);
   }
 
   @UseGuards(AuthGuard('jwt'))
@@ -198,7 +215,7 @@ export class WorkflowController {
     type: String,
   })
   @ApiBody({
-    type: updateWorkflowDto,
+    type: UpdateWorkflowDto,
     examples: {
       example1: {
         summary: 'Example update workflow',
@@ -256,8 +273,9 @@ export class WorkflowController {
     description: 'Forbidden.',
   })
   async updateWorkflow(
-    @Body() data: updateWorkflowDto,
+    @Body() data: UpdateWorkflowDto,
     @Req() req: any,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @Param('id') id: string,
   ) {
     const userId = req.user.id;
@@ -287,4 +305,100 @@ export class WorkflowController {
     const userId = req.user.id;
     return this.workflowService.deleteWorkflow(id, userId);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('run/:id')
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the workflow to run',
+    required: true,
+    type: String,
+  })
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Run a workflow by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workflow has been successfully run.',
+  })
+  @ApiResponse({
+    status: 403,
+    description:
+      'Forbidden you do not have the permission to run this workflow.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'The workflow does not exist.',
+  })
+  async runWorkflow(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.id;
+    await this.workflowService.runWorkflowByIdSecure(id, userId);
+  }
+
+  @Get(':id/history')
+  @ApiParam({
+    name: 'id',
+    description: 'The ID of the workflow to get history',
+    required: true,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The history of the workflow has been successfully retrieved.',
+    schema: {
+      example: {
+        workflowId: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'Workflow 1',
+        history: [
+          { executionDate: '2025-01-15T10:41:35.665Z', status: 'sucess' },
+        ],
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'The workflow does not exist.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden.',
+  })
+  @ApiOperation({ summary: 'Get the history of a workflow by ID' })
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  async getWorkflowHistory(@Param('id') id: string, @Req() req: any) {
+    const userId = req.user.id;
+    return this.workflowService.getWorkflowHistory(userId, id);
+  }
+
+  // @Get('/all')
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Get all workflows (for admin)' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'The workflows have been successfully retrieved.',
+  //   schema: {
+  //     example: [
+  //       {
+  //         id: '123e4567-e89b-12d3-a456-426614174000',
+  //         name: 'Workflow 1',
+  //         enabled: true,
+  //         createdAt: '2023-01-01T00:00:00.000Z',
+  //         updatedAt: '2023-01-02T00:00:00.000Z',
+  //       },
+  //     ],
+  //   },
+  // })
+  // @ApiResponse({
+  //   status: 403,
+  //   description: 'Forbidden.',
+  // })
+  // @UseGuards(AuthGuard('jwt'))
+  // async getAllWorkflows(@Req() req: any) {
+  //   const userId = req.user.id;
+  //   const isAdmin = await this.userService.checkRole(userId, 'admin');
+  //   if (!isAdmin) {
+  //     throw new ForbiddenException({ err_code: 'USER_ADMIN' });
+  //   }
+  //   return this.workflowService.getAllWorkflows();
+  // }
 }

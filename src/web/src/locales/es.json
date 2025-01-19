@@ -1,0 +1,685 @@
+{
+  "main": {
+    "welcome": "Bienvenido",
+    "login": "Iniciar sesión",
+    "users": "Usuarios"
+  },
+  "admin": {
+    "copyToClipboard": "Copiado al portapapeles",
+    "fetchError": "Error al obtener usuarios, por favor intente de nuevo.",
+    "active": "Activo",
+    "fetchHistoryError": "Error al obtener el historial, por favor intente de nuevo.",
+    "deleteSuccess": "Usuario eliminado con éxito.",
+    "deleteError": "Error al eliminar el usuario, por favor intente de nuevo.",
+    "statusChangeSuccess": "Estado del usuario cambiado con éxito.",
+    "statusChangeError": "Error al cambiar el estado del usuario, por favor intente de nuevo.",
+    "suspended": "Suspendido",
+    "title": "Gestión de Usuarios",
+    "workflowStats": "Ejecuciones de flujo de trabajo",
+    "statsDescription": "Ver estadísticas sobre el número de ejecuciones para cada flujo de trabajo.",
+    "usersTitle": "Usuarios Registrados",
+    "viewProfile": "Ver Perfil",
+    "recentFailed": "Ejecuciones fallidas recientes",
+    "recentSuccess": "Ejecuciones exitosas recientes",
+    "live": "En vivo habilitado",
+    "pause": "En vivo deshabilitado",
+    "workflowCreationStats": "Estadísticas de creación de flujo de trabajo",
+    "viewMode": {
+      "daily": "Ejecuciones diarias",
+      "hourly": "Ejecuciones por hora",
+      "minute": "Ejecuciones por minuto"
+    },
+    "stats": {
+      "title": "Estadísticas de flujo de trabajo",
+      "success": "Éxito",
+      "error": "Error",
+      "registrations": "Registros",
+      "newUsers": "nuevos usuarios",
+      "created": "Creado",
+      "updated": "Actualizado"
+    },
+    "users": {
+      "id": "ID",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "status": "Estado",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "provider": "Proveedor",
+      "role": "Rol",
+      "createdAt": "Creado el",
+      "updatedAt": "Actualizado el",
+      "lastConnection": "Última conexión",
+      "close": "Cerrar"
+    },
+    "openMenu": "Abrir menú",
+    "suspend": "Suspender",
+    "activate": "Activar",
+    "confirmDeleteTitle": "Confirmar eliminación",
+    "confirmDelete": "¿Está seguro de que desea eliminar al usuario {{userName}}?",
+    "confirmStatusTitle": "Confirmar cambio de estado",
+    "confirmStatus": "¿Está seguro de que desea {{status}} al usuario {{userName}}?",
+    "editTitle": "Editar usuario",
+    "saveChanges": "Guardar cambios",
+    "registrationStats": "Registros de usuarios",
+    "lastSevenDays": "Actividad de los últimos 7 días",
+    "last24Hours": "Actividad de las últimas 24 horas",
+    "lastHour": "Actividad de la última hora",
+    "workflowActivityDescription": "Rastrear la actividad de creación y actualización de flujos de trabajo a lo largo del tiempo"
+  },
+  "sidebar": {
+    "groups": {
+      "application": "Aplicación",
+      "administration": "Administración"
+    },
+    "premium": {
+      "title": "AI Premium",
+      "description": "Construya sus flujos de trabajo con el poder de la IA. Disponible solo con premium.",
+      "button": "Actualizar a Premium"
+    },
+    "items": {
+      "home": "Inicio",
+      "workflows": "Mis flujos de trabajo",
+      "services": "Mis servicios",
+      "users": "Usuarios",
+      "settings": "Configuraciones",
+      "switchAccount": "Cambiar cuenta",
+      "switchAccountSuccess": "Cuenta cambiada con éxito",
+      "logout": "Cerrar sesión",
+      "addAccount": "Agregar cuenta",
+      "currentAccount": "Actual",
+      "switchTheme": "Cambiar tema",
+      "documentation": "Documentación",
+      "onboarding": "Integración",
+      "newWorkflow": "Nuevo flujo de trabajo",
+      "adminWorkflows": "Flujos de trabajo"
+    }
+  },
+  "settings": {
+    "title": "Configuraciones",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "tabs": {
+      "account": "Cuenta",
+      "appearance": "Apariencia",
+      "notifications": "Notificaciones",
+      "security": "Seguridad",
+      "automation": "Automatización"
+    },
+    "account": {
+      "title": "Información de la cuenta",
+      "description": "Gestione los detalles y preferencias de su cuenta.",
+      "avatar": {
+        "change": "Cambiar avatar",
+        "alt": "Foto de perfil",
+        "upload": "Avatar",
+        "description": "Suba una nueva foto de perfil.",
+        "save": "Guardar"
+      },
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "language": "Idioma"
+      },
+      "save": "Guardar cambios",
+      "languages": {
+        "fr": "Francés",
+        "en": "Inglés",
+        "placeholder": "Seleccione idioma"
+      }
+    },
+    "appearance": {
+      "language": {
+        "fr": "Francés",
+        "en": "Inglés",
+        "ar": "Árabe",
+        "es": "Español",
+        "label": "Idioma",
+        "description": "Seleccione el idioma para la aplicación."
+      },
+      "title": "Apariencia",
+      "description": "Personalice la apariencia de la aplicación.",
+      "darkMode": {
+        "label": "Modo oscuro",
+        "description": "Habilite el modo oscuro para una experiencia visual cómoda en condiciones de poca luz.",
+        "switch": "Cambiar modo"
+      },
+      "fontSize": {
+        "label": "Tamaño de fuente",
+        "description": "Ajuste el tamaño de la fuente para una mejor legibilidad.",
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande",
+        "xLarge": "Extra grande"
+      }
+    },
+    "security": {
+      "title": "Configuraciones de seguridad",
+      "description": "Gestione la seguridad y el acceso de su cuenta.",
+      "password": {
+        "label": "Cambiar contraseña",
+        "description": "Cambie su contraseña para mejorar la seguridad de su cuenta.",
+        "change": "Cambiar contraseña"
+      },
+      "twoFactor": {
+        "label": "Autenticación de dos factores",
+        "description": "Agregue una capa adicional de seguridad a su cuenta."
+      },
+      "delete": {
+        "label": "Eliminar cuenta",
+        "description": "Elimine permanentemente su cuenta y elimine sus datos de nuestros servidores.",
+        "success": "Cuenta eliminada con éxito. Se cerrará la sesión en 5 segundos.",
+        "error": "Error al eliminar la cuenta, por favor intente de nuevo.",
+        "confirmation": {
+          "title": "Confirmar eliminación",
+          "description": "¿Está seguro de que desea eliminar su cuenta? Esta acción es irreversible y eliminará todos sus datos de nuestros servidores."
+        }
+      },
+      "openai": {
+        "label": "Token de API de OpenAI",
+        "description": "Ingrese su token de API de OpenAI para habilitar funciones de IA",
+        "saveSuccess": "Token de OpenAI guardado con éxito"
+      }
+    },
+    "automation": {
+      "title": "Configuraciones de automatización",
+      "description": "Configure opciones específicas de automatización.",
+      "executionLimit": {
+        "label": "Límite de ejecución diaria"
+      },
+      "apiKey": {
+        "label": "Clave API"
+      },
+      "retryAttempts": {
+        "label": "Intentos de reintento",
+        "placeholder": "Seleccione el número de intentos",
+        "options": {
+          "1": "1 intento",
+          "3": "3 intentos",
+          "5": "5 intentos",
+          "10": "10 intentos"
+        }
+      }
+    }
+  },
+  "workflows": {
+    "runWorkflowDescriptionError": "Error al ejecutar el flujo de trabajo, por favor intente de nuevo.",
+    "fetchErrorDescription": "Error al obtener datos del servidor. Por favor intente de nuevo.",
+    "selectAll": "Seleccionar todo",
+    "selectRow": "Seleccionar fila",
+    "name": "Nombre",
+    "creatingWorkflow": "Creando flujo de trabajo...",
+    "updateItem": "Actualizar flujo de trabajo",
+    "live": "En vivo",
+    "workflow": "flujo de trabajo",
+    "history": "Historial",
+    "refresh": "Actualizar",
+    "lastRefresh": "Última actualización a las {{time}}",
+    "workflowDisabled": "El flujo de trabajo está deshabilitado, no se ejecutará.",
+    "noHistory": "No hay historial disponible",
+    "executionSuccess": "Ejecución exitosa",
+    "executionHistory": "Historial de ejecuciones",
+    "executionError": "Error de ejecución",
+    "workflows": "flujos de trabajo",
+    "ai": {
+      "assistant": "Asistente de flujo de trabajo IA",
+      "editor": "Editor de flujo de trabajo IA",
+      "modify": "Modificar",
+      "workflowUpdated": "Flujo de trabajo actualizado con éxito",
+      "generating": "Generando flujo de trabajo...",
+      "error": "Ocurrió un error al generar el flujo de trabajo. Por favor intente de nuevo.",
+      "setupToken": "Configure su token de API de OpenAI para generar flujos de trabajo.",
+      "settings": "Abrir configuraciones",
+      "prompt": "Ingrese su solicitud",
+      "success": "Flujo de trabajo generado con éxito",
+      "workflowCreated": "Flujo de trabajo creado con éxito",
+      "resultDescription": "Su flujo de trabajo llamado {{name}} y con el objetivo de {{description}} ha sido creado. Puede verlo haciendo clic en el botón de abajo.",
+      "result": "Resultado:",
+      "clear": "Borrar resultado",
+      "openWorkflow": "Abrir flujo de trabajo",
+      "generate": "Generar",
+      "description": "Versión beta, puede que no siempre funcione.",
+      "tooltip": "Para generar un flujo de trabajo, escriba una descripción de lo que desea hacer. Tenga en cuenta que puede ver la lista de servicios disponibles en la sección de servicios."
+    },
+    "paused": "Pausado",
+    "copyLink": "Copiar enlace",
+    "quickActions": "Acciones rápidas",
+    "enabled": "Habilitado",
+    "removedFromFavorites": "Eliminado de favoritos",
+    "addedToFavorites": "Añadido a favoritos",
+    "removeFromFavorites": "Eliminar de favoritos",
+    "addToFavorites": "Añadir a favoritos",
+    "updateLoadingDescription": "Actualizando flujo de trabajo...",
+    "openMenu": "Abrir menú",
+    "updateSuccessDescription": "Nombre del flujo de trabajo actualizado",
+    "actions": "Acciones",
+    "changesToSave": "Este flujo de trabajo tiene cambios para guardar",
+    "discardChanges": "Descartar cambios",
+    "success": "Completado",
+    "save2": "Guardar",
+    "saving": "El flujo de trabajo se está guardando...",
+    "edit": "Editar en el constructor",
+    "filterByName": "Filtrar por nombre...",
+    "deletingWorkflow": "Eliminando flujo de trabajo...",
+    "deleteCancelledDescription": "Eliminación cancelada.",
+    "noDescription": "Sin descripción",
+    "bulkActions": "Acciones masivas",
+    "enableAll": "Habilitar todo",
+    "disableAll": "Deshabilitar todo",
+    "runWorkflowDescription": "Ejecutando flujo de trabajo...",
+    "runWorkflowDescriptionSuccess": "¡Flujo de trabajo ejecutado con éxito!",
+    "columns": "Columnas",
+    "create": "Crear nuevo flujo de trabajo",
+    "enable": "Habilitar",
+    "disable": "Deshabilitar",
+    "enableSuccess": "Flujo de trabajo actualizado",
+    "enableSuccessDescription": "El flujo de trabajo ha sido actualizado.",
+    "creation": {
+      "info": {
+        "title": "Crear nuevo flujo de trabajo",
+        "subtitle": "Ingrese información básica sobre su flujo de trabajo",
+        "name": "Nombre",
+        "description": "Descripción",
+        "namePlaceholder": "Ingrese el nombre del flujo de trabajo",
+        "descriptionPlaceholder": "Ingrese la descripción del flujo de trabajo"
+      },
+      "cancel": "Cancelar",
+      "back": "Atrás",
+      "nextStep": "Siguiente paso",
+      "create": "Crear flujo de trabajo",
+      "trigger": {
+        "title": "Seleccionar desencadenante",
+        "description": "Elija un evento que desencadenará su flujo de trabajo",
+        "back": "Atrás",
+        "create": "Crear flujo de trabajo",
+        "connectMoreServices": "Conecte más servicios para desbloquear más posibilidades de automatización para crear flujos de trabajo.",
+        "goToServices": "Gestionar"
+      },
+      "folder": {
+        "title": "Elegir carpeta",
+        "description": "Seleccione una carpeta existente o cree una nueva para su flujo de trabajo",
+        "existing": "Carpetas existentes",
+        "new": "Nueva carpeta",
+        "newPlaceholder": "Ingrese el nombre de la carpeta",
+        "createNew": "Crear nueva carpeta"
+      }
+    },
+    "noResults": "No se encontraron resultados",
+    "selectedRows": "{{selected}} de {{total}} filas seleccionadas",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "apps": "Aplicaciones",
+    "runNow": "Ejecutar ahora",
+    "disabled": "Deshabilitado",
+    "delete": "Eliminar",
+    "confirmDeleteTitle": "Confirmar eliminación",
+    "confirmDelete": "¿Está seguro de que desea eliminar el flujo de trabajo '{{workflowName}}'?",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "linkCopiedDescription": "Enlace copiado al portapapeles.",
+    "updateErrorTitle": "Error al actualizar el flujo de trabajo",
+    "updateErrorDescription": "Ocurrió un error al actualizar el flujo de trabajo. Por favor intente de nuevo.",
+    "deleteErrorTitle": "Error al eliminar el flujo de trabajo",
+    "deleteErrorDescription": "Ocurrió un error al eliminar el flujo de trabajo. Por favor intente de nuevo.",
+    "typeNameToConfirm": "Escriba '{{workflowName}}' para confirmar.",
+    "trigger": "Desencadenante",
+    "remove": "Eliminar nodo",
+    "confirmRemove": "¿Confirmar eliminación?",
+    "cancel": "Cancelar",
+    "validationErrorTitle": "Error de validación",
+    "validationErrorDescription": "Por favor complete todos los campos obligatorios.",
+    "invalidFields": "Error",
+    "resetNode": "Restablecer nodo",
+    "searchServices": "Buscar servicios...",
+    "nodeResetTitle": "Restablecimiento de nodo",
+    "nodeResetDescription": "¿Está seguro de que desea restablecer el nodo?",
+    "nodeAddedTitle": "Nodo añadido",
+    "nodeAddedDescription": "El nodo ha sido añadido al flujo de trabajo.",
+    "save": "Guardar cambios",
+    "back": "Atrás",
+    "deleteSuccess": "Flujo de trabajo eliminado con éxito",
+    "deleteSuccessDescription": "El flujo de trabajo ha sido eliminado.",
+    "createSuccess": "Flujo de trabajo creado con éxito",
+    "createSuccessDescription": "El flujo de trabajo ha sido creado.",
+    "createError": "Error al crear el flujo de trabajo",
+    "createErrorDescription": "Ocurrió un error al crear el flujo de trabajo. Por favor intente de nuevo.",
+    "rootFolder": "Carpeta raíz",
+    "lastTenExecutions": "Mostrando las últimas 10 ejecuciones de este flujo de trabajo."
+  },
+  "login": {
+    "passwordRequired": "La contraseña es obligatoria",
+    "title": "Inicie sesión en su cuenta",
+    "description": "Ingrese sus credenciales a continuación para iniciar sesión",
+    "noAccount": "¿No tiene una cuenta?",
+    "signUp": "Regístrese",
+    "signIn": "Iniciar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "emailPlaceholder": "Ingrese su correo electrónico",
+    "passwordPlaceholder": "Ingrese su contraseña",
+    "or": "O",
+    "emailInvalid": "Correo electrónico inválido",
+    "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+    "forgotPassword": "¿Olvidó su contraseña?"
+  },
+  "register": {
+    "usernameUnavailable": "El nombre de usuario ya está en uso",
+    "createAccount": "Crear una cuenta",
+    "fillInDetails": "Complete sus datos para crear una nueva cuenta",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "usernamePlaceholder": "Ingrese su nombre de usuario",
+    "emailPlaceholder": "Ingrese su correo electrónico",
+    "passwordPlaceholder": "Ingrese su contraseña",
+    "confirmPasswordPlaceholder": "Confirme su contraseña",
+    "alreadyHaveAccount": "¿Ya tiene una cuenta?",
+    "signIn": "Iniciar sesión",
+    "or": "O",
+    "usernameRequired": "El nombre de usuario es obligatorio",
+    "emailInvalid": "Correo electrónico inválido",
+    "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+    "passwordsDontMatch": "Las contraseñas no coinciden"
+  },
+  "error": {
+    "USER_NOT_FOUND": "Usuario no encontrado",
+    "INTERNAL_SERVER_ERROR": "Error interno del servidor",
+    "INTERNAL_SERVER_ERROR_DESCRIPTION": "Ocurrió un error al procesar su solicitud. Por favor intente de nuevo más tarde.",
+    "USERNAME_ALREADY_USE": "El nombre de usuario ya está en uso.",
+    "EMAIL_ALREADY_USE": "El correo electrónico ya está en uso.",
+    "FIELD_ALREADY_USE": "El valor de este campo ya está en uso.",
+    "DB_UNAVAILABLE": "Base de datos no disponible. Ocurrió un error interno.",
+    "USER_NOT_LOCAL_REG": "Usuario no encontrado.",
+    "INVALID_CREDENTIAL": "Contraseña incorrecta.",
+    "HACH_FAIL": "Ocurrió un error interno al crear la contraseña.",
+    "INTERNAL_FRONT_URL": "Error interno del servidor.",
+    "FAIL_SEND_MAIL": "Ocurrió un error interno al enviar el correo electrónico.",
+    "USER_NOT_FOUND_RESET": "Token inválido. El usuario no existe.",
+    "INVALID_TOKEN": "El token de restablecimiento es inválido.",
+    "TOKEN_EXPIRED": "El token de restablecimiento ha expirado.",
+    "WORKFLOW_INVALID_PERM": "Permisos insuficientes para eliminar o actualizar el flujo de trabajo.",
+    "WORKFLOW_UNKNOWN": "El flujo de trabajo no existe.",
+    "USER_FORBIDDEN_EDIT": "No tiene permiso para editar este usuario.",
+    "AI_WORKFLOW_GENERATION_ERROR": "Ocurrió un error al generar el flujo de trabajo. Por favor intente de nuevo.",
+    "AI_WORKFLOW_GENERATION_SUCCESS": "Flujo de trabajo generado con éxito",
+    "AI_WORKFLOW_SYNTAX_ERROR_GENERATION": "El flujo de trabajo generado no es válido. Por favor intente de nuevo."
+  },
+  "common": {
+    "loading": "Cargando...",
+    "back": "Volver",
+    "tip": "Consejo",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "forgotPassword": {
+    "title": "Restablezca su contraseña",
+    "description": "Ingrese su dirección de correo electrónico y le enviaremos un enlace para restablecer su contraseña.",
+    "email": "Dirección de correo electrónico",
+    "emailPlaceholder": "Ingrese su correo electrónico",
+    "emailInvalid": "Dirección de correo electrónico inválida",
+    "resetPassword": "Restablecer contraseña",
+    "backToLogin": "Volver a iniciar sesión",
+    "checkEmail": "Revise su correo electrónico",
+    "checkEmailDescription": "Si existe una cuenta para este correo electrónico, recibirá un enlace para restablecer la contraseña en breve."
+  },
+  "home": {
+    "theme": {
+      "dark": "Cambiar a modo oscuro",
+      "light": "Cambiar a modo claro"
+    },
+    "navigation": {
+      "menu": "Menú",
+      "theme": {
+        "toggleDark": "Cambiar a modo oscuro",
+        "toggleLight": "Cambiar a modo claro"
+      },
+      "features": {
+        "scalability": {
+          "sidebar": {
+            "close": "Cerrar barra lateral"
+          }
+        },
+        "title": "Características",
+        "description": "Automatice sus tareas conectando sus servicios favoritos. Simple, poderoso y accesible para todos.",
+        "intro": "Cree flujos de trabajo automatizados entre sus aplicaciones favoritas.",
+        "pricing": "Planes adaptados a sus necesidades, desde gratuito hasta empresarial.",
+        "integrations": "Más de 100 servicios compatibles para sus automatizaciones.",
+        "team": "Conozca a nuestro equipo",
+        "stack": "Tecnología",
+        "teamDescription": "Somos un grupo dinámico de individuos apasionados por lo que hacemos y dedicados a ofrecer los mejores resultados para nuestros clientes.",
+        "stackDescription": "LinkIt le permite orquestar sus aplicaciones y servicios favoritos con una amplia gama de integraciones.",
+        "linkLabel": "Aprenda más sobre las características de LinkIt",
+        "teamLinkLabel": "Aprenda más sobre nuestro equipo",
+        "stackLinkLabel": "Aprenda más sobre nuestra pila tecnológica"
+      },
+      "documentation": {
+        "title": "Documentación",
+        "api": "Documentación completa de nuestra API pública.",
+        "source": "Acceda a nuestro código fuente en GitHub.",
+        "mobile": "Descargue nuestra aplicación móvil."
+      },
+      "enterprise": {
+        "title": "Empresa",
+        "solutions": "Características avanzadas para grandes organizaciones.",
+        "cases": "Descubra cómo nuestros clientes usan LinkIt.",
+        "contact": "Hablemos de sus necesidades específicas."
+      },
+      "logo": "Volver a la página de inicio"
+    },
+    "auth": {
+      "signin": "Iniciar sesión",
+      "register": "Registrarse",
+      "dashboard": "Abrir panel de control"
+    },
+    "mobile": {
+      "discover": "Descubra nuestra aplicación móvil.",
+      "getStarted": "Comenzar"
+    },
+    "title": {
+      "automate": "Automatice.",
+      "iterate": "Itere.",
+      "scale": "Escale."
+    },
+    "description": "Automatice sus tareas conectando sus servicios favoritos. Simple, poderoso y accesible para todos.",
+    "team": {
+      "title": "Conozca a nuestro equipo",
+      "description": "Somos un grupo dinámico de individuos apasionados por lo que hacemos y dedicados a ofrecer los mejores resultados para nuestros clientes.",
+      "roles": {
+        "frontend": "Desarrollador Frontend",
+        "backend": "Desarrollador Backend",
+        "backendAndDevOps": "Desarrollador Backend y DevOps"
+      }
+    },
+    "features": {
+      "title": "Automatice sus flujos de trabajo",
+      "subtitle": "Todo lo que necesita para automatizar sus flujos de trabajo",
+      "mobile": {
+        "title": "Amigable con móviles",
+        "description": "Nuestra aplicación móvil está diseñada para ser fácil de usar, con un enfoque en la simplicidad y la eficiencia."
+      },
+      "performance": {
+        "title": "Capacidades de IA",
+        "description": "Aproveche nuestras herramientas impulsadas por IA para automatizar flujos de trabajo sin esfuerzo. Experimente una automatización inteligente adaptada a sus necesidades.",
+        "ai": {
+          "title": "Generación de flujo de trabajo IA",
+          "description": "Genere sus flujos de trabajo con nuestro generador de flujo de trabajo IA. No necesita codificar, simplemente describa su flujo de trabajo y deje que la IA haga el resto."
+        }
+      },
+      "scalability": {
+        "title": "Escalabilidad",
+        "description": "Todas las acciones y reacciones en nuestra aplicación son altamente personalizables, lo que le permite adaptar los flujos de trabajo a sus necesidades específicas.",
+        "sidebar": {
+          "titleGroup": "Opciones del servidor",
+          "label": "ID del servidor",
+          "title": "Enviar un mensaje en un canal"
+        }
+      },
+      "connect": {
+        "title": "Conecte sus aplicaciones",
+        "description": "Integre sin esfuerzo sus aplicaciones favoritas como Discord, YouTube y los servicios de Google. Cree flujos de trabajo automatizados poderosos que funcionen juntos."
+      }
+    },
+    "stack": {
+      "title1": "Integre",
+      "title2": "automatizaciones con múltiples servicios.",
+      "description": "LinkIt le permite orquestar sus aplicaciones y servicios favoritos con una amplia gama de integraciones.",
+      "services": {
+        "discord": {
+          "title": "Discord",
+          "description": "Conecte su cuenta de Discord para automatizar sus flujos de trabajo y mantenerse conectado con su comunidad sin esfuerzo."
+        },
+        "apple": {
+          "title": "Apple",
+          "description": "Conecte su cuenta de Apple para automatizar sus flujos de trabajo e integrarse perfectamente con su ecosistema Apple."
+        },
+        "google": {
+          "title": "Google",
+          "description": "Conecte su cuenta de Google para automatizar sus flujos de trabajo y mejorar la productividad con los servicios de Google."
+        },
+        "github": {
+          "title": "Github",
+          "description": "Conecte su cuenta de Github para automatizar sus flujos de trabajo y agilizar su proceso de desarrollo."
+        },
+        "youtube": {
+          "title": "Youtube",
+          "description": "Conecte su cuenta de Youtube para automatizar sus flujos de trabajo y gestionar su contenido de video de manera más eficiente."
+        },
+        "twitch": {
+          "title": "Twitch",
+          "description": "Conecte su cuenta de Twitch para automatizar sus flujos de trabajo e interactuar con su audiencia en tiempo real."
+        },
+        "outlook": {
+          "title": "Outlook",
+          "description": "Conecte su cuenta de Outlook para automatizar sus flujos de trabajo y gestionar su correo electrónico de manera más eficiente."
+        },
+        "spotify": {
+          "title": "Spotify",
+          "description": "Conecte su cuenta de Spotify para automatizar sus flujos de trabajo y gestionar su música de manera más eficiente."
+        }
+      }
+    },
+    "cta": {
+      "title1": "Comience a automatizar",
+      "title2": "sus flujos de trabajo hoy.",
+      "description": "Cree su primer flujo de trabajo en minutos con nuestro constructor de flujo de trabajo fácil.",
+      "button": "Abrir constructor"
+    }
+  },
+  "resetPassword": {
+    "title": "Restablezca su contraseña",
+    "description": "Ingrese su nueva contraseña a continuación para restablecer su contraseña.",
+    "newPassword": "Nueva contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "newPasswordPlaceholder": "Ingrese su nueva contraseña",
+    "confirmPasswordPlaceholder": "Confirme su nueva contraseña",
+    "resetPassword": "Restablecer contraseña",
+    "backToLogin": "Volver a iniciar sesión",
+    "success": "Restablecimiento de contraseña exitoso",
+    "successDescription": "Su contraseña ha sido restablecida con éxito. Ahora puede iniciar sesión con su nueva contraseña."
+  },
+  "client": {
+    "apk": {
+      "startIn": "La descarga comenzará en {{seconds}} segundos",
+      "title": "Descargando el cliente de LinkIt...",
+      "description": "Si la descarga no comienza automáticamente, ",
+      "download": "haga clic aquí"
+    }
+  },
+  "loading": {
+    "error": "La autenticación está tardando más de 10 segundos. Por favor intente de nuevo.",
+    "authenticating": "Autenticando...",
+    "pleaseWait": "Por favor espere mientras verificamos su información."
+  },
+  "premium": {
+    "includes": "Incluye todo en {{previous_tier}}, más:",
+    "include": "Incluye:",
+    "contactUs": "Contáctenos",
+    "title": "Elija su plan",
+    "description": "Desbloquee todo el potencial de la automatización con nuestras características premium",
+    "recommended": "Recomendado",
+    "tiers": {
+      "free": {
+        "name": "Plan de inicio",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
+        "description": "Perfecto para pequeñas automatizaciones y uso personal o para pruebas.",
+        "button": "Comenzar",
+        "features": {
+          "workflows": "Hasta 5 flujos de trabajo activos",
+          "integrations": "Integraciones básicas",
+          "support": "Soporte comunitario"
+        }
+      },
+      "pro": {
+        "name": "Plan Pro",
+        "price": {
+          "monthly": "10",
+          "yearly": "8"
+        },
+        "description": "Ideal para automatizaciones e integraciones en crecimiento y uso profesional.",
+        "button": "Actualizar a Pro",
+        "features": {
+          "ai": "Sugerencias de flujo de trabajo impulsadas por IA",
+          "priority": "Ejecución prioritaria",
+          "storage": "Flujos de trabajo ilimitados",
+          "support": "Soporte prioritario"
+        }
+      },
+      "enterprise": {
+        "name": "Plan Empresarial",
+        "price": null,
+        "description": "Perfecto para grandes organizaciones y automatizaciones a nivel empresarial.",
+        "button": "Contáctenos",
+        "features": {
+          "commercial": "Uso comercial"
+        }
+      }
+    }
+  },
+  "services": {
+    "redirecting": "Redirigiendo a servicios...",
+    "description": "Conecte sus servicios favoritos para crear flujos de trabajo automatizados poderosos",
+    "enabled": "Servicios habilitados",
+    "disabled": "Servicios disponibles",
+    "noEnabledServices": "No se encontraron servicios habilitados. Conecte un servicio para comenzar.",
+    "noDisabledServices": "No se encontraron servicios disponibles.",
+    "connecting": "Conectando servicio...",
+    "connected": "Servicio conectado con éxito",
+    "triggers": "Desencadenantes",
+    "actions": "Reacción",
+    "useNow": "Usar ahora",
+    "connect": "Conectar"
+  },
+  "onboarding": {
+    "sidebar": {
+      "title": "Menú lateral",
+      "description": "La barra lateral le permite navegar a través de sus flujos de trabajo y servicios. También puede acceder a sus configuraciones y preferencias aquí."
+    },
+    "createWorkflow": {
+      "title": "Crear un flujo de trabajo",
+      "description": "Haga clic aquí para crear su primer flujo de trabajo automatizado."
+    },
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "finish": "Terminar",
+    "skip": "Omitir",
+    "of": "de",
+    "services": {
+      "title": "Conectar servicios",
+      "description": "Conecte sus servicios favoritos como Discord, Google o GitHub para comenzar a crear flujos de trabajo automatizados entre ellos."
+    },
+    "sidebarFooter": {
+      "title": "Perfil de usuario",
+      "description": "Acceda a la configuración de su perfil, gestione su cuenta y personalice sus preferencias desde aquí."
+    }
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que está buscando no existe o ha sido movida.",
+    "backHome": "Volver al inicio"
+  }
+}

@@ -13,7 +13,7 @@ services:
       - ./src/shared:/shared
       - web_service_node_modules:/web_service/node_modules
     depends_on:
-#      - client_mobile
+ #     - client_mobile
       - server
     command: >
       bash -c "
@@ -22,26 +22,26 @@ services:
       npm run dev
       "
 
-#  client_mobile:
-#    container_name: linkit_mobile-service
-#    build:
-#      context: ./src/web/
-#      dockerfile: DockerfileDev
-#    volumes:
-#      - ./src/web:/web_service
-#      - ./src/shared:/shared
-#      - mobile_service_node_modules:/web_service/node_modules
-#    command: >
-#      bash -c "
-#      npm install &&
-#      npm run build &&
-#      npx cap sync &&
-#      cd android &&
-#      ./gradlew assembleDebug &&
-#      cd .. &&
-#      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/ &&
-#      echo 'APK generated at /web_service/app-debug.apk'
-#      "
+  client_mobile:
+    container_name: linkit_mobile-service
+    build:
+      context: ./src/web/
+      dockerfile: DockerfileDev
+    volumes:
+      - ./src/web:/web_service
+      - ./src/shared:/shared
+      - mobile_service_node_modules:/web_service/node_modules
+    command: >
+      bash -c "
+      npm install &&
+      npm run build &&
+      npx cap sync &&
+      cd android &&
+      ./gradlew assembleDebug &&
+      cd .. &&
+      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/src/ &&
+      echo 'APK generated at /web_service/app-debug.apk'
+      "
 
   database:
     container_name: linkit_database

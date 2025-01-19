@@ -1,4 +1,4 @@
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,7 +19,10 @@ import {
   ArrowLeftStartOnRectangleIcon,
   ArrowsRightLeftIcon,
   ChevronUpDownIcon,
+  Cog6ToothIcon,
+  MoonIcon,
   PlusIcon,
+  SunIcon,
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +37,8 @@ import { useState } from 'react';
 import { LoginForm } from '../auth/LoginForm';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/interfaces/User';
+import { useTheme } from '@/context/ThemeContext';
+import { toast } from '@/hooks/use-toast';
 
 export function UserInfo({
   user,
@@ -44,6 +49,7 @@ export function UserInfo({
   const { t } = useTranslation();
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const addAccount = () => {
     setShowLoginDialog(true);
@@ -53,6 +59,10 @@ export function UserInfo({
     const success = await logout();
     if (!success)
       navigate('/login');
+  };
+
+  const handleThemeSwitch = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -108,10 +118,10 @@ export function UserInfo({
                 </DropdownMenuItem>
                 {accounts.map((account) => (
                   <DropdownMenuItem
-                    key={account.token}
-                    onClick={() => switchAccount(account.token)}
+                    key={account.user?.id}
+                    onClick={() => switchAccount(account.user?.id)}
                     className='justify-between'
-                    disabled={isCurrentAccount(account.token)}
+                    disabled={isCurrentAccount(account.user?.id)}
                   >
                     <div className='flex items-center gap-2'>
                       <div className='flex-shrink-0 flex size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden'>
@@ -129,7 +139,7 @@ export function UserInfo({
                         {account.user?.displayName || account.user?.username}
                       </span>
                     </div>
-                    {isCurrentAccount(account.token) && (
+                    {isCurrentAccount(account.user?.id) && (
                       <Badge variant='outline' className="ml-2">
                         {t('sidebar.items.currentAccount')}
                       </Badge>
@@ -154,10 +164,16 @@ export function UserInfo({
                     <DropdownMenuSubContent>
                       {accounts.map((account) => (
                         <DropdownMenuItem
-                          key={account.token}
-                          onClick={() => switchAccount(account.token)}
+                          key={account.user?.id}
+                          onClick={() => {
+                            switchAccount(account.user?.id);
+                            toast({
+                              description: t('sidebar.items.switchAccountSuccess'),
+                              variant: 'success',
+                            });
+                          }}
                           className='justify-between min-w-[--radix-dropdown-menu-trigger-width]'
-                          disabled={isCurrentAccount(account.token)}
+                          disabled={isCurrentAccount(account.user?.id)}
                         >
                           <div className='flex items-center gap-2'>
                             <div className='flex-shrink-0 flex size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden'>
@@ -173,7 +189,7 @@ export function UserInfo({
                             </div>
                             {account.user?.displayName || account.user?.username}
                           </div>
-                          {isCurrentAccount(account.token) && (
+                          {isCurrentAccount(account.user?.id) && (
                             <Badge variant='outline'>
                               {t('sidebar.items.currentAccount')}
                             </Badge>
@@ -192,6 +208,19 @@ export function UserInfo({
                 </DropdownMenuSub>
               </div>
 
+              <DropdownMenuItem onClick={() => handleThemeSwitch()}>
+                {theme === 'light' ? (
+                  <MoonIcon className='size-4' />
+                ) : (
+                  <SunIcon className='size-4' />
+                )}
+                <span>{t('sidebar.items.switchTheme')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
+                <Cog6ToothIcon className='size-4' />
+                <span>{t('sidebar.items.settings')}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleLogout()}>
                 <ArrowLeftStartOnRectangleIcon className='size-4' />
                 <span>{t('sidebar.items.logout')}</span>

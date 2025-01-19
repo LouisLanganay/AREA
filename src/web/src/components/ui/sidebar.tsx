@@ -68,9 +68,8 @@ const SidebarProvider = React.forwardRef<
         const isMobile = useIsMobile();
         const [openMobile, setOpenMobile] = React.useState(false);
 
-        // This is the internal state of the sidebar.
-        // We use openProp and setOpenProp for control from outside the component.
-        const [_open, _setOpen] = React.useState(defaultOpen);
+        // Initialize the sidebar open state based on whether the user is on mobile
+        const [_open, _setOpen] = React.useState(!isMobile && defaultOpen);
         const open = openProp ?? _open;
         const setOpen = React.useCallback(
           (value: boolean | ((value: boolean) => boolean)) => {
@@ -86,6 +85,13 @@ const SidebarProvider = React.forwardRef<
           },
           [setOpenProp, open]
         );
+
+        // Collapse the sidebar when switching to mobile
+        React.useEffect(() => {
+          if (isMobile) {
+            setOpen(false);
+          }
+        }, [isMobile, setOpen]);
 
         // Helper to toggle the sidebar.
         const toggleSidebar = React.useCallback(() => {
@@ -503,7 +509,7 @@ const SidebarMenuItem = React.forwardRef<
   <li
     ref={ref}
     data-sidebar="menu-item"
-    className={cn("group/menu-item relative", className)}
+    className={cn("group/menu-item relative cursor-pointer", className)}
     {...props}
   />
 ));
@@ -688,7 +694,7 @@ const SidebarMenuSub = React.forwardRef<
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5",
+      "ml-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border pl-2.5 py-0.5",
       "group-data-[collapsible=icon]:hidden",
       className
     )}

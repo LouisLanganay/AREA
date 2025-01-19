@@ -32,6 +32,7 @@ export class UsersService {
         displayName: Data.displayName,
         avatarUrl: Data.avatarUrl,
         provider: Data.provider,
+        lastConnection: new Date(),
       },
     });
   }
@@ -92,6 +93,7 @@ export class UsersService {
         email: true,
         password: true,
         provider: true,
+        status: true,
       },
     });
   }
@@ -245,5 +247,181 @@ export class UsersService {
 
   async deleteUser(id: string) {
     await this.prismaService.user.delete({ where: { id } });
+  }
+
+  async addTokenService(
+    userId: string,
+    provider: string,
+    accessToken: string,
+    refreshToken?: string,
+    expiresIn?: number,
+  ) {
+    const exists = await this.prismaService.token.findFirst({
+      where: {
+        userId: userId,
+        provider: provider,
+      },
+    });
+
+    if (exists) {
+      return this.prismaService.token.update({
+        where: {
+          userId_provider: {
+            userId,
+            provider,
+          },
+        },
+        data: {
+          accessToken,
+          refreshToken,
+          expiresAt: new Date(Date.now() + expiresIn * 1000),
+        },
+      });
+    }
+
+    const expiresAt = new Date(Date.now() + expiresIn * 1000);
+    return this.prismaService.token.create({
+      data: {
+        userId,
+        provider,
+        accessToken,
+        refreshToken,
+        expiresAt,
+      },
+    });
+  }
+
+  async getTokenService(userId: string, provider: string) {
+    const token = await this.prismaService.token.findFirst({
+      where: {
+        userId,
+        provider,
+      },
+    });
+    if (!token) return null;
+    return token;
+  }
+
+  async checkRole(id: string, role: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        role: true,
+      },
+    });
+    if (!user) throw new NotFoundException({ err_code: 'NOT_FOUND_USER' });
+    return user.role === role;
+  }
+
+  async getAllUsers() {
+    try {
+      return this.prismaService.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          displayName: true,
+          avatarUrl: true,
+          role: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          lastConnection: true,
+          provider: true,
+        },
+      });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+      return [];
+    }
+  }
+
+  async setRole(id: string, role: string) {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        role,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async setStatus(id: string, status: string) {
+    return this.prismaService.user.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  async createAdmin(hash: string) {
+    return this.prismaService.user.create({
+      data: {
+        email: 'admin@admin.fr',
+        username: 'admin',
+        password: hash,
+        role: 'admin',
+        status: 'active',
+        provider: 'local',
+      },
+    });
+  }
+
+  async createWebhook(userId: string, data: any) {
+    const workflowId = data.workflowId;
+    const webhook = await this.prismaService.webhook.findFirst({
+      where: {
+        workflowId,
+      },
+    });
+    if (webhook) return null;
+    return this.prismaService.webhook.create({
+      data: {
+        ...data,
+        userId,
+      },
+    });
+  }
+
+  async updateWebhook(userId: string, id: string, data: any) {
+    const webhook = await this.prismaService.webhook.findFirst({
+      where: {
+        id,
+      },
+    });
+    if (!webhook) return null;
+    return this.prismaService.webhook.update({
+      where: {
+        id,
+      },
+      data: {
+        ...data,
+        userId,
+      },
+    });
+  }
+
+  public async getUserWorkflowsHistory(userId: string) {
+    return this.prismaService.workflow.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        name: true,
+        historyWorkflow: {
+          select: {
+            executionDate: true,
+            status: true,
+          },
+        },
+      },
+    });
   }
 }

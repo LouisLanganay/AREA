@@ -1,15 +1,18 @@
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
-import { getServiceAuth, getServices } from '@/api/Services';
+import axiosInstance from '@/api/axiosInstance';
+import { getServices } from '@/api/Services';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { PlusIcon } from '@heroicons/react/24/solid';
-import { useAuth } from '@/auth/AuthContext';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
-import { oauthCallback } from '@/api/Auth';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAuth } from '@/context/AuthContext';
+import { useOAuth } from '@/hooks/useOAuth';
 import { Service } from '@/interfaces/Services';
-import { toast } from '@/hooks/use-toast';
+import { ArrowDownRightIcon, ArrowRightIcon, ArrowUpRightIcon } from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/solid';
+import { AnimatePresence, motion } from 'framer-motion';
+import Cookies from 'js-cookie';
+import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export default function Services() {
   const { t } = useTranslation();
@@ -18,10 +21,12 @@ export default function Services() {
   const token = searchParams.get('code');
   const { token: userToken } = useAuth();
   const navigate = useNavigate();
+  const { openServiceOAuthUrl } = useOAuth();
+  const [expandedServices, setExpandedServices] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    if (!token && localStorage.getItem('oauth_service_id'))
-      localStorage.removeItem('oauth_service_id');
+    if (!token && Cookies.get('service_oauth_provider'))
+      Cookies.remove('service_oauth_provider');
   }, [token]);
 
   useEffect(() => {
@@ -37,13 +42,14 @@ export default function Services() {
     fetchServices();
   }, []);
 
-  async function handleOAuth(service: Service) {
-    if (!service.auth || !userToken)
-      return;
+  async function handleConnectService(serviceId: string) {
+    const service = services.find(s => s.id === serviceId);
+    if (!service?.auth?.uri) return;
     try {
-      const auth = await getServiceAuth(service.auth.uri, userToken);
-      localStorage.setItem('oauth_service_id', service.id);
-      window.location.href = auth.redirectUrl;
+      const url = await axiosInstance.get(`${import.meta.env.VITE_API_URL}${service?.auth?.uri}`).then(res => res.data.redirectUrl);
+      const redirectUri = `${window.location.origin}/service-login-success`;
+      const finalUrl = url.replace('%5BREDIRECT_URI%5D', encodeURIComponent(redirectUri));
+      openServiceOAuthUrl(finalUrl, service.id);
     } catch (error) {
       console.error(error);
     }
@@ -51,113 +57,186 @@ export default function Services() {
 
   function authInProgress(serviceId?: string) {
     if (serviceId) {
-      if (localStorage.getItem('oauth_service_id') === serviceId)
+      if (Cookies.get('service_oauth_provider') === serviceId)
         return true;
-    } else if (localStorage.getItem('oauth_service_id'))
+    } else if (Cookies.get('service_oauth_provider'))
       return true;
     return false;
   }
 
-  useEffect(() => {
-    const handleOAuthCallback = async () => {
-      const serviceId = localStorage.getItem('oauth_service_id');
+  function handleCreateWorkflow() {
+    navigate(`/workflows/`);
+  }
 
-      console.log("handleOAuthCallback", token, serviceId);
+  const toggleServiceExpansion = (serviceId: string) => {
+    const newExpanded = new Set(expandedServices);
+    if (newExpanded.has(serviceId)) {
+      newExpanded.delete(serviceId);
+    } else {
+      newExpanded.add(serviceId);
+    }
+    setExpandedServices(newExpanded);
+  };
 
-      if (!token || !serviceId)
-        return;
-
-      const service = services.find(s => s.id === serviceId);
-
-      if (!service?.auth?.callback_uri || !userToken)
-        return;
-
-      try {
-        await oauthCallback(service.auth.callback_uri, token, userToken);
-        // TODO: Handle response
-        localStorage.removeItem('oauth_service_id');
-        const updatedServices = await getServices(userToken);
-        setServices(updatedServices);
-      } catch (error: any) {
-        localStorage.removeItem('oauth_service_id');
-        console.error('OAuth callback error:', error);
-        if (error?.response?.status === 500) {
-          toast({
-            title: t('error.INTERNAL_SERVER_ERROR'),
-            description: t('error.INTERNAL_SERVER_ERROR_DESCRIPTION'),
-            variant: 'destructive',
-          });
-        }
-        navigate('/services');
-      }
-    };
-
-    console.log("handleOAuthCallback");
-
-    handleOAuthCallback();
-  }, [token, services]);
+  const renderServiceCard = (service: Service, isEnabled: boolean) => (
+    <motion.div
+      key={service.id}
+      className='bg-card p-3 rounded-lg border border-border'
+    >
+      <div className='flex flex-col md:flex-row justify-between md:items-center gap-2'>
+        <div className='flex flex-row items-center gap-2'>
+          <div className='flex bg-muted p-1 rounded-lg border'>
+            {service.image ? (
+              <img src={service.image} alt={service.name} className='size-6 rounded' />
+            ) : (
+              <div className='size-6 rounded-lg aspect-square bg-muted flex items-center justify-center'>
+                <p className='text-xs md:text-sm text-muted-foreground'>{service.name.charAt(0)}</p>
+              </div>
+            )}
+          </div>
+          <div className='flex flex-col'>
+            <div className='flex items-center gap-2'>
+              <h2 className='text-md font-semibold'>{service.name}</h2>
+              <motion.button
+                onClick={() => toggleServiceExpansion(service.id)}
+                className='hover:bg-muted p-1 rounded-md'
+              >
+                <motion.div
+                  animate={{ rotate: expandedServices.has(service.id) ? 45 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <PlusIcon className='size-4' />
+                </motion.div>
+              </motion.button>
+            </div>
+            <p className='text-sm text-muted-foreground'>{service.description}</p>
+          </div>
+        </div>
+        {isEnabled ? (
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => handleCreateWorkflow()}
+          >
+            {t('services.useNow')} <ArrowRightIcon className='size-4' />
+          </Button>
+        ) : (
+          <Button
+            size='sm'
+            onClick={() => handleConnectService(service.id)}
+            disabled={authInProgress(service.id)}
+          >
+            {t('services.connect')} {service.name} {
+              authInProgress(service.id) ?
+                <Loader2 className='size-4 animate-spin' /> :
+                <PlusIcon className='size-4' />
+            }
+          </Button>
+        )}
+      </div>
+      <AnimatePresence>
+        {expandedServices.has(service.id) && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            className='overflow-hidden mt-2 flex flex-col gap-2'
+          >
+            <hr className='my-2 border-border' />
+            {service.Event?.some(event => event.type === 'action') && (
+              <motion.div
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h3 className='text-sm font-semibold mb-2 flex items-center gap-2'>
+                  <ArrowDownRightIcon className='size-4 flex-shrink-0' />
+                  {t('services.triggers')}
+                </h3>
+                <div className='grid gap-2'>
+                  {service.Event?.filter(event => event.type === 'action').map(event => (
+                    <motion.div
+                      key={event.id}
+                      initial={{ x: -10, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className='text-sm p-2 rounded-md bg-muted/50'
+                    >
+                      <p className='font-medium'>{event.name}</p>
+                      <p className='text-muted-foreground text-xs'>{event.description}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+            {service.Event?.some(event => event.type === 'reaction') && (
+              <motion.div
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <h3 className='text-sm font-semibold mb-2 flex items-center gap-2'>
+                  <ArrowUpRightIcon className='size-4 flex-shrink-0' />
+                  {t('services.actions')}
+                </h3>
+                <div className='grid gap-2'>
+                  {service.Event?.filter(event => event.type === 'reaction').map(event => (
+                    <motion.div
+                      key={event.id}
+                      initial={{ x: -10, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className='text-sm p-2 rounded-md bg-muted/50'
+                    >
+                      <p className='font-medium'>{event.name}</p>
+                      <p className='text-muted-foreground text-xs'>{event.description}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
 
   return (
     <>
       <div className='mb-8'>
         <h1 className='text-2xl font-bold'>{t('sidebar.items.services')}</h1>
         <p className='text-muted-foreground mt-2'>
-          Connect and manage your service integrations
+          {t('services.description')}
         </p>
       </div>
 
-      {services.length === 0 && (
-        <p className='text-muted-foreground'>
-          No services found. Contact support to add services.
-        </p>
-      )}
+      <Tabs defaultValue={services.some(service => service.enabled) ? 'enabled' : 'disabled'} data-onboarding="services">
+        <TabsList className='mb-4'>
+          <TabsTrigger value='enabled'>{t('services.enabled')}</TabsTrigger>
+          <TabsTrigger value='disabled'>{t('services.disabled')}</TabsTrigger>
+        </TabsList>
 
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        {services.map((service) => (
-          <Card
-            key={service.id}
-          >
-            <CardContent className='p-6'>
-              <div className='flex items-center gap-4 mb-4'>
-                <img
-                  src={service.image}
-                  alt={service.name}
-                  className='w-12 h-12 rounded-lg aspect-square object-cover'
-                />
-                <div>
-                  <h2 className='text-lg font-semibold'>{service.name}</h2>
-                  <p className='text-sm text-muted-foreground'>
-                    {service.description}
-                  </p>
-                </div>
-              </div>
-              {service.enabled ? (
-                <Button
-                  variant='secondary'
-                  className='w-full'
-                  disabled={authInProgress()}
-                >
-                  Create a workflow
-                </Button>
-              ) : (
-                <Button
-                  variant='default'
-                  className='w-full'
-                  onClick={() => handleOAuth(service)}
-                  disabled={!service.auth || authInProgress()}
-                >
-                  {authInProgress(service.id) ? (
-                    <Loader2 className='w-4 h-4 animate-spin' />
-                  ) : (
-                    <PlusIcon className='w-4 h-4' />
-                  )}
-                  Connect
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        <TabsContent value="enabled" className='flex flex-col gap-2 mt-0'>
+          {services.filter(service => service.enabled).length === 0 ? (
+            <p className='text-muted-foreground'>
+              {t('services.noEnabledServices')}
+            </p>
+          ) : (
+            services.filter(service => service.enabled).map(service => renderServiceCard(service, true))
+          )}
+        </TabsContent>
+
+        <TabsContent value="disabled" className='flex flex-col gap-2 mt-0'>
+          {services.filter(service => !service.enabled).length === 0 ? (
+            <p className='text-muted-foreground'>
+              {t('services.noDisabledServices')}
+            </p>
+          ) : (
+            services.filter(service => !service.enabled).map(service => renderServiceCard(service, false))
+          )}
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

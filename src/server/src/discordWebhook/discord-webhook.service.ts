@@ -4,7 +4,9 @@ import { Queue } from 'bull';
 
 @Injectable()
 export class DiscordWebhookService {
-  constructor(@InjectQueue('discord-webhook') private discordWebhookQueue: Queue ) {}
+  constructor(
+    @InjectQueue('discord-webhook') private discordWebhookQueue: Queue,
+  ) {}
 
   async queueMessage(content: string): Promise<void> {
     console.log('Queueing message for Discord webhook:', content);

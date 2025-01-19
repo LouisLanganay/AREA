@@ -1,35 +1,74 @@
 import { Browser } from '@capacitor/browser';
 import { isPlatform } from '@ionic/react';
-import { useAuth } from '@/auth/AuthContext';
 import { App } from '@capacitor/app';
+import Cookies from 'js-cookie';
 
+/**
+ * Hook for handling OAuth authentication flows
+ * Supports both web and mobile (Capacitor) platforms
+ */
 export const useOAuth = () => {
-  const { login } = useAuth();
+  /**
+   * Opens OAuth authentication URL and handles the redirect flow
+   * @param url - OAuth provider's authorization URL
+   * @param provider - Name of the OAuth provider (e.g., 'google', 'discord')
+   */
+  const openOAuthUrl = async (url: string, provider: string) => {
+    // Store provider in cookie for 5 minutes (1/288 of a day)
+    Cookies.set('oauth_provider', provider.toLowerCase(), { expires: 1/288 });
 
-  const openOAuthUrl = async (url: string) => {
     if (isPlatform('capacitor')) {
+      // Mobile platform handling
       App.addListener('appUrlOpen', async ({ url: redirectUrl }) => {
         if (redirectUrl.includes('login-success')) {
+          // Close in-app browser and redirect to success page
           await Browser.close();
-
-          const urlObj = new URL(redirectUrl);
-          const token = urlObj.searchParams.get('token');
-
-          if (token) {
-            login(token);
-          }
+          window.location.href = redirectUrl;
         }
       });
 
+      // Open OAuth URL in in-app browser
       await Browser.open({
         url,
         windowName: '_self',
         presentationStyle: 'popover'
       });
     } else {
+      // Web platform handling - direct redirect
       window.location.href = url;
     }
   };
 
-  return { openOAuthUrl };
+  /**
+   * Opens OAuth URL for service integration (e.g., Discord bot)
+   * @param url - Service OAuth URL
+   * @param serviceId - Identifier for the service
+   */
+  const openServiceOAuthUrl = async (url: string, serviceId: string) => {
+    // Store service ID in cookie for 5 minutes
+    Cookies.set('service_oauth_provider', serviceId, { expires: 1/288 });
+
+    if (isPlatform('capacitor')) {
+      // Mobile platform handling
+      App.addListener('appUrlOpen', async ({ url: redirectUrl }) => {
+        if (redirectUrl.includes('service-login-success')) {
+          // Close browser and clean up cookie on completion
+          await Browser.close();
+          window.location.href = redirectUrl;
+        }
+      });
+
+      // Open service OAuth URL in in-app browser
+      await Browser.open({
+        url,
+        windowName: '_self',
+        presentationStyle: 'popover'
+      });
+    } else {
+      // Web platform handling - direct redirect
+      window.location.href = url;
+    }
+  };
+
+  return { openOAuthUrl, openServiceOAuthUrl };
 };

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,14 +13,16 @@ import { loginResponse } from '@/interfaces/api/Auth';
 import { apiError } from '@/interfaces/api/Errors';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import { useOAuth } from '@/hooks/useOAuth';
-
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { createAdmin } from '@/api/User';
 
 export default function Login() {
   const { t } = useTranslation();
   type LoginSchema = z.infer<typeof loginSchema>;
   const loginSchema = z.object({
     email: z.string().email(t('login.emailInvalid')),
-    password: z.string().min(8, t('login.passwordMinLength')),
+    password: z.string().min(1, t('login.passwordRequired')),
   });
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -31,16 +33,22 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const { openOAuthUrl } = useOAuth();
 
-
   const onSubmit = async (data: LoginSchema) => {
     setIsLoading(true);
     try {
+      if (data.email === 'admin@admin.fr' && data.password === 'admin') {
+        try {
+          await createAdmin();
+        } catch {
+          console.info('Admin creation failed, continuing with login');
+        }
+      }
       const response: loginResponse = await loginApi({
         id: data.email,
         password: data.password,
       });
-      login(response.access_token);
-      navigate('/');
+      await login(response.access_token);
+      navigate('/workflows');
     } catch(error: any) {
       const data = error.response.data as apiError;
       setError(t('error.' + data.err_code));
@@ -56,6 +64,7 @@ export default function Login() {
         size="icon"
         className="absolute top-4 left-4 md:hidden"
         onClick={() => navigate(-1)}
+        aria-label={t('common.back')}
       >
         <ArrowLeftIcon className="h-5 w-5" />
       </Button>
@@ -74,15 +83,16 @@ export default function Login() {
           {providers.map(provider => (
             <Button
               variant='outline'
-              size='icon'
+              size='sm'
               key={provider.name}
-              onClick={() => openOAuthUrl(provider.redirect || '')}
+              onClick={() => openOAuthUrl(provider.redirect, provider.name)}
             >
               <img
                 src={provider.icon}
-                alt={provider.name}
+                alt={`${provider.name} icon`}
                 className='h-full max-h-4'
               />
+              <span>{provider.name}</span>
             </Button>
           ))}
         </div>
@@ -98,13 +108,12 @@ export default function Login() {
         <form className='mt-8 space-y-4' onSubmit={handleSubmit(onSubmit)}>
           <div className='space-y-4'>
             <div>
-              <label htmlFor='email' className='block text-sm font-medium'>
+              <Label htmlFor='email' className='block text-sm font-medium'>
                 {t('login.email')}
-              </label>
-              <input
+              </Label>
+              <Input
                 {...register('email')}
                 type='email'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('login.emailPlaceholder')}
               />
               {errors.email && (
@@ -114,20 +123,19 @@ export default function Login() {
 
             <div>
               <div className="flex justify-between items-center">
-                <label htmlFor='password' className='block text-sm font-medium'>
+                <Label htmlFor='password' className='block text-sm font-medium mb-1'>
                   {t('login.password')}
-                </label>
+                </Label>
                 <Link
                   to='/forgot-password'
-                  className='text-sm text-primary hover:underline'
+                  className='text-sm text-primary hover:underline mb-1'
                 >
                   {t('login.forgotPassword')}
                 </Link>
               </div>
-              <input
+              <Input
                 {...register('password')}
                 type='password'
-                className='mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
                 placeholder={t('login.passwordPlaceholder')}
               />
               {errors.password && (

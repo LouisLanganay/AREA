@@ -1,17 +1,29 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.votreapp.id',
-  appName: 'Votre App',
+  appId: 'com.your.app',
+  appName: 'LinkIt',
   webDir: 'dist',
   server: {
-    androidScheme: 'myapp'
+    androidScheme: 'http',
+    hostname: 'localhost:8081',
+    iosScheme: 'http',
+    cleartext: true
   },
   plugins: {
     App: {
-      // Définir les URL schemes que votre app peut gérer
-      appUrlScheme: 'myapp'
+      appUrlOpen: {
+        domain: 'localhost:8081',
+        paths: ['/login-success', '/service-login-success']
+      }
     }
+  },
+  ios: {
+    contentInset: 'automatic',
+    preferredContentMode: 'mobile'
+  },
+  android: {
+    backgroundColor: '#FFFFFF'
   }
 };
 

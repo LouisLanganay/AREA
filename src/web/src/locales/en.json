@@ -5,10 +5,39 @@
     "users": "Users"
   },
   "admin": {
+    "copyToClipboard": "Copied to clipboard",
+    "fetchError": "Failed to fetch users, please try again.",
     "active": "Active",
+    "fetchHistoryError": "Failed to fetch history, please try again.",
+    "deleteSuccess": "User deleted successfully.",
+    "deleteError": "Failed to delete user, please try again.",
+    "statusChangeSuccess": "User status changed successfully.",
+    "statusChangeError": "Failed to change user status, please try again.",
     "suspended": "Suspended",
     "title": "User Management",
+    "workflowStats": "Workflow executions",
+    "statsDescription": "View statistics about the number of executions for each workflow.",
     "usersTitle": "Registered Users",
+    "viewProfile": "View Profile",
+    "recentFailed": "Recent failed executions",
+    "recentSuccess": "Recent successful executions",
+    "live": "Live enabled",
+    "pause": "Live disabled",
+    "workflowCreationStats": "Workflow creation stats",
+    "viewMode": {
+      "daily": "Daily executions",
+      "hourly": "Hourly executions",
+      "minute": "Minute executions"
+    },
+    "stats": {
+      "title": "Workflow Stats",
+      "success": "Success",
+      "error": "Error",
+      "registrations": "Registrations",
+      "newUsers": "new users",
+      "created": "Created",
+      "updated": "Updated"
+    },
     "users": {
       "id": "ID",
       "name": "Name",
@@ -18,7 +47,13 @@
       "edit": "Edit",
       "delete": "Delete",
       "cancel": "Cancel",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "provider": "Provider",
+      "role": "Role",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "lastConnection": "Last Connection",
+      "close": "Close"
     },
     "openMenu": "Open menu",
     "suspend": "Suspend",
@@ -28,12 +63,22 @@
     "confirmStatusTitle": "Confirm status change",
     "confirmStatus": "Are you sure you want to {{status}} the user {{userName}}?",
     "editTitle": "Edit user",
-    "saveChanges": "Save changes"
+    "saveChanges": "Save changes",
+    "registrationStats": "User Registrations",
+    "lastSevenDays": "Activity over the last 7 days",
+    "last24Hours": "Activity over the last 24 hours",
+    "lastHour": "Activity over the last hour",
+    "workflowActivityDescription": "Track workflow creation and update activity over time"
   },
   "sidebar": {
     "groups": {
       "application": "Application",
       "administration": "Administration"
+    },
+    "premium": {
+      "title": "AI Premium",
+      "description": "Build your workflows with the power of AI. Only available with premium.",
+      "button": "Upgrade Now"
     },
     "items": {
       "home": "Home",
@@ -42,9 +87,15 @@
       "users": "Users",
       "settings": "Settings",
       "switchAccount": "Switch Account",
+      "switchAccountSuccess": "Account switched successfully",
       "logout": "Logout",
       "addAccount": "Add Account",
-      "currentAccount": "Current"
+      "currentAccount": "Current",
+      "switchTheme": "Switch Theme",
+      "documentation": "Documentation",
+      "onboarding": "Onboarding",
+      "newWorkflow": "New Workflow",
+      "adminWorkflows": "Workflows"
     }
   },
   "settings": {
@@ -84,6 +135,8 @@
       "language": {
         "fr": "French",
         "en": "English",
+        "ar": "Arabic",
+        "es": "Spanish",
         "label": "Language",
         "description": "Select the language for the application."
       },
@@ -91,7 +144,8 @@
       "description": "Customize the application's appearance.",
       "darkMode": {
         "label": "Dark Mode",
-        "description": "Enable dark mode for a comfortable visual experience in low light."
+        "description": "Enable dark mode for a comfortable visual experience in low light.",
+        "switch": "Switch mode"
       },
       "fontSize": {
         "label": "Font Size",
@@ -116,7 +170,18 @@
       },
       "delete": {
         "label": "Delete Account",
-        "description": "Permanently delete your account and remove your data from our servers."
+        "description": "Permanently delete your account and remove your data from our servers.",
+        "success": "Account deleted successfully. You will be logged out in 5 seconds.",
+        "error": "Failed to delete account, please try again.",
+        "confirmation": {
+          "title": "Confirm Deletion",
+          "description": "Are you sure you want to delete your account? This action is irreversible and will remove all your data from our servers."
+        }
+      },
+      "openai": {
+        "label": "OpenAI API Token",
+        "description": "Enter your OpenAI API token to enable AI features",
+        "saveSuccess": "OpenAI token saved successfully"
       }
     },
     "automation": {
@@ -141,19 +206,77 @@
     }
   },
   "workflows": {
+    "runWorkflowDescriptionError": "Failed to run workflow, please try again.",
+    "fetchErrorDescription": "Failed to fetch data from the server. Please try again.",
     "selectAll": "Select All",
     "selectRow": "Select Row",
     "name": "Name",
+    "creatingWorkflow": "Creating workflow...",
+    "updateItem": "Update Workflow",
+    "live": "Live",
+    "workflow": "workflow",
+    "history": "History",
+    "refresh": "Refresh",
+    "lastRefresh": "Last refresh at {{time}}",
+    "workflowDisabled": "The workflow is disabled, it will not be executed.",
+    "noHistory": "No history available",
+    "executionSuccess": "Execution successful",
+    "executionHistory": "Execution History",
+    "executionError": "Execution failed",
+    "workflows": "workflows",
+    "ai": {
+      "assistant": "AI Workflow Assistant",
+      "editor": "AI Workflow Editor",
+      "modify": "Modify",
+      "workflowUpdated": "Workflow updated successfully",
+      "generating": "Generating workflow...",
+      "error": "An error occurred while generating the workflow. Please try again.",
+      "setupToken": "Setup your OpenAI API token to generate workflows.",
+      "settings": "Open Settings",
+      "prompt": "Enter your prompt",
+      "success": "Workflow generated successfully",
+      "workflowCreated": "Workflow created successfully",
+      "resultDescription": "Your workflow named {{name}} and with the goal of {{description}} has been created. You can view it by clicking on the button below.",
+      "result": "Result:",
+      "clear": "Clear result",
+      "openWorkflow": "Open Workflow",
+      "generate": "Generate",
+      "description": "Beta version, it may not always work.",
+      "tooltip": "To generate a workflow, write a description of what you want to do. Please note that you can view list of available services in the services section."
+    },
+    "paused": "Paused",
+    "copyLink": "Copy Link",
+    "quickActions": "Quick Actions",
     "enabled": "Enabled",
+    "removedFromFavorites": "Removed from favorite",
+    "addedToFavorites": "Added to favorite",
+    "removeFromFavorites": "Remove from favorite",
+    "addToFavorites": "Add to favorite",
+    "updateLoadingDescription": "Updating workflow...",
     "openMenu": "Open Menu",
+    "updateSuccessDescription": "Workflow name updated",
     "actions": "Actions",
-    "edit": "Edit",
+    "changesToSave": "This workflow has changes to save",
+    "discardChanges": "Discard changes",
+    "success": "Completed",
+    "save2": "Save",
+    "saving": "Workflow is being saved...",
+    "edit": "Edit in Builder",
     "filterByName": "Filter by name...",
+    "deletingWorkflow": "Deleting workflow...",
+    "deleteCancelledDescription": "Deletion cancelled.",
+    "noDescription": "No description",
     "bulkActions": "Bulk Actions",
     "enableAll": "Enable All",
     "disableAll": "Disable All",
+    "runWorkflowDescription": "Running workflow...",
+    "runWorkflowDescriptionSuccess": "Workflow run successfully !",
     "columns": "Columns",
     "create": "Create new workflow",
+    "enable": "Enable",
+    "disable": "Disable",
+    "enableSuccess": "Workflow updated",
+    "enableSuccessDescription": "The workflow has been updated.",
     "creation": {
       "info": {
         "title": "Create New Workflow",
@@ -164,12 +287,24 @@
         "descriptionPlaceholder": "Enter workflow description"
       },
       "cancel": "Cancel",
+      "back": "Back",
       "nextStep": "Next Step",
+      "create": "Create Workflow",
       "trigger": {
         "title": "Select Trigger",
         "description": "Choose an event that will trigger your workflow",
         "back": "Back",
-        "create": "Create Workflow"
+        "create": "Create Workflow",
+        "connectMoreServices": "Connect more services to unlock more automation possibilities to create workflows.",
+        "goToServices": "Manage"
+      },
+      "folder": {
+        "title": "Choose a folder",
+        "description": "Select an existing folder or create a new one for your workflow",
+        "existing": "Existing folders",
+        "new": "New folder",
+        "newPlaceholder": "Enter folder name",
+        "createNew": "Create new folder"
       }
     },
     "noResults": "No results found",
@@ -183,7 +318,7 @@
     "confirmDeleteTitle": "Confirm deletion",
     "confirmDelete": "Are you sure you want to delete the workflow '{{workflowName}}'?",
     "linkCopied": "Link copied to clipboard",
-    "linkCopiedDescription": "You can now share the link to your workflow with others",
+    "linkCopiedDescription": "Link copied to clipboard.",
     "updateErrorTitle": "Error updating workflow",
     "updateErrorDescription": "An error occurred while updating the workflow. Please try again.",
     "deleteErrorTitle": "Error deleting workflow",
@@ -209,9 +344,12 @@
     "createSuccess": "Workflow created successfully",
     "createSuccessDescription": "The workflow has been created.",
     "createError": "Error creating workflow",
-    "createErrorDescription": "An error occurred while creating the workflow. Please try again."
+    "createErrorDescription": "An error occurred while creating the workflow. Please try again.",
+    "rootFolder": "Root folder",
+    "lastTenExecutions": "Displaying last 10 executions of this workflow."
   },
   "login": {
+    "passwordRequired": "Password is required",
     "title": "Sign in to your account",
     "description": "Enter your credentials below to login",
     "noAccount": "Don't have an account?",
@@ -227,6 +365,7 @@
     "forgotPassword": "Forgot password?"
   },
   "register": {
+    "usernameUnavailable": "Username is already used",
     "createAccount": "Create an account",
     "fillInDetails": "Fill in your details to create a new account",
     "username": "Username",
@@ -248,10 +387,31 @@
   "error": {
     "USER_NOT_FOUND": "User not found",
     "INTERNAL_SERVER_ERROR": "Internal server error",
-    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later."
+    "INTERNAL_SERVER_ERROR_DESCRIPTION": "An error occurred while processing your request. Please try again later.",
+    "USERNAME_ALREADY_USE": "The username is already taken.",
+    "EMAIL_ALREADY_USE": "The email is already in use.",
+    "FIELD_ALREADY_USE": "This field value is already in use.",
+    "DB_UNAVAILABLE": "Database unavailable. Internal error occurred.",
+    "USER_NOT_LOCAL_REG": "User not found.",
+    "INVALID_CREDENTIAL": "Incorrect password.",
+    "HACH_FAIL": "Internal error occurred while creating the password.",
+    "INTERNAL_FRONT_URL": "Internal server error.",
+    "FAIL_SEND_MAIL": "Internal error occurred while sending the email.",
+    "USER_NOT_FOUND_RESET": "Invalid token. User does not exist.",
+    "INVALID_TOKEN": "The reset token is invalid.",
+    "TOKEN_EXPIRED": "The reset token has expired.",
+    "WORKFLOW_INVALID_PERM": "Insufficient permissions to delete or update the workflow.",
+    "WORKFLOW_UNKNOWN": "The workflow does not exist.",
+    "USER_FORBIDDEN_EDIT": "You do not have permission to edit this user.",
+    "AI_WORKFLOW_GENERATION_ERROR": "An error occurred while generating the workflow. Please try again.",
+    "AI_WORKFLOW_GENERATION_SUCCESS": "Workflow generated successfully",
+    "AI_WORKFLOW_SYNTAX_ERROR_GENERATION": "The generated workflow is not valid. Please try again."
   },
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "back": "Go back",
+    "tip": "Tip",
+    "tryAgain": "Try again"
   },
   "forgotPassword": {
     "title": "Reset your password",
@@ -270,12 +430,29 @@
       "light": "Switch to light mode"
     },
     "navigation": {
+      "menu": "Menu",
+      "theme": {
+        "toggleDark": "Switch to dark mode",
+        "toggleLight": "Switch to light mode"
+      },
       "features": {
+        "scalability": {
+          "sidebar": {
+            "close": "Fermer la barre latérale"
+          }
+        },
         "title": "Features",
         "description": "Automate your tasks by connecting your favorite services. Simple, powerful, and accessible to everyone.",
         "intro": "Create automated workflows between your favorite applications.",
         "pricing": "Plans adapted to your needs, from free to enterprise.",
-        "integrations": "More than 100 compatible services for your automations."
+        "integrations": "More than 100 compatible services for your automations.",
+        "team": "Meet our team",
+        "stack": "Stack",
+        "teamDescription": "We're a dynamic group of individuals who are passionate about what we do and dedicated to delivering the best results for our clients.",
+        "stackDescription": "LinkIt allows you to orchestrate your favorite apps and services with a wide range of integrations.",
+        "linkLabel": "Learn more about LinkIt features",
+        "teamLinkLabel": "Learn more about our team",
+        "stackLinkLabel": "Learn more about our technology stack"
       },
       "documentation": {
         "title": "Documentation",
@@ -288,11 +465,13 @@
         "solutions": "Advanced features for large organizations.",
         "cases": "Discover how our clients use LinkIt.",
         "contact": "Let's talk about your specific needs."
-      }
+      },
+      "logo": "Return to homepage"
     },
     "auth": {
       "signin": "Sign in",
-      "register": "Register"
+      "register": "Register",
+      "dashboard": "Open Dashboard"
     },
     "mobile": {
       "discover": "Discover our mobile app.",
@@ -321,12 +500,21 @@
         "description": "Our mobile app is designed to be user-friendly and easy to use, with a focus on simplicity and efficiency."
       },
       "performance": {
-        "title": "Performance",
-        "description": "Execute your workflows instantly with our high-performance infrastructure. Real-time automation without delays."
+        "title": "AI Capabilities",
+        "description": "Leverage our AI-driven tools to automate workflows effortlessly. Experience intelligent automation tailored to your needs.",
+        "ai": {
+          "title": "AI Workflow Generation",
+          "description": "Generate your workflows with our AI workflow builder. No need to code, just describe your workflow and let the AI do the rest."
+        }
       },
       "scalability": {
         "title": "Scalability",
-        "description": "Create unlimited workflows and automate as many tasks as you need. Our platform grows with your automation needs."
+        "description": "All actions and reactions in our app are highly customizable, allowing you to tailor workflows to your specific needs.",
+        "sidebar": {
+          "titleGroup": "Server Options",
+          "label": "Server ID",
+          "title": "Send a message on a channel"
+        }
       },
       "connect": {
         "title": "Connect Your Apps",
@@ -361,6 +549,14 @@
         "twitch": {
           "title": "Twitch",
           "description": "Connect your Twitch account to automate your workflows and engage with your audience in real-time."
+        },
+        "outlook": {
+          "title": "Outlook",
+          "description": "Connect your Outlook account to automate your workflows and manage your email more efficiently."
+        },
+        "spotify": {
+          "title": "Spotify",
+          "description": "Connect your Spotify account to automate your workflows and manage your music more efficiently."
         }
       }
     },
@@ -382,5 +578,108 @@
     "backToLogin": "Back to login",
     "success": "Password reset successful",
     "successDescription": "Your password has been reset successfully. You can now login with your new password."
+  },
+  "client": {
+    "apk": {
+      "startIn": "Download start in {{seconds}} seconds",
+      "title": "Downloading the LinkIt client...",
+      "description": "If the download doesn't start automatically, ",
+      "download": "click here"
+    }
+  },
+  "loading": {
+    "error": "Authentication is taking more than 10 seconds. Please try again.",
+    "authenticating": "Authenticating...",
+    "pleaseWait": "Please wait while we verify your information."
+  },
+  "premium": {
+    "includes": "Includes everything in {{previous_tier}}, plus:",
+    "include": "Includes:",
+    "contactUs": "Contact us",
+    "title": "Choose Your Plan",
+    "description": "Unlock the full potential of automation with our premium features",
+    "recommended": "Recommended",
+    "tiers": {
+      "free": {
+        "name": "Starter Plan",
+        "price": {
+          "monthly": "0",
+          "yearly": "0"
+        },
+        "description": "Perfect for small automations and personal use or for testing.",
+        "button": "Get Started",
+        "features": {
+          "workflows": "Up to 5 active workflows",
+          "integrations": "Basic integrations",
+          "support": "Community support"
+        }
+      },
+      "pro": {
+        "name": "Pro Plan",
+        "price": {
+          "monthly": "10",
+          "yearly": "8"
+        },
+        "description": "Ideal for growing automations and integrations and professional use.",
+        "button": "Upgrade to Pro",
+        "features": {
+          "ai": "AI-powered workflow suggestions",
+          "priority": "Priority execution",
+          "storage": "Unlimited workflows",
+          "support": "Priority support"
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise Plan",
+        "price": null,
+        "description": "Perfect for large organizations and enterprise-level automations.",
+        "button": "Contact us",
+        "features": {
+          "commercial": "Commercial use"
+        }
+      }
+    }
+  },
+  "services": {
+    "redirecting": "Redirecting to services...",
+    "description": "Connect your favorite services to create powerful automated workflows",
+    "enabled": "Enabled Services",
+    "disabled": "Available Services",
+    "noEnabledServices": "No enabled services found. Connect a service to get started.",
+    "noDisabledServices": "No available services found.",
+    "connecting": "Connecting service...",
+    "connected": "Service connected successfully",
+    "triggers": "Triggers",
+    "actions": "Reaction",
+    "useNow": "Use Now",
+    "connect": "Connect"
+  },
+  "onboarding": {
+    "sidebar": {
+      "title": "Sidebar Menu",
+      "description": "Sidebar allows you to navigate through your workflows and services. You can also access your settings and preferences here."
+    },
+    "createWorkflow": {
+      "title": "Create a Workflow",
+      "description": "Click here to create your first automated workflow."
+    },
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "skip": "Skip",
+    "of": "of",
+    "services": {
+      "title": "Connect Services",
+      "description": "Connect your favorite services like Discord, Google, or GitHub to start creating automated workflows between them."
+    },
+    "sidebarFooter": {
+      "title": "User Profile",
+      "description": "Access your profile settings, manage your account, and customize your preferences from here."
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home"
   }
 }

@@ -1,5 +1,6 @@
-# area
-# **Project README**
+# AREA - LinkIt
+
+![LinkIt Illustration](assets/linkit%20illustration%20banner.png)
 
 ## **Project Concept**
 
@@ -22,36 +23,19 @@ cd AREA
 
 ### **Environment Variables**
 
-Before running the project, you must configure the required environment variables. There are `.env.example` files provided to guide you in setting up the `.env` files. Here’s what you need to do:
+Before running the project, you must configure the required environment variables. There are `.env.example` files provided to guide you in setting up the `.env` files. Here's what you need to do:
 
 1. **Root `.env`**:
    - Located at the root of the project.
    - Use this to configure global environment settings.
-   - Example:
-     ```bash
-        MYSQL_ROOT_PASSWORD="root_pswd"
-        MYSQL_DATABASE="linkit"
-        MYSQL_USER="user"
-        MYSQL_PASSWORD="user_pswd"
-     ```
 
 2. **Backend `.env`**:
    - Located in `src/server`.
    - Use this to configure backend-specific settings like database connection and API keys.
-   - Example:
-     ```bash
-     DATABASE_URL=postgres://user:password@localhost:5432/database_name
-     JWT_SECRET=your_jwt_secret
-     ...
-     ```
 
 3. **Frontend `.env`**:
    - Located in `src/web`.
    - Use this to configure frontend-specific settings like API endpoints.
-   - Example:
-     ```bash
-     VITE_API_URL=http://localhost:8080
-     ```
 
 Make sure to copy each `.env.example` to a `.env` file in the same location and fill in the required values.
 
@@ -95,12 +79,19 @@ This project uses Docker to simplify the setup and ensure consistent development
   - Handles API requests and workflow execution logic.
 - **Environment**:
   - `.env.example` files are present in the root, `src/server`, and `src/web` directories for configuration guidance.
+  - `.env.example` file is in the root of the project.
+  -
 
 ---
 
 ## **Create a New Service**
 
-To create a new service in the project, you got a doc at [Create a Service](src/server/src/service/HowToCreateAService.md).
+To create a new service in the project, you got a doc at [Create a Service](src/server/README.md).
+
+## **Additional Documentation**
+
+- [Web README](src/web/README.md)
+- [Server README](src/server/README.md)
 
 ## **Additional Notes**
 
@@ -110,4 +101,52 @@ To create a new service in the project, you got a doc at [Create a Service](src/
 
 ---
 
-Feel free to reach out if you have any questions or need assistance setting up the project!
+## **API Documentation**
+
+Below is a comprehensive table describing the available API routes, their authentication requirements, request types, and a brief description of each.
+
+| Route                          | Auth Needed | Type   | Description                                      |
+|--------------------------------|-------------|--------|--------------------------------------------------|
+| `/about.json`                  | No          | GET    | Get about.json with data for service.            |
+| `/services`                    | Yes         | GET    | Get all services.                                |
+| `/auth/register`               | No          | POST   | Register a new user.                             |
+| `/auth/login`                  | No          | POST   | Login a user.                                    |
+| `/auth/forgot-password`        | No          | POST   | Request a password reset.                        |
+| `/auth/google/redirect/{service}` | No       | GET    | Redirect for Google OAuth.                       |
+| `/auth/google/callback/{service}` | No       | POST   | Callback for Google OAuth.                       |
+| `/auth/discord/redirect`       | No          | GET    | Redirect for Discord OAuth.                      |
+| `/auth/discord/callback`       | No          | POST   | Discord OAuth callback.                          |
+| `/auth/reset-password`         | No          | POST   | Reset user password.                             |
+| `/auth/google`                 | No          | POST   | Google OAuth, route for receiving code from Google. |
+| `/auth/discord`                | No          | POST   | Discord OAuth.                                   |
+| `/auth/createAdmin`            | No          | GET    | Create a default admin user for testing.         |
+| `/auth/spotify/redirect`       | No          | GET    | Redirect for Spotify OAuth.                      |
+| `/auth/spotify/callback`       | No          | POST   | Callback for Spotify OAuth.                      |
+| `/users/me`                    | Yes         | GET    | Get the current user's information.              |
+| `/users/update/{id}`           | Yes         | PATCH  | Update the current user's information.           |
+| `/users`                       | Yes         | DELETE | Delete a connected user.                         |
+| `/users`                       | Yes         | GET    | Get all users (for admin).                       |
+| `/users/use/{username}`        | No          | GET    | Check if a username is already in use.           |
+| `/users/{id}`                  | Yes         | DELETE | Delete a user by ID (for admin).                 |
+| `/users/{id}`                  | Yes         | GET    | Get user by ID (for admin).                      |
+| `/users/isAdmin`               | Yes         | GET    | Check if the user is an admin.                   |
+| `/users/setRole/{id}/{role}`   | Yes         | GET    | Set role for user (for admin).                   |
+| `/users/setStatus/{id}/{status}` | Yes       | GET    | Set status for user (for admin).                 |
+| `/users/{id}/workflows-history` | Yes        | GET    | Get the history of all workflows for a user (for admin). |
+| `/workflows`                   | Yes         | POST   | Create a new workflow.                           |
+| `/workflows`                   | Yes         | GET    | Get all workflows for a user.                    |
+| `/workflows/{id}`              | Yes         | GET    | Get a workflow by ID.                            |
+| `/workflows/{id}`              | Yes         | PATCH  | Update an existing workflow.                     |
+| `/workflows/{id}`              | Yes         | DELETE | Delete an existing workflow.                     |
+| `/workflows/run/{id}`          | Yes         | GET    | Run a workflow by ID.                            |
+| `/workflows/{id}/history`      | Yes         | GET    | Get the history of a workflow by ID.             |
+| `/webhooks/{id}`               | No          | POST   | Handle webhook.                                  |
+| `/discord-app/authorize`       | No          | GET    | Authorize Discord app.                           |
+| `/discord-app/callback`        | No          | GET    | Callback for Discord app authorization.          |
+| `/ai/generate-workflow`        | No          | POST   | Generate a workflow using OpenAI.                |
+| `/ai/update-workflow`          | No          | POST   | Update an existing workflow using OpenAI.        |
+| `/workflows-history`           | Yes         | GET    | Get the history of all workflows for a user.     |
+| `/workflows-history/all`       | Yes         | GET    | Get the history of all workflows.                |
+
+> [!NOTE]
+> The API is documented with Swagger. You can access the Swagger UI at `http://localhost:8080/doc` for more detailed information.

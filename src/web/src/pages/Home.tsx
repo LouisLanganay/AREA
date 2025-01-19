@@ -1,6 +1,9 @@
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import DiscordIcon from '@/assets/discord-icon.svg';
+import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
 import { Button } from '@/components/ui/button';
+import DotPattern from '@/components/ui/dot-pattern';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   ListItem,
   NavigationMenu,
@@ -10,99 +13,224 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { Link } from 'react-router-dom';
-import { AnimatedBeamHome } from '@/components/AnimatedBeamHome';
-import DotPattern from '@/components/ui/dot-pattern';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
+import { WorkflowNode } from '@/interfaces/Workflows';
+import { getLayoutedElements } from '@/utils/workflows';
+import { BoldIcon } from '@heroicons/react/24/outline';
 import {
-  RocketLaunchIcon,
-  MoonIcon,
-  SunIcon,
   Bars3Icon,
   ChevronDownIcon,
+  MoonIcon,
+  RocketLaunchIcon,
+  SparklesIcon,
+  SunIcon,
+  UserIcon,
   UserPlusIcon,
-  UserIcon
+  XMarkIcon
 } from '@heroicons/react/24/solid';
-import { useTheme } from '@/context/ThemeContext';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { useState } from 'react';
+import {
+  ConnectionLineType,
+  Edge,
+  MarkerType,
+  ReactFlow
+} from 'reactflow';
+import { useState, useCallback, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
+import LinkitLogoFull from '../assets/linkitLogoFull';
+import Node from '../components/flow/Node';
 
 export default function Home() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   const team = [
     {
       name: 'Louis Langanay',
       role: t('home.team.roles.frontend'),
-      image: '/assets/team/louis.langanay@epitech.eu.jpg'
+      image: '/assets/team/louis.langanay@epitech.eu.jpg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       name: 'Justine Loizel',
       role: t('home.team.roles.frontend'),
-      image: '/assets/team/justine.loizel@epitech.eu.jpg'
+      image: '/assets/team/justine.loizel@epitech.eu.jpg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       name: 'Sebastien Bertil-Souchet',
       role: t('home.team.roles.backendAndDevOps'),
-      image: '/assets/team/sebastien.bertil-souchet@epitech.eu.jpg'
+      image: '/assets/team/sebastien.bertil-souchet@epitech.eu.jpg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       name: 'Ewen Emeraud',
       role: t('home.team.roles.backend'),
-      image: '/assets/team/ewen.emeraud@epitech.eu.jpg'
+      image: '/assets/team/ewen.emeraud@epitech.eu.jpg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       name: 'Tom Lefoix',
       role: t('home.team.roles.backend'),
-      image: '/assets/team/tom.lefoix@epitech.eu.jpg'
+      image: '/assets/team/tom.lefoix@epitech.eu.jpg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     }
-  ]
+  ];
 
   const stack = [
     {
       title: t('home.stack.services.discord.title'),
       description: t('home.stack.services.discord.description'),
-      icon: '/assets/stack/discord-icon.svg'
+      icon: '/assets/stack/discord-icon.svg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
-      title: t('home.stack.services.apple.title'),
-      description: t('home.stack.services.apple.description'),
-      icon: '/assets/stack/apple-icon.svg'
+      title: t('home.stack.services.outlook.title'),
+      description: t('home.stack.services.outlook.description'),
+      icon: '/assets/stack/outlook-icon.svg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       title: t('home.stack.services.google.title'),
       description: t('home.stack.services.google.description'),
-      icon: '/assets/stack/google-icon.svg'
+      icon: '/assets/stack/google-icon.svg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
-      title: t('home.stack.services.github.title'),
-      description: t('home.stack.services.github.description'),
-      icon: '/assets/stack/github-icon.svg'
+      title: t('home.stack.services.spotify.title'),
+      description: t('home.stack.services.spotify.description'),
+      icon: '/assets/stack/spotify-icon.svg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       title: t('home.stack.services.youtube.title'),
       description: t('home.stack.services.youtube.description'),
-      icon: '/assets/stack/youtube-icon.svg'
+      icon: '/assets/stack/youtube-icon.svg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     },
     {
       title: t('home.stack.services.twitch.title'),
       description: t('home.stack.services.twitch.description'),
-      icon: '/assets/stack/twitch-icon.svg'
+      icon: '/assets/stack/twitch-icon.svg',
+      loading: 'lazy' as const,
+      decoding: 'async' as const,
     }
-  ]
+  ];
 
-  const MobileNav = () => {
+  const exampleNodes: WorkflowNode[] = [
+    {
+      id: '1',
+      type: 'node',
+      position: { x: 0, y: 0 },
+      data: {
+        label: 'Twitch Trigger',
+        isTrigger: true,
+        isValid: true,
+        selected: false,
+        description: 'Trigger when Squeezie goes live on Twitch.',
+        service: {
+          id: '1',
+          name: 'Twitch',
+          image: '/assets/stack/twitch-icon.svg',
+          description: 'Twitch is a live streaming platform',
+          loginRequired: true
+        },
+        status: 'success'
+      },
+    },
+    {
+      id: '2',
+      type: 'node',
+      position: { x: 100, y: 0 },
+      data: {
+        label: 'Send Discord Message',
+        isTrigger: false,
+        isValid: true,
+        selected: false,
+        description: 'Send a message to a Discord server on a specific channel.',
+        service: {
+          id: '2',
+          name: 'Discord',
+          image: '/assets/stack/discord-icon.svg',
+          description: 'Discord is a social media platform',
+          loginRequired: true
+        },
+        status: 'pending'
+      },
+    },
+    {
+      id: '3',
+      type: 'node',
+      position: { x: 200, y: 0 },
+      data: {
+        label: 'Send Email',
+        isTrigger: false,
+        isValid: true,
+        selected: false,
+        description: 'Send an email notification to the Squeezie team.',
+        service: {
+          id: '3',
+          name: 'Gmail',
+          image: '/assets/stack/gmail-icon.svg',
+          description: 'Email service for notifications',
+          loginRequired: true
+        }
+      },
+    },
+  ];
+
+  const exampleEdges: Edge[] = [
+    {
+      id: 'e1-2',
+      source: '1',
+      target: '2',
+      type: 'smoothstep',
+      markerEnd: {
+        type: MarkerType.ArrowClosed
+      }
+    },
+    {
+      id: 'e2-3',
+      source: '2',
+      target: '3',
+      type: 'smoothstep',
+      markerEnd: {
+        type: MarkerType.ArrowClosed
+      }
+    }
+  ];
+
+  const MobileNav = useCallback(() => {
     const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-    const toggleSubmenu = (menu: string) => {
+    const toggleSubmenu = useCallback((menu: string) => {
       setOpenSubmenu(openSubmenu === menu ? null : menu);
-    };
+    }, [openSubmenu]);
 
     return (
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-label={t('home.navigation.menu')}
+          >
             <Bars3Icon className="h-5 w-5" />
           </Button>
         </SheetTrigger>
@@ -170,14 +298,14 @@ export default function Home() {
                     <Button
                       variant="ghost"
                       className="justify-start truncate"
-                      onClick={() => navigate('/github')}
+                      onClick={() => navigate('https://github.com/LouisLanganay/AREA')}
                     >
                       {t('home.navigation.documentation.source')}
                     </Button>
                     <Button
                       variant="ghost"
                       className="justify-start truncate"
-                      onClick={() => navigate('/mobile')}
+                      onClick={() => navigate('/client.apk')}
                     >
                       {t('home.navigation.documentation.mobile')}
                     </Button>
@@ -227,25 +355,37 @@ export default function Home() {
             <hr className="my-4" />
 
             <div className="flex flex-col gap-2">
-              <Button
-                variant="outline"
-                className="justify-start truncate"
-                onClick={() => navigate('/login')}
-              >
-                <UserIcon className="h-5 w-5" />
-                {t('home.auth.signin')}
-              </Button>
-              <Button
-                className="justify-start truncate"
-                onClick={() => navigate('/register')}
-              >
-                <UserPlusIcon className="h-5 w-5" />
-                {t('home.auth.register')}
-              </Button>
+              {!isAuthenticated ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="justify-start truncate"
+                    onClick={() => navigate('/login')}
+                  >
+                    <UserIcon className="h-5 w-5" />
+                    {t('home.auth.signin')}
+                  </Button>
+                  <Button
+                    className="justify-start truncate"
+                    onClick={() => navigate('/register')}
+                  >
+                    <UserPlusIcon className="h-5 w-5" />
+                    {t('home.auth.register')}
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  className="justify-start truncate"
+                  onClick={() => navigate('/workflows')}
+                >
+                  {t('home.auth.dashboard')}
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 className="justify-start truncate"
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                aria-label={theme === 'light' ? t('home.theme.toggleDark') : t('home.theme.toggleLight')}
               >
                 {theme === 'light' ? (
                   <><MoonIcon className="h-5 w-5" />{t('home.theme.dark')}</>
@@ -258,16 +398,29 @@ export default function Home() {
         </SheetContent>
       </Sheet>
     );
-  };
+  }, []);
+
+  const layoutedElements = useMemo(() =>
+    getLayoutedElements(exampleNodes, exampleEdges, 'TB'),
+  [exampleNodes, exampleEdges]
+  );
 
   return (
     <div className='min-h-screen bg-background'>
+      <Helmet>
+        <meta name="description" content={t('home.description')} />
+      </Helmet>
+
       <header className='border-b z-40'>
         <div className='container flex h-16 items-center justify-between px-4 max-w-7xl mx-auto'>
-          <div className='flex-1 basis-0 flex items-center'>
-            <div className='h-8 w-8 rounded bg-primary/20'>
-              <Link to='/'>LinkIt</Link>
-            </div>
+          <div className='flex-1 basis-0 items-center w-24 h-full justify-start flex'>
+            <Link
+              to='/'
+              className='h-full flex items-center'
+              aria-label={t('home.navigation.logo')}
+            >
+              <LinkitLogoFull className='w-24 h-fit object-contain fill-primary' />
+            </Link>
           </div>
 
           <NavigationMenu className="hidden md:block">
@@ -275,10 +428,10 @@ export default function Home() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.features.title')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
+                  <ul className='grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
                     <li className='row-span-3'>
                       <NavigationMenuLink asChild>
-                        <a className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md' href='/'>
+                        <a className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md' href='/'>
                           <div className='h-8 w-8 rounded bg-primary/20'></div>
                           <div className='mb-2 mt-4 text-lg font-medium'>LinkIt</div>
                           <p className='text-sm leading-tight text-muted-foreground'>
@@ -287,14 +440,26 @@ export default function Home() {
                         </a>
                       </NavigationMenuLink>
                     </li>
-                    <ListItem href='/docs' title={t('home.navigation.features.title')}>
+                    <ListItem
+                      href='#features'
+                      title={t('home.navigation.features.title')}
+                      aria-label={t('home.navigation.features.linkLabel')}
+                    >
                       {t('home.navigation.features.intro')}
                     </ListItem>
-                    <ListItem href='/pricing' title='Pricing'>
-                      {t('home.navigation.features.pricing')}
+                    <ListItem
+                      href='#team'
+                      title={t('home.navigation.features.team')}
+                      aria-label={t('home.navigation.features.teamLinkLabel')}
+                    >
+                      {t('home.navigation.features.teamDescription')}
                     </ListItem>
-                    <ListItem href='/integrations' title='Integrations'>
-                      {t('home.navigation.features.integrations')}
+                    <ListItem
+                      href='#stack'
+                      title={t('home.navigation.features.stack')}
+                      aria-label={t('home.navigation.features.stackLinkLabel')}
+                    >
+                      {t('home.navigation.features.stackDescription')}
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -303,32 +468,12 @@ export default function Home() {
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('home.navigation.documentation.title')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className='grid gap-3 p-6 w-[400px]'>
-                    <ListItem href='/api-docs' title='API Reference'>
-                      {t('home.navigation.documentation.api')}
-                    </ListItem>
-                    <ListItem href='/github' title='Source Code'>
+                  <ul className='grid gap-3 p-4 w-[400px]'>
+                    <ListItem href='https://github.com/LouisLanganay/AREA' title='Source Code'>
                       {t('home.navigation.documentation.source')}
                     </ListItem>
-                    <ListItem href='/mobile' title='Mobile App'>
+                    <ListItem href='/client.apk' title='Mobile App'>
                       {t('home.navigation.documentation.mobile')}
-                    </ListItem>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>{t('home.navigation.enterprise.title')}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className='grid gap-3 p-6 w-[400px]'>
-                    <ListItem href='/enterprise' title='Enterprise Solutions'>
-                      {t('home.navigation.enterprise.solutions')}
-                    </ListItem>
-                    <ListItem href='/case-studies' title='Case Studies'>
-                      {t('home.navigation.enterprise.cases')}
-                    </ListItem>
-                    <ListItem href='/contact' title='Contact Sales'>
-                      {t('home.navigation.enterprise.contact')}
                     </ListItem>
                   </ul>
                 </NavigationMenuContent>
@@ -341,6 +486,7 @@ export default function Home() {
               variant='ghost'
               size='icon'
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              aria-label={theme === 'light' ? t('home.theme.toggleDark') : t('home.theme.toggleLight')}
             >
               {theme === 'light' ? (
                 <MoonIcon className='h-5 w-5' />
@@ -348,26 +494,37 @@ export default function Home() {
                 <SunIcon className='h-5 w-5' />
               )}
             </Button>
-            <Button
-              variant='outline'
-              onClick={() => navigate('/login')}
-            >
-              {t('home.auth.signin')}
-            </Button>
-            <Button
-              onClick={() => navigate('/register')}
-            >
-              {t('home.auth.register')}
-            </Button>
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  variant='outline'
+                  onClick={() => navigate('/login')}
+                >
+                  {t('home.auth.signin')}
+                </Button>
+                <Button
+                  onClick={() => navigate('/register')}
+                >
+                  {t('home.auth.register')}
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => navigate('/workflows')}
+              >
+                {t('home.auth.dashboard')}
+              </Button>
+            )}
           </div>
 
           <MobileNav />
         </div>
       </header>
 
-      <div className='px-2 sm:px-5 md:px-12 lg:px-24 relative'>
+      <div className='px-4 sm:px-5 md:px-12 lg:px-24 relative'>
         <DotPattern className='absolute inset-x-0 h-[calc(100vh)] [mask-image:linear-gradient(to_bottom,white,white,transparent_100%)] opacity-50 dark:opacity-20' />
-        <section className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative'>
+
+        <section id="hero" className='container w-full h-full max-w-6xl mx-auto min-h-[300px] py-40 relative flex flex-row justify-between'>
           <div className=''>
             <div className='flex flex-col'>
               <h1 className='text-balance text-5xl font-semibold tracking-tight text-foreground sm:text-7xl'>
@@ -380,12 +537,32 @@ export default function Home() {
                 {t('home.title.iterate')}
               </h1>
             </div>
-            <p className='mt-8 text-pretty text-lg font-medium text-muted-foreground sm:text-xl/8 max-w-lg'>
-              {t('home.description')}
-            </p>
+            <p className='mt-8 text-pretty text-lg font-medium text-muted-foreground sm:text-xl/8 max-w-lg'
+              dangerouslySetInnerHTML={{ __html: t('home.description') }}
+              suppressHydrationWarning={true}
+            />
+          </div>
+          <div className='w-[385px] h-[calc(100vh-300px)] hidden md:flex'>
+            <div className='w-[385px] h-full'>
+              <ReactFlow
+                nodes={layoutedElements.nodes}
+                edges={layoutedElements.edges as Edge[]}
+                nodeTypes={{node: Node}}
+                nodesConnectable={false}
+                nodesDraggable={false}
+                panOnDrag={false}
+                defaultViewport={{ x: 10, y: 0, zoom: 1.1 }}
+                connectionLineType={ConnectionLineType.SmoothStep}
+                fitView
+                zoomOnPinch={false}
+                zoomOnDoubleClick={false}
+              >
+              </ReactFlow>
+            </div>
           </div>
         </section>
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+
+        <section id="features" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <h2 className='text-center text-base/7 font-semibold text-primary'>
             {t('home.features.title')}
           </h2>
@@ -405,15 +582,20 @@ export default function Home() {
                   </p>
                 </div>
                 <div className='relative min-h-[30rem] w-full grow [container-type:inline-size] max-lg:mx-auto max-lg:max-w-sm'>
-                  <div className='absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-for shadow-2xl'>
-                    <img className='size-full object-cover object-top' src='https://tailwindui.com/plus/img/component-images/bento-03-mobile-friendly.png' alt=''/>
+                  <div className='absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-muted-foreground/20 shadow-2xl'>
+                    <img
+                      className='size-full object-cover object-top'
+                      src='/assets/phone.png'
+                      alt={t('home.features.mobile.imageAlt')}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
                 </div>
               </div>
             </div>
-            <div className='relative max-lg:row-start-1'>
-              <div className='absolute inset-px rounded-lg bg-card max-lg:rounded-t-[2rem] border'></div>
-              <div className='relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
+            <div className='relative max-lg:row-start-1 inset-px rounded-lg bg-card max-lg:rounded-t-[2rem] border'>
+              <div className='relative flex min-h-72 h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]'>
                 <div className='px-8 pt-8 sm:px-10 sm:pt-10'>
                   <p className='mt-2 text-lg font-medium tracking-tight text-foreground max-lg:text-center'>
                     {t('home.features.performance.title')}
@@ -422,8 +604,30 @@ export default function Home() {
                     {t('home.features.performance.description')}
                   </p>
                 </div>
-                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2'>
-                  <img className='w-full max-lg:max-w-xs' src='https://tailwindui.com/plus/img/component-images/bento-03-performance.png' alt=''/>
+                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2 overflow-hidden mt-20'>
+                  <div className='rounded-lg border border-primary/20 bg-primary/10 group/premium-banner overflow-hidden absolute -bottom-1 -right-7 max-w-[350px]'>
+                    <div className="absolute inset-0 z-0">
+                      <div className="absolute bg-second/70 size-16 rounded-full blur-2xl animate-blob" />
+                      <div className="absolute inset-[90%] bg-primary size-14 rounded-full blur-2xl animate-blob animation-delay-2000" />
+                    </div>
+                    <div className='relative h-full w-full'>
+                      <div className="absolute bottom-full left-16 -mb-px flex h-8 items-end overflow-hidden">
+                        <div className="flex -mb-px h-[2px] w-56">
+                          <div className="w-full flex-none bg-border-gradient-ai blur-xs"></div>
+                          <div className="-ml-[100%] w-full flex-none bg-border-gradient-ai blur-[10px] h-[20px]"></div>
+                        </div>
+                      </div>
+                      <h3 className='font-medium text-sm flex flex-row gap-2 items-center pt-4 px-4'>
+                        <SparklesIcon className='size-4 text-primary' />
+                        <span className='bg-clip-text text-transparent bg-text-gradient-ai'>
+                          {t('home.features.performance.ai.title')}
+                        </span>
+                      </h3>
+                      <p className='text-sm text-muted-foreground mt-2 pb-4 px-4'>
+                        {t('home.features.performance.ai.description')}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -438,8 +642,60 @@ export default function Home() {
                     {t('home.features.scalability.description')}
                   </p>
                 </div>
-                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2'>
-                  <img className='w-full max-lg:max-w-xs' src='https://tailwindui.com/plus/img/component-images/bento-03-performance.png' alt=''/>
+                <div className='flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2 overflow-hidden mt-32'>
+                  <div className='w-[400px] bg-muted/50 p-4 border-l border-t rounded-lg absolute -bottom-7 -right-8 max-w-[350px]'>
+                    <div className='space-y-4'>
+                      <div className='flex items-center justify-between'>
+                        <div className='flex items-center gap-2'>
+                          <div className='p-1 rounded-md bg-muted border overflow-hidden shrink-0'>
+                            <img
+                              src={DiscordIcon}
+                              alt={t('home.features.scalability.sidebar.discord')}
+                              className='size-5 object-contain'
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </div>
+                          <div className='font-medium text-sm text-foreground'>
+                            {t('home.features.scalability.sidebar.title')}
+                          </div>
+                        </div>
+                        <Button
+                          variant='outline'
+                          size='sm'
+                          className='p-1 h-auto'
+                          aria-label={t('home.features.scalability.sidebar.close')}
+                        >
+                          <XMarkIcon className='w-4 h-4' />
+                        </Button>
+                      </div>
+                      <div className='space-y-2'>
+                        <div className='space-y-4'>
+                          <div className='space-y-4 bg-card border rounded-lg p-4 shadow-sm'>
+                            <div className='flex items-center gap-2'>
+                              <div className='p-1 min-w-6 min-h-6 rounded-full bg-muted border overflow-hidden'>
+                                <BoldIcon className='size-5 object-contain' />
+                              </div>
+                              <p className='text-sm font-semibold'>{t('home.features.scalability.sidebar.titleGroup')}</p>
+                            </div>
+                            <div className='space-y-1'>
+                              <Label htmlFor="serverName" className='flex items-center gap-1'>
+                                {t('home.features.scalability.sidebar.label')} <span className='text-sm text-destructive'>*</span>
+                              </Label>
+                              <Input
+                                id="serverName"
+                                variantSize='sm'
+                                type='text'
+                                required={true}
+                                aria-required="true"
+                                aria-label={t('home.features.scalability.sidebar.label')}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -461,7 +717,8 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+
+        <section id="team" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='mx-auto grid gap-20 xl:grid-cols-3'>
             <div className='max-w-xl'>
               <h2 className='text-pretty text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground sm:text-4xl'>
@@ -475,7 +732,13 @@ export default function Home() {
               {team.map((person) => (
                 <li key={person.name}>
                   <div className='flex items-center gap-x-6'>
-                    <img className='size-16 rounded-full object-cover' src={person.image} alt={person.name} />
+                    <img
+                      className='size-16 rounded-full object-cover'
+                      src={person.image}
+                      alt={person.name}
+                      loading={person.loading}
+                      decoding={person.decoding}
+                    />
                     <div>
                       <h3 className='text-base/7 font-semibold tracking-tight text-foreground'>{person.name}</h3>
                       <p className='text-sm/6 font-semibold text-primary'>{person.role}</p>
@@ -487,7 +750,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+        <section id="stack" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='flex flex-col sm:flex-row justify-between gap-4'>
             <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-4xl max-w-md'>
               <span className='bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground'>{t('home.stack.title1')} </span>{t('home.stack.title2')}
@@ -498,9 +761,15 @@ export default function Home() {
           </div>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-16'>
             {stack.map((item) => (
-              <div className='flex flex-row gap-4 border rounded-lg p-4 shadow-sm hover:scale-101 transition-transform duration-300'>
+              <div key={item.title} className='flex flex-row gap-4 border rounded-lg p-4 shadow-sm hover:scale-101 transition-transform duration-300'>
                 <div className='shrink-0 size-12 p-2 border rounded-lg flex items-center justify-center'>
-                  <img src={item.icon} alt={item.title} className='w-full h-full object-contain' />
+                  <img
+                    src={item.icon}
+                    alt={item.title}
+                    className='w-full h-full object-contain'
+                    loading={item.loading}
+                    decoding={item.decoding}
+                  />
                 </div>
                 <div className='flex flex-col flex-1 min-w-0'>
                   <span className='text-md font-semibold truncate'>{item.title}</span>
@@ -511,7 +780,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
+        <section id="cta" className='container w-full h-full max-w-6xl mx-auto py-10 sm:py-20 md:py-32 lg:py-40'>
           <div className='flex flex-col justify-center gap-4 items-center text-center'>
             <h2 className='text-pretty text-3xl font-bold tracking-tight text-foreground sm:text-5xl max-w-xl'>
               <span className='bg-clip-text text-transparent bg-gradient-to-b from-foreground/60 to-foreground'>

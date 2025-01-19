@@ -10,10 +10,13 @@ import { PrismaClientErrorFilter } from './prisma/prismaHandlerError';
 import { ConfigModule } from '@nestjs/config';
 import { WorkflowModule } from './workflow/workflow.module';
 import { BullModule } from '@nestjs/bullmq';
-import { WebhookModule } from './discordWebhook/discord-webhook.module';
-import {DiscordModule} from "./app-discord/discord-app.module";
-import { ServiceController } from "./service/route/service.controller";
-import { ServiceModule } from "./service/route/service.module";
+import { DiscordModule } from './app-discord/discord-app.module';
+import { ServiceController } from './service/route/service.controller';
+import { ServiceModule } from './service/route/service.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AiModule } from './ai/ai.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -30,8 +33,11 @@ import { ServiceModule } from "./service/route/service.module";
         port: 6379,
       },
     }),
-    WebhookModule,
-    DiscordModule
+    WebhooksModule,
+    DiscordModule,
+    ScheduleModule.forRoot(),
+    AiModule,
+    HistoryModule,
   ],
   controllers: [AppController, AboutController, ServiceController],
   providers: [

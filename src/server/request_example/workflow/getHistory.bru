@@ -1,0 +1,15 @@
+meta {
+  name: getHistory
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://localhost:8080/workflows-history/all
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlNzQzN2Q4LTJiZDMtNGE4MC04ZWZhLTA0NzEzYmFiNzY4NCIsImlhdCI6MTczNjk1Mzc3MCwiZXhwIjoxNzM2OTY4MTcwfQ.yepWDv4Opz9TMwnNBJME2pJrqX5PP_iUFDRciTlABUs
+}
