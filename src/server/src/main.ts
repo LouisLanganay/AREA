@@ -76,7 +76,6 @@ export async function defineAllService(allService: any) {
   allService.addEventToService('gcalendar', EventAddGoogleCalendar);
 
   allService.addEventToService('twitch', EventStreamerOnline);
-  allService.addEventToService('twitch', EventLogTerm);
   allService.addEventToService('twitch', EventWriteInBroadcasterChat);
 
   allService.addEventToService('spotify', EventCreatePlaylist);
