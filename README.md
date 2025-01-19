@@ -1,6 +1,6 @@
-# area
+# AREA - LinkIt
 
-![image](assets\linkit illustration.png)
+![LinkIt Illustration](assets/linkit%20illustration%20banner.png)
 
 ## **Project Concept**
 
@@ -23,7 +23,7 @@ cd AREA
 
 ### **Environment Variables**
 
-Before running the project, you must configure the required environment variables. There are `.env.example` files provided to guide you in setting up the `.env` files. Here’s what you need to do:
+Before running the project, you must configure the required environment variables. There are `.env.example` files provided to guide you in setting up the `.env` files. Here's what you need to do:
 
 1. **Root `.env`**:
    - Located at the root of the project.
