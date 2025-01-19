@@ -1,4 +1,5 @@
 import { Service, Event, FieldGroup } from '../../../shared/Workflow';
+import { PrismaService } from '../prisma/prisma.service';
 
 export const EventDateReached: Event = {
   type: 'action',
@@ -24,6 +25,10 @@ export const EventDateReached: Event = {
     },
   ],
   check: async (parameters: FieldGroup[]) => {
+    const workflowId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'workflow_id')?.value;
+
     const dateDetails = parameters.find((p) => p.id === 'dateDetails');
 
     if (!dateDetails) {
@@ -44,13 +49,21 @@ export const EventDateReached: Event = {
     }
 
     const now = new Date();
+    const prisma = new PrismaService();
 
-    // TODO: quand historique sera disponible, vérifier si pas déjà executé pour ce jour au lieu d'une fenêtre de 1 minute
-    const oneMinuteAfterTarget = new Date(targetDate.getTime() + 60 * 1000);
-    if (now >= targetDate && now < oneMinuteAfterTarget) {
-      console.log(
-        `Target date reached: ${targetDate.toISOString()} (within 1 minute).`,
-      );
+    const history = await prisma.historyWorkflow.findMany({
+      where: { workflowId: workflowId },
+      take: 2,
+    });
+    console.log(history[history.length - 1]);
+    const oneMinuteAfterTarget = new Date(targetDate.getTime() + 11 * 1000);
+    if (
+      now >= targetDate &&
+      now < oneMinuteAfterTarget &&
+      history[history.length - 1].status === 'failure' &&
+      history[history.length - 2].status === 'failure'
+    ) {
+      console.log(`Target date reached: ${targetDate.toISOString()}.`);
       return true;
     }
     return false;
@@ -93,6 +106,10 @@ export const EventDayAndTimeReached: Event = {
     },
   ],
   check: async (parameters: FieldGroup[]) => {
+    const workflowId = parameters
+      .find((group) => group.id === 'workflow_information')
+      ?.fields.find((field) => field.id === 'workflow_id')?.value;
+
     const scheduleDetails = parameters.find((p) => p.id === 'scheduleDetails');
 
     if (!scheduleDetails) {
@@ -130,10 +147,22 @@ export const EventDayAndTimeReached: Event = {
       }),
     );
 
+    const prisma = new PrismaService();
+
+    const history = await prisma.historyWorkflow.findMany({
+      where: { workflowId: workflowId },
+      orderBy: { executionDate: 'desc' },
+      take: 6,
+    });
+    const allFailures =
+      history.length === 6 &&
+      history.every((entry) => entry.status === 'failure');
+
     if (
       currentDay.toLowerCase() === dayOfWeek.toLowerCase() &&
       currentHour === hour &&
-      currentMinute === minute
+      currentMinute === minute &&
+      allFailures
     ) {
       return true;
     }

@@ -5,7 +5,7 @@ services:
     container_name: linkit_web-service
     build:
       context: ./src/web/
-      dockerfile: DockerfileDev
+      dockerfile: Dockerfile
     ports:
       - "8081:8081"
     volumes:
@@ -21,7 +21,7 @@ services:
       - server
     command: >
       bash -c "
-      while [ ! -f /web_service/public/app-debug.apk ]; do
+      while [ ! -f /web_service/public/LinkIt.apk ]; do
         echo 'Waiting for mobile build to complete...'
         sleep 5
       done &&
@@ -37,7 +37,7 @@ services:
     container_name: linkit_mobile-service
     build:
       context: ./src/web/
-      dockerfile: DockerfileDev
+      dockerfile: Dockerfile
     volumes:
       - ./src/web:/web_service
       - ./src/shared:/shared
@@ -56,8 +56,8 @@ services:
       cd android &&
       ./gradlew assembleDebug &&
       cd .. &&
-      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/public/ &&
-      echo 'APK generated at /web_service/public/app-debug.apk'
+      mv android/app/build/outputs/apk/debug/app-debug.apk /web_service/public/LinkIt.apk &&
+      echo 'APK generated at /web_service/public/LinkIt.apk'
       "
 
   database:
@@ -82,7 +82,7 @@ services:
     container_name: linkit_server
     build:
       context: ./src/server/
-      dockerfile: DockerfileDev
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
