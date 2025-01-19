@@ -14,6 +14,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { HttpModule } from '@nestjs/axios';
 import { GoogleAuthService } from './external-services/google.auth.service';
 import { DiscordAuthService } from './external-services/discord.auth.service';
+import { OutlookAuthService } from './external-services/outlook.auth.service';
 import { SpotifyAuthService } from './external-services/spotify.auth.service';
 import {TwitchAuthService} from "./external-services/twitch.auth.services";
 
@@ -39,6 +40,7 @@ import {TwitchAuthService} from "./external-services/twitch.auth.services";
     DiscordService,
     GoogleAuthService,
     DiscordAuthService,
+    OutlookAuthService,
     SpotifyAuthService,
     TwitchAuthService,
   ],

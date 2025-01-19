@@ -16,6 +16,7 @@ import { ForgotPasswordDto } from '../users/dto/forgot-password.dto';
 import { AuthGuard } from '@nestjs/passport';
 import * as process from 'node:process';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
+import { OutlookAuthService } from './external-services/outlook.auth.service';
 import { DiscordService } from '../app-discord/discord-app.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SpotifyAuthService } from './external-services/spotify.auth.service';
@@ -27,6 +28,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly discordService: DiscordService,
+    private readonly outlookAuthService: OutlookAuthService,
     private readonly twitchAuthService: TwitchAuthService,
     private readonly spotifyAuthService: SpotifyAuthService,
   ) {}
@@ -177,6 +179,33 @@ export class AuthController {
     }
     if (service === 'gcalendar') {
       return await this.authService.gCalendarRedirect(code, req.user.id);
+    }
+  }
+
+  @Get('outlook/redirect')
+  outlookAuthRedirect(): { redirectUrl: string } {
+    const redirectUrl = this.outlookAuthService.generateAuthUrl();
+    return { redirectUrl };
+  }
+
+  @Post('outlook/callback')
+  @UseGuards(AuthGuard('jwt'))
+  async getOutlookCallback(@Body('code') code: string, @Req() req: any) {
+    if (!code) {
+      throw new BadRequestException('Code is missing');
+    }
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+    try {
+      await this.outlookAuthService.getAccessToken(code, userId);
+      return { message: 'Tokens stored in the database' };
+    } catch (error) {
+      throw new BadRequestException({
+        err_code: 'OUTLOOK_TOKEN_EXCHANGE_FAILED',
+        details: error.message,
+      });
     }
   }
 

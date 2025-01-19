@@ -10,7 +10,6 @@ import {
   EventCheckTemperature,
   EventGetWeatherForecast,
 } from './service/meteo.service';
-import { MailTestService, EventSendMail } from './service/mailTest.service';
 import {
   discordService,
   EventBanUserDiscord,
@@ -30,7 +29,7 @@ import {
   EventDateReached,
   EventDayAndTimeReached,
 } from './service/timer.service';
-import { MailerService } from './service/mailer.service';
+import { OutlookService, EventSendEmail, EventMonitorEmails, EventCreateEmailDraft } from './service/outlook.service';
 import {
   EventCreatePlaylist,
   EventCheckPlayer,
@@ -50,8 +49,7 @@ import {
 export async function defineAllService(allService: any) {
   allService.addService(discordService);
   allService.addService(TimerService);
-  allService.addService(MailTestService);
-  allService.addService(MailerService);
+  allService.addService(OutlookService);
   allService.addService(WeatherService);
   allService.addService(gcalendarService);
   allService.addService(SpotifyService);
@@ -65,7 +63,9 @@ export async function defineAllService(allService: any) {
   allService.addEventToService('weather', EventCheckTemperature);
   allService.addEventToService('weather', EventGetWeatherForecast);
 
-  allService.addEventToService('mailTest', EventSendMail);
+  allService.addEventToService('outlook', EventSendEmail);
+  allService.addEventToService('outlook', EventMonitorEmails);
+  allService.addEventToService('outlook', EventCreateEmailDraft);
 
   allService.addEventToService('timer', EventDateReached);
   allService.addEventToService('timer', EventDayAndTimeReached);
