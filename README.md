@@ -6,6 +6,9 @@
 
 This project is a flexible and dynamic automation platform inspired by services like IFTTT. It enables users to create workflows by combining triggers (actions) and reactions, leveraging APIs from third-party services like YouTube, Discord, and others, as well as built-in functionalities like time-based triggers. The system is designed to allow users to seamlessly manage and execute workflows.
 
+![Platform Screenshot 1](assets/278shots_so.png)
+![Platform Screenshot 2](assets/54shots_so.png)
+
 ---
 
 ## **How to Clone the Project**
